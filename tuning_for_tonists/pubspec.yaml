@@ -56,6 +56,9 @@ dependencies:
   flutter_svg: ^1.1.6
   auto_size_text: ^3.0.0
   image_cropper: ^3.0.1
+  syncfusion_flutter_charts: ^20.3.61
+  # sound_stream: ^0.3.0
+  mic_stream: ^0.6.2
 
 dev_dependencies:
   flutter_test:
