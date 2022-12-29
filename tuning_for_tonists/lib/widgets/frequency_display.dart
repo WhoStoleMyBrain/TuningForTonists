@@ -102,7 +102,8 @@ class _FrequencyDisplayState extends State<FrequencyDisplay>
 
     stream = await MicStream.microphone(
         audioSource: AudioSource.DEFAULT,
-        sampleRate: 1000 * (rng.nextInt(50) + 30),
+        // sampleRate: 1000 * (rng.nextInt(50) + 30),
+        sampleRate: 16000,
         channelConfig: ChannelConfig.CHANNEL_IN_MONO,
         audioFormat: audioFormat);
     // after invoking the method for the first time, though, these will be available;
@@ -128,6 +129,8 @@ class _FrequencyDisplayState extends State<FrequencyDisplay>
   // }
 
   void _calculateIntensitySamples(samples) {
+    print(samples);
+    print('samples: ${samples.length}');
     currentSamples ??= [];
     int currentSample = 0;
     eachWithIndex(samples, (i, int sample) {
@@ -145,14 +148,18 @@ class _FrequencyDisplayState extends State<FrequencyDisplay>
     });
 
     if (currentSamples!.length >= samplesPerSecond / 10) {
+      print(currentSamples);
+      print('current samples:${currentSamples?.length}');
       visibleSamples
           .add(currentSamples!.map((i) => i).toList().reduce((a, b) => a + b));
+      print(visibleSamples);
+      print('visible samples${visibleSamples.length}');
       localMax ??= visibleSamples.last;
       localMin ??= visibleSamples.last;
       localMax = max(localMax!, visibleSamples.last);
       localMin = min(localMin!, visibleSamples.last);
       currentSamples = [];
-      print('visible samples length: ${visibleSamples.length}');
+      // print('visible samples length: ${visibleSamples.length}');
 
       // print('samplesPerSecond: $samplesPerSecond');
       if (visibleSamples.length >= 10 * 10) {
@@ -199,7 +206,7 @@ class _FrequencyDisplayState extends State<FrequencyDisplay>
 
   Color _getBgColor() => (isRecording) ? Colors.red : Colors.cyan;
   Icon _getIcon() =>
-      (isRecording) ? Icon(Icons.stop) : Icon(Icons.keyboard_voice);
+      (isRecording) ? const Icon(Icons.stop) : const Icon(Icons.keyboard_voice);
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -234,10 +241,10 @@ class _FrequencyDisplayState extends State<FrequencyDisplay>
           children: [
             FloatingActionButton(
               onPressed: _controlMicStream,
-              child: _getIcon(),
               foregroundColor: _iconColor,
               backgroundColor: _getBgColor(),
               tooltip: (isRecording) ? "Stop recording" : "Start recording",
+              child: _getIcon(),
             ),
           ],
         ),
@@ -281,8 +288,9 @@ class WavePainter extends CustomPainter {
   Size? size;
 
   // Set max val possible in stream, depending on the config
-  // int absMax = 255*4; //(AUDIO_FORMAT == AudioFormat.ENCODING_PCM_8BIT) ? 127 : 32767;
-  // int absMin; //(AUDIO_FORMAT == AudioFormat.ENCODING_PCM_8BIT) ? 127 : 32767;
+  int absMax =
+      255 * 4; //(audioFormat == AudioFormat.ENCODING_PCM_8BIT) ? 127 : 32767;
+  int absMin = (audioFormat == AudioFormat.ENCODING_PCM_8BIT) ? 127 : 32767;
 
   WavePainter(
       {this.samples, this.color, this.context, this.localMax, this.localMin});
@@ -328,7 +336,7 @@ class WavePainter extends CustomPainter {
       points.add(point);
     }
 
-    print(points);
+    // print(points);
     return points;
   }
 
