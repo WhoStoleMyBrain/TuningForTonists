@@ -59,7 +59,9 @@ dependencies:
   syncfusion_flutter_charts: ^20.3.61
   # sound_stream: ^0.3.0
   mic_stream: ^0.6.2
-
+  flutter_sound: ^9.2.13
+  audio_session: ^0.1.13
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter

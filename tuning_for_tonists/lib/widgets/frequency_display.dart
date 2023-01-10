@@ -1,27 +1,24 @@
-import 'dart:async';
-import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+
+import 'package:audio_session/audio_session.dart';
+import 'package:flutter_sound/flutter_sound.dart';
+
+import 'dart:async';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-// import 'dart:async';
-// import 'dart:typed_data';
-// import 'package:sound_stream/sound_stream.dart';
 
-import 'package:mic_stream/mic_stream.dart';
+// const audioFormat = AudioFormat.ENCODING_PCM_16BIT;
 
-const audioFormat = AudioFormat.ENCODING_PCM_16BIT;
+const int tSampleRate = 44100;
 
-class MicrophoneData {
-  MicrophoneData(this.time, this.frequency);
-  final DateTime time;
-  final double frequency;
-}
+///
+const int tBlockSize = 4096;
 
-enum Command {
-  start,
-  stop,
-  change,
-}
+typedef _Fn = void Function();
 
 class FrequencyDisplay extends StatefulWidget {
   const FrequencyDisplay({super.key});
@@ -30,331 +27,308 @@ class FrequencyDisplay extends StatefulWidget {
   State<FrequencyDisplay> createState() => _FrequencyDisplayState();
 }
 
-class _FrequencyDisplayState extends State<FrequencyDisplay>
-    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
-  final List<MicrophoneData> microphoneData = [
-    MicrophoneData(DateTime.fromMillisecondsSinceEpoch(0), 2.0),
-    MicrophoneData(DateTime.fromMillisecondsSinceEpoch(1), 1.0),
-    MicrophoneData(DateTime.fromMillisecondsSinceEpoch(2), 4.0),
-    MicrophoneData(DateTime.fromMillisecondsSinceEpoch(3), 3.0),
-    MicrophoneData(DateTime.fromMillisecondsSinceEpoch(4), 2.0),
-  ];
-  Stream? stream;
-  late StreamSubscription listener;
-  List<int>? currentSamples = [];
+class _FrequencyDisplayState extends State<FrequencyDisplay> {
+  List<int>? currentSamples = List<int>.generate(100, (index) => 100);
   List<int> visibleSamples = [];
-  int? localMax;
-  int? localMin;
-  Random rng = Random();
+  final List<int> _defaultVisibleSamples =
+      List<int>.generate(100, (index) => 100);
 
-  // Refreshes the Widget for every possible tick to force a rebuild of the sound wave
-  late AnimationController controller;
+  // FlutterSoundPlayer? _mPlayer = FlutterSoundPlayer();
+  // bool _mPlayerIsInited = false;
 
-  final Color _iconColor = Colors.white;
-  bool isRecording = false;
-  bool memRecordingState = false;
-  late bool isActive;
-  DateTime? startTime;
+  FlutterSoundPlayer? _mPlayer = FlutterSoundPlayer();
+  FlutterSoundRecorder? _mRecorder = FlutterSoundRecorder();
+  bool _mPlayerIsInited = false;
+  bool _mRecorderIsInited = false;
+  bool _mplaybackReady = false;
+  String? _mPath;
+  StreamSubscription? _mRecordingDataSubscription;
+  List<FrequencyData> sink2 = [];
 
-  // int page = 0;
-  List state = ["SoundWavePage", "IntensityWavePage", "InformationPage"];
+  Future<void> _openRecorder() async {
+    var status = await Permission.microphone.request();
+    if (status != PermissionStatus.granted) {
+      throw RecordingPermissionException('Microphone permission not granted');
+    }
+    await _mRecorder!.openRecorder();
+
+    final session = await AudioSession.instance;
+    await session.configure(AudioSessionConfiguration(
+      avAudioSessionCategory: AVAudioSessionCategory.playAndRecord,
+      avAudioSessionCategoryOptions:
+          AVAudioSessionCategoryOptions.allowBluetooth |
+              AVAudioSessionCategoryOptions.defaultToSpeaker,
+      avAudioSessionMode: AVAudioSessionMode.spokenAudio,
+      avAudioSessionRouteSharingPolicy:
+          AVAudioSessionRouteSharingPolicy.defaultPolicy,
+      avAudioSessionSetActiveOptions: AVAudioSessionSetActiveOptions.none,
+      androidAudioAttributes: const AndroidAudioAttributes(
+        contentType: AndroidAudioContentType.speech,
+        flags: AndroidAudioFlags.none,
+        usage: AndroidAudioUsage.voiceCommunication,
+      ),
+      androidAudioFocusGainType: AndroidAudioFocusGainType.gain,
+      androidWillPauseWhenDucked: true,
+    ));
+
+    setState(() {
+      _mRecorderIsInited = true;
+    });
+  }
+
   @override
   void initState() {
-    // print("Init application");
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    setState(() {
-      initPlatformState();
+    // Be careful : openAudioSession return a Future.
+    // Do not access your FlutterSoundPlayer or FlutterSoundRecorder before the completion of the Future
+    _mPlayer!.openPlayer().then((value) {
+      setState(() {
+        _mPlayerIsInited = true;
+      });
     });
-  }
-
-  // Responsible for switching between recording / idle state
-  void _controlMicStream({Command command = Command.change}) async {
-    switch (command) {
-      case Command.change:
-        _changeListening();
-        break;
-      case Command.start:
-        _startListening();
-        break;
-      case Command.stop:
-        _stopListening();
-        break;
-    }
-  }
-
-  Future<bool> _changeListening() async =>
-      !isRecording ? await _startListening() : _stopListening();
-
-  late int bytesPerSample;
-  late int samplesPerSecond;
-
-  Future<bool> _startListening() async {
-    // print("START LISTENING");
-    if (isRecording) return false;
-    // if this is the first time invoking the microphone()
-    // method to get the stream, we don't yet have access
-    // to the sampleRate and bitDepth properties
-    // print("wait for stream");
-
-    // Default option. Set to false to disable request permission dialogue
-    MicStream.shouldRequestPermission(true);
-
-    stream = await MicStream.microphone(
-        audioSource: AudioSource.DEFAULT,
-        // sampleRate: 1000 * (rng.nextInt(50) + 30),
-        sampleRate: 16000,
-        channelConfig: ChannelConfig.CHANNEL_IN_MONO,
-        audioFormat: audioFormat);
-    // after invoking the method for the first time, though, these will be available;
-    // It is not necessary to setup a listener first, the stream only needs to be returned first
-    print(
-        "Start Listening to the microphone, sample rate is ${await MicStream.sampleRate}, bit depth is ${await MicStream.bitDepth}, bufferSize: ${await MicStream.bufferSize}");
-    bytesPerSample = (await MicStream.bitDepth)! ~/ 8;
-    samplesPerSecond = (await MicStream.sampleRate)!.toInt();
-    localMax = null;
-    localMin = null;
-
-    setState(() {
-      isRecording = true;
-      startTime = DateTime.now();
-    });
-    visibleSamples = [];
-    listener = stream!.listen(_calculateIntensitySamples);
-    return true;
-  }
-
-  // void _calculateSamples(samples) {
-  //   _calculateIntensitySamples(samples);
-  // }
-
-  void _calculateIntensitySamples(samples) {
-    print(samples);
-    print('samples: ${samples.length}');
-    currentSamples ??= [];
-    int currentSample = 0;
-    eachWithIndex(samples, (i, int sample) {
-      currentSample += sample;
-      if ((i % bytesPerSample) == bytesPerSample - 1) {
-        currentSamples!.add(currentSample);
-        currentSample = 0;
-      }
-
-      // print('currentSamples : ${currentSamples?.length}');
-      // if ((currentSamples?.length ?? 0) > samplesPerSecond * 10) {
-      //   print('currentSamples too long: ${currentSamples?.length}');
-      //   currentSamples = currentSamples!.sublist(0, samplesPerSecond * 10);
-      // }
-    });
-
-    if (currentSamples!.length >= samplesPerSecond / 10) {
-      print(currentSamples);
-      print('current samples:${currentSamples?.length}');
-      visibleSamples
-          .add(currentSamples!.map((i) => i).toList().reduce((a, b) => a + b));
-      print(visibleSamples);
-      print('visible samples${visibleSamples.length}');
-      localMax ??= visibleSamples.last;
-      localMin ??= visibleSamples.last;
-      localMax = max(localMax!, visibleSamples.last);
-      localMin = min(localMin!, visibleSamples.last);
-      currentSamples = [];
-      // print('visible samples length: ${visibleSamples.length}');
-
-      // print('samplesPerSecond: $samplesPerSecond');
-      if (visibleSamples.length >= 10 * 10) {
-        visibleSamples =
-            visibleSamples.skip(visibleSamples.length - 10 * 10).toList();
-        // visibleSamples.
-      }
-      setState(() {});
-    }
-  }
-
-  bool _stopListening() {
-    if (!isRecording) return false;
-    print("Stop Listening to the microphone");
-    listener.cancel();
-
-    setState(() {
-      isRecording = false;
-      currentSamples = null;
-      startTime = null;
-    });
-    return true;
-  }
-
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    if (!mounted) return;
-    isActive = true;
-
-    controller =
-        AnimationController(duration: const Duration(seconds: 1), vsync: this)
-          ..addListener(() {
-            if (isRecording) setState(() {});
-          })
-          ..addStatusListener((status) {
-            if (status == AnimationStatus.completed) {
-              controller.reverse();
-            } else if (status == AnimationStatus.dismissed) {
-              controller.forward();
-            }
-          })
-          ..forward();
-  }
-
-  Color _getBgColor() => (isRecording) ? Colors.red : Colors.cyan;
-  Icon _getIcon() =>
-      (isRecording) ? const Icon(Icons.stop) : const Icon(Icons.keyboard_voice);
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      isActive = true;
-      // print("Resume app");
-
-      _controlMicStream(
-          command: memRecordingState ? Command.start : Command.stop);
-    } else if (isActive) {
-      memRecordingState = isRecording;
-      _controlMicStream(command: Command.stop);
-
-      // print("Pause app");
-      isActive = false;
-    }
+    _openRecorder();
   }
 
   @override
   void dispose() {
-    listener.cancel();
-    controller.dispose();
-    WidgetsBinding.instance.removeObserver(this);
+    stopPlayer();
+    _mPlayer!.closePlayer();
+    _mPlayer = null;
+
+    stopRecorder();
+    _mRecorder!.closeRecorder();
+    _mRecorder = null;
     super.dispose();
   }
 
+  Future<IOSink> createFile() async {
+    var tempDir = await getTemporaryDirectory();
+    _mPath = '${tempDir.path}/flutter_sound_example.pcm';
+    var outputFile = File(_mPath!);
+    if (outputFile.existsSync()) {
+      await outputFile.delete();
+    }
+    return outputFile.openWrite();
+  }
+
+  // ----------------------  Here is the code to record to a Stream ------------
+
+  Future<void> record() async {
+    assert(_mRecorderIsInited && _mPlayer!.isStopped);
+    var sink = await createFile();
+
+    var recordingDataController = StreamController<Food>();
+    _mRecordingDataSubscription =
+        recordingDataController.stream.listen((buffer) {
+      if (buffer is FoodData) {
+        sink.add(buffer.data!);
+        sink2.add(FrequencyData.fromUint8List(buffer.data!));
+        setState(() {});
+        // print('sink2.length:${sink2.length}');
+      }
+    });
+    await _mRecorder!.startRecorder(
+      toStream: recordingDataController.sink,
+      codec: Codec.pcm16,
+      numChannels: 1,
+      sampleRate: tSampleRate,
+    );
+    setState(() {});
+  }
+
+  Future<void> stopRecorder() async {
+    await _mRecorder!.stopRecorder();
+    if (_mRecordingDataSubscription != null) {
+      await _mRecordingDataSubscription!.cancel();
+      _mRecordingDataSubscription = null;
+    }
+    _mplaybackReady = true;
+  }
+
+  // -------  Here is the code to play from the microphone -----------------------
+
+  // void play() async {
+  //   await _mPlayer!.startPlayerFromMic();
+  //   setState(() {});
+  // }
+
+  Future<void> stopPlayer() async {
+    if (_mPlayer != null) {
+      await _mPlayer!.stopPlayer();
+    }
+  }
+
+  // ---------------------------------------
+
+  _Fn? getPlaybackFn() {
+    if (!_mPlayerIsInited || !_mplaybackReady || !_mRecorder!.isStopped) {
+      return null;
+    }
+    return _mPlayer!.isStopped
+        ? play
+        : () {
+            stopPlayer().then((value) => setState(() {}));
+          };
+  }
+
+  _Fn? getRecorderFn() {
+    if (!_mRecorderIsInited || !_mPlayer!.isStopped) {
+      return null;
+    }
+    return _mRecorder!.isStopped
+        ? record
+        : () {
+            stopRecorder().then((value) => setState(() {}));
+          };
+  }
+
+  // -------  Here is the code to play Live data with back-pressure ------------
+
+  // void feedHim(Uint8List data) {
+  //   var start = 0;
+  //   var totalLength = data.length;
+  //   while (totalLength > 0 && _mPlayer != null && !_mPlayer!.isStopped) {
+  //     var ln = totalLength > tBlockSize ? tBlockSize : totalLength;
+  //     _mPlayer!.foodSink!.add(FoodData(data.sublist(start, start + ln)));
+  //     totalLength -= ln;
+  //     start += ln;
+  //   }
+  // }
+
+  void play() async {
+    assert(_mPlayerIsInited &&
+        _mplaybackReady &&
+        _mRecorder!.isStopped &&
+        _mPlayer!.isStopped);
+    await _mPlayer!.startPlayer(
+        fromURI: _mPath,
+        sampleRate: tSampleRate,
+        codec: Codec.pcm16,
+        numChannels: 1,
+        whenFinished: () {
+          setState(() {});
+        }); // The readability of Dart is very special :-(
+    setState(() {});
+  }
+
+  // --------------------- (it was very simple, wasn't it ?) -------------------
+
+  // Future<Uint8List> getAssetData(String path) async {
+  //   var asset = await rootBundle.load(path);
+  //   return asset.buffer.asUint8List();
+  // }
+
+  // ----------------------------------------------------------------------------------------------------------------------
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            FloatingActionButton(
-              onPressed: _controlMicStream,
-              foregroundColor: _iconColor,
-              backgroundColor: _getBgColor(),
-              tooltip: (isRecording) ? "Stop recording" : "Start recording",
-              child: _getIcon(),
+    Widget makeBody() {
+      return Column(
+        children: [
+          Container(
+            margin: const EdgeInsets.all(3),
+            padding: const EdgeInsets.all(3),
+            height: 80,
+            width: double.infinity,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: Color(0xFFFAF0E6),
+              border: Border.all(
+                color: Colors.indigo,
+                width: 3,
+              ),
             ),
-          ],
-        ),
-        // Container(
-        //   height: MediaQuery.of(context).size.height * 0.3,
-        //   child: SfCartesianChart(
-        //       isTransposed: true,
-        //       primaryXAxis: DateTimeAxis(isInversed: true),
-        //       series: <ChartSeries>[
-        //         LineSeries<MicrophoneData, DateTime>(
-        //           dataSource: microphoneData,
-        //           xValueMapper: (MicrophoneData item, _) => item.time,
-        //           yValueMapper: (MicrophoneData item, _) => item.frequency,
-        //         )
-        //       ]),
-        // ),
-        Container(
-          height: MediaQuery.of(context).size.height * 0.2,
-          child: CustomPaint(
-            painter: WavePainter(
-              samples: visibleSamples,
-              color: _getBgColor(),
-              localMax: localMax,
-              localMin: localMin,
-              context: context,
-            ),
+            child: Row(children: [
+              ElevatedButton(
+                onPressed: getRecorderFn(),
+                //color: Colors.white,
+                //disabledColor: Colors.grey,
+                child: Text(_mRecorder!.isRecording ? 'Stop' : 'Record'),
+              ),
+              SizedBox(
+                width: 20,
+              ),
+              Text(_mRecorder!.isRecording
+                  ? 'Recording in progress'
+                  : 'Recorder is stopped'),
+            ]),
           ),
-        )
-      ],
-    );
-  }
-}
-
-class WavePainter extends CustomPainter {
-  int? localMax;
-  int? localMin;
-  List<int>? samples;
-  late List<Offset> points;
-  Color? color;
-  BuildContext? context;
-  Size? size;
-
-  // Set max val possible in stream, depending on the config
-  int absMax =
-      255 * 4; //(audioFormat == AudioFormat.ENCODING_PCM_8BIT) ? 127 : 32767;
-  int absMin = (audioFormat == AudioFormat.ENCODING_PCM_8BIT) ? 127 : 32767;
-
-  WavePainter(
-      {this.samples, this.color, this.context, this.localMax, this.localMin});
-
-  @override
-  void paint(Canvas canvas, Size? size) {
-    this.size = context!.size;
-    size = this.size;
-
-    Paint paint = Paint()
-      ..color = color!
-      ..strokeWidth = 1.0
-      ..style = PaintingStyle.stroke;
-
-    if (samples!.isEmpty) return;
-
-    points = toPoints(samples);
-
-    Path path = Path();
-    path.addPolygon(points, false);
-
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => true;
-
-  // Maps a list of ints and their indices to a list of points on a cartesian grid
-  List<Offset> toPoints(List<int>? samples) {
-    List<Offset> points = [];
-    samples ??= List<int>.filled(size!.width.toInt(), (0.5).toInt());
-    double pixelsPerSample = size!.width / samples.length;
-    if (localMin == localMax) {
-      localMin = localMin! - 1;
-    }
-    for (int i = 0; i < samples.length; i++) {
-      var point = Offset(
-        0.5 *
-            size!.height *
-            pow((samples[i] - localMin!) / (localMax! - localMin!), 5),
-        i * pixelsPerSample,
+          Container(
+            margin: const EdgeInsets.all(3),
+            padding: const EdgeInsets.all(3),
+            height: 80,
+            width: double.infinity,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: Color(0xFFFAF0E6),
+              border: Border.all(
+                color: Colors.indigo,
+                width: 3,
+              ),
+            ),
+            child: Row(children: [
+              ElevatedButton(
+                onPressed: getPlaybackFn(),
+                //color: Colors.white,
+                //disabledColor: Colors.grey,
+                child: Text(_mPlayer!.isPlaying ? 'Stop' : 'Play'),
+              ),
+              SizedBox(
+                width: 20,
+              ),
+              Text(_mPlayer!.isPlaying
+                  ? 'Playback in progress'
+                  : 'Player is stopped'),
+            ]),
+          ),
+          Text('length of information saved in sink2:${sink2.length}'),
+          Container(
+            child: SfCartesianChart(
+              primaryXAxis: NumericAxis(),
+              primaryYAxis: NumericAxis(),
+              series: <LineSeries<FrequencyData, double>>[
+                LineSeries<FrequencyData, double>(
+                  dataSource: sink2,
+                  xValueMapper: (FrequencyData frequencyData, _) =>
+                      frequencyData.frequency,
+                  yValueMapper: (FrequencyData frequencyData, _) =>
+                      frequencyData.datetime.millisecond,
+                )
+              ],
+            ),
+          )
+        ],
       );
-      points.add(point);
     }
 
-    // print(points);
-    return points;
-  }
-
-  double project(int val, int max, double height) {
-    double waveHeight =
-        (max == 0) ? val.toDouble() : (val / max) * 0.5 * height;
-    return waveHeight + 0.5 * height;
+    // return Scaffold(
+    //   backgroundColor: Colors.blue,
+    //   appBar: AppBar(
+    //     title: const Text('Play from Mic'),
+    //   ),
+    //   body: makeBody(),
+    // );
+    return makeBody();
+    // return Column(
+    //   children: [
+    //     Row(
+    //       children: [],
+    //     ),
+    //     Container(
+    //       height: MediaQuery.of(context).size.height * 0.2,
+    //       child: Text('blabla'),
+    //     )
+    //   ],
+    // );
   }
 }
 
-Iterable<T> eachWithIndex<E, T>(
-    Iterable<T> items, E Function(int index, T item) f) {
-  var index = 0;
-
-  for (final item in items) {
-    f(index, item);
-    index = index + 1;
+class FrequencyData {
+  FrequencyData(this.datetime, this.frequency);
+  final DateTime datetime;
+  final double frequency;
+  factory FrequencyData.fromUint8List(Uint8List data) {
+    return FrequencyData(DateTime.now(),
+        data.toList().reduce((value, element) => value + element).toDouble());
   }
-
-  return items;
 }
