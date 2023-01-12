@@ -11,7 +11,7 @@ class _StringsDisplayState extends State<StringsDisplay> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.2,
+      height: MediaQuery.of(context).size.height * 0.1,
       child: Text('Strings Display'),
     );
   }

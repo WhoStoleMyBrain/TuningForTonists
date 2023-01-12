@@ -1,24 +1,25 @@
-import 'dart:typed_data';
+// import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 
-import 'package:audio_session/audio_session.dart';
-import 'package:flutter_sound/flutter_sound.dart';
+// import 'package:audio_session/audio_session.dart';
+import 'package:flutter_fft/flutter_fft.dart';
+// import 'package:flutter_sound/flutter_sound.dart';
 
 import 'dart:async';
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
+// import 'dart:io';
+// import 'package:path_provider/path_provider.dart';
+// import 'package:permission_handler/permission_handler.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 // const audioFormat = AudioFormat.ENCODING_PCM_16BIT;
 
-const int tSampleRate = 44100;
+// const int tSampleRate = 44100;
 
-///
-const int tBlockSize = 4096;
+// ///
+// const int tBlockSize = 4096;
 
-typedef _Fn = void Function();
+// typedef _Fn = void Function();
 
 class FrequencyDisplay extends StatefulWidget {
   const FrequencyDisplay({super.key});
@@ -28,271 +29,130 @@ class FrequencyDisplay extends StatefulWidget {
 }
 
 class _FrequencyDisplayState extends State<FrequencyDisplay> {
-  List<int>? currentSamples = List<int>.generate(100, (index) => 100);
-  List<int> visibleSamples = [];
-  final List<int> _defaultVisibleSamples =
-      List<int>.generate(100, (index) => 100);
+  double? frequency;
+  String? note;
+  int? octave;
+  bool? isRecording;
 
-  // FlutterSoundPlayer? _mPlayer = FlutterSoundPlayer();
-  // bool _mPlayerIsInited = false;
+  List<FrequencyData> frequencyHistory2 = [FrequencyData(DateTime.now(), 0.0)];
+  List<FrequencyData> frequencyHistory =
+      List.filled(100, FrequencyData(DateTime.now(), 0.0), growable: true);
 
-  FlutterSoundPlayer? _mPlayer = FlutterSoundPlayer();
-  FlutterSoundRecorder? _mRecorder = FlutterSoundRecorder();
-  bool _mPlayerIsInited = false;
-  bool _mRecorderIsInited = false;
-  bool _mplaybackReady = false;
-  String? _mPath;
-  StreamSubscription? _mRecordingDataSubscription;
-  List<FrequencyData> sink2 = [];
+  FlutterFft flutterFft = FlutterFft();
 
-  Future<void> _openRecorder() async {
-    var status = await Permission.microphone.request();
-    if (status != PermissionStatus.granted) {
-      throw RecordingPermissionException('Microphone permission not granted');
+  _initialize() async {
+    print("Starting recorder...");
+    // print("Before");
+    // bool hasPermission = await flutterFft.checkPermission();
+    // print("After: " + hasPermission.toString());
+
+    // Keep asking for mic permission until accepted
+    while (!(await flutterFft.checkPermission())) {
+      flutterFft.requestPermission();
+      // IF DENY QUIT PROGRAM
     }
-    await _mRecorder!.openRecorder();
 
-    final session = await AudioSession.instance;
-    await session.configure(AudioSessionConfiguration(
-      avAudioSessionCategory: AVAudioSessionCategory.playAndRecord,
-      avAudioSessionCategoryOptions:
-          AVAudioSessionCategoryOptions.allowBluetooth |
-              AVAudioSessionCategoryOptions.defaultToSpeaker,
-      avAudioSessionMode: AVAudioSessionMode.spokenAudio,
-      avAudioSessionRouteSharingPolicy:
-          AVAudioSessionRouteSharingPolicy.defaultPolicy,
-      avAudioSessionSetActiveOptions: AVAudioSessionSetActiveOptions.none,
-      androidAudioAttributes: const AndroidAudioAttributes(
-        contentType: AndroidAudioContentType.speech,
-        flags: AndroidAudioFlags.none,
-        usage: AndroidAudioUsage.voiceCommunication,
-      ),
-      androidAudioFocusGainType: AndroidAudioFocusGainType.gain,
-      androidWillPauseWhenDucked: true,
-    ));
-
-    setState(() {
-      _mRecorderIsInited = true;
+    // await flutterFft.checkPermissions();
+    await flutterFft.startRecorder();
+    print("Recorder started...");
+    setState(() => isRecording = flutterFft.getIsRecording);
+    final periodicTimer = Timer.periodic(Duration(milliseconds: 100), (timer) {
+      if (DateTime.now()
+              .difference(frequencyHistory.last.datetime)
+              .inMilliseconds >
+          100) {
+        print(DateTime.now()
+            .difference(frequencyHistory.last.datetime)
+            .inMilliseconds);
+        setState(() {
+          addDataToFrequencyDisplay(frequencyHistory.last.frequency);
+          // frequencyHistory
+          //     .add(FrequencyData.fromDouble(frequencyHistory.last.frequency));
+        });
+      }
     });
+    DateTime.now().difference(DateTime.now()).inMilliseconds > 100;
+    flutterFft.onRecorderStateChanged.listen(
+        (data) => {
+              print("Changed state, received: $data"),
+              setState(
+                () => {
+                  frequency = data[1] as double,
+                  note = data[2] as String,
+                  octave = data[5] as int,
+                },
+              ),
+              flutterFft.setNote = note!,
+              flutterFft.setFrequency = frequency!,
+              flutterFft.setOctave = octave!,
+              // frequencyHistory.add(FrequencyData.fromDouble(
+              //     frequency ?? frequencyHistory.last.frequency)),
+              addDataToFrequencyDisplay(frequency),
+              print(frequencyHistory.length),
+              print("Octave: ${octave!.toString()}")
+            },
+        onError: (err) {
+          print("Error: $err");
+        },
+        onDone: () => {print("Isdone")});
+  }
+
+  void addDataToFrequencyDisplay(double? frequency) {
+    frequencyHistory.add(
+        FrequencyData.fromDouble(frequency ?? frequencyHistory.last.frequency));
+    if (frequencyHistory.length > 100) {
+      frequencyHistory = frequencyHistory.sublist(
+          frequencyHistory.length - 100, frequencyHistory.length);
+    }
   }
 
   @override
   void initState() {
+    isRecording = flutterFft.getIsRecording;
+    frequency = flutterFft.getFrequency;
+    note = flutterFft.getNote;
+    octave = flutterFft.getOctave;
     super.initState();
-    // Be careful : openAudioSession return a Future.
-    // Do not access your FlutterSoundPlayer or FlutterSoundRecorder before the completion of the Future
-    _mPlayer!.openPlayer().then((value) {
-      setState(() {
-        _mPlayerIsInited = true;
-      });
-    });
-    _openRecorder();
+    _initialize();
   }
-
-  @override
-  void dispose() {
-    stopPlayer();
-    _mPlayer!.closePlayer();
-    _mPlayer = null;
-
-    stopRecorder();
-    _mRecorder!.closeRecorder();
-    _mRecorder = null;
-    super.dispose();
-  }
-
-  Future<IOSink> createFile() async {
-    var tempDir = await getTemporaryDirectory();
-    _mPath = '${tempDir.path}/flutter_sound_example.pcm';
-    var outputFile = File(_mPath!);
-    if (outputFile.existsSync()) {
-      await outputFile.delete();
-    }
-    return outputFile.openWrite();
-  }
-
-  // ----------------------  Here is the code to record to a Stream ------------
-
-  Future<void> record() async {
-    assert(_mRecorderIsInited && _mPlayer!.isStopped);
-    var sink = await createFile();
-
-    var recordingDataController = StreamController<Food>();
-    _mRecordingDataSubscription =
-        recordingDataController.stream.listen((buffer) {
-      if (buffer is FoodData) {
-        sink.add(buffer.data!);
-        sink2.add(FrequencyData.fromUint8List(buffer.data!));
-        setState(() {});
-        // print('sink2.length:${sink2.length}');
-      }
-    });
-    await _mRecorder!.startRecorder(
-      toStream: recordingDataController.sink,
-      codec: Codec.pcm16,
-      numChannels: 1,
-      sampleRate: tSampleRate,
-    );
-    setState(() {});
-  }
-
-  Future<void> stopRecorder() async {
-    await _mRecorder!.stopRecorder();
-    if (_mRecordingDataSubscription != null) {
-      await _mRecordingDataSubscription!.cancel();
-      _mRecordingDataSubscription = null;
-    }
-    _mplaybackReady = true;
-  }
-
-  // -------  Here is the code to play from the microphone -----------------------
-
-  // void play() async {
-  //   await _mPlayer!.startPlayerFromMic();
-  //   setState(() {});
-  // }
-
-  Future<void> stopPlayer() async {
-    if (_mPlayer != null) {
-      await _mPlayer!.stopPlayer();
-    }
-  }
-
-  // ---------------------------------------
-
-  _Fn? getPlaybackFn() {
-    if (!_mPlayerIsInited || !_mplaybackReady || !_mRecorder!.isStopped) {
-      return null;
-    }
-    return _mPlayer!.isStopped
-        ? play
-        : () {
-            stopPlayer().then((value) => setState(() {}));
-          };
-  }
-
-  _Fn? getRecorderFn() {
-    if (!_mRecorderIsInited || !_mPlayer!.isStopped) {
-      return null;
-    }
-    return _mRecorder!.isStopped
-        ? record
-        : () {
-            stopRecorder().then((value) => setState(() {}));
-          };
-  }
-
-  // -------  Here is the code to play Live data with back-pressure ------------
-
-  // void feedHim(Uint8List data) {
-  //   var start = 0;
-  //   var totalLength = data.length;
-  //   while (totalLength > 0 && _mPlayer != null && !_mPlayer!.isStopped) {
-  //     var ln = totalLength > tBlockSize ? tBlockSize : totalLength;
-  //     _mPlayer!.foodSink!.add(FoodData(data.sublist(start, start + ln)));
-  //     totalLength -= ln;
-  //     start += ln;
-  //   }
-  // }
-
-  void play() async {
-    assert(_mPlayerIsInited &&
-        _mplaybackReady &&
-        _mRecorder!.isStopped &&
-        _mPlayer!.isStopped);
-    await _mPlayer!.startPlayer(
-        fromURI: _mPath,
-        sampleRate: tSampleRate,
-        codec: Codec.pcm16,
-        numChannels: 1,
-        whenFinished: () {
-          setState(() {});
-        }); // The readability of Dart is very special :-(
-    setState(() {});
-  }
-
-  // --------------------- (it was very simple, wasn't it ?) -------------------
-
-  // Future<Uint8List> getAssetData(String path) async {
-  //   var asset = await rootBundle.load(path);
-  //   return asset.buffer.asUint8List();
-  // }
-
-  // ----------------------------------------------------------------------------------------------------------------------
 
   @override
   Widget build(BuildContext context) {
     Widget makeBody() {
       return Column(
         children: [
-          Container(
-            margin: const EdgeInsets.all(3),
-            padding: const EdgeInsets.all(3),
-            height: 80,
-            width: double.infinity,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: Color(0xFFFAF0E6),
-              border: Border.all(
-                color: Colors.indigo,
-                width: 3,
-              ),
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                isRecording!
+                    ? Text("Current note: ${note!},${octave!.toString()}",
+                        style: TextStyle(fontSize: 30))
+                    : Text("Not Recording", style: TextStyle(fontSize: 35)),
+                isRecording!
+                    ? Text(
+                        "Current frequency: ${frequency!.toStringAsFixed(2)}",
+                        style: TextStyle(fontSize: 30))
+                    : Text("Not Recording", style: TextStyle(fontSize: 35))
+              ],
             ),
-            child: Row(children: [
-              ElevatedButton(
-                onPressed: getRecorderFn(),
-                //color: Colors.white,
-                //disabledColor: Colors.grey,
-                child: Text(_mRecorder!.isRecording ? 'Stop' : 'Record'),
-              ),
-              SizedBox(
-                width: 20,
-              ),
-              Text(_mRecorder!.isRecording
-                  ? 'Recording in progress'
-                  : 'Recorder is stopped'),
-            ]),
           ),
-          Container(
-            margin: const EdgeInsets.all(3),
-            padding: const EdgeInsets.all(3),
-            height: 80,
-            width: double.infinity,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: Color(0xFFFAF0E6),
-              border: Border.all(
-                color: Colors.indigo,
-                width: 3,
-              ),
-            ),
-            child: Row(children: [
-              ElevatedButton(
-                onPressed: getPlaybackFn(),
-                //color: Colors.white,
-                //disabledColor: Colors.grey,
-                child: Text(_mPlayer!.isPlaying ? 'Stop' : 'Play'),
-              ),
-              SizedBox(
-                width: 20,
-              ),
-              Text(_mPlayer!.isPlaying
-                  ? 'Playback in progress'
-                  : 'Player is stopped'),
-            ]),
-          ),
-          Text('length of information saved in sink2:${sink2.length}'),
+          // Text('length of information saved in sink2:${sink2.length}'),
           Container(
             child: SfCartesianChart(
+              // isTransposed: true,
+              enableAxisAnimation: true,
+              isTransposed: false,
+
               primaryXAxis: NumericAxis(),
-              primaryYAxis: NumericAxis(),
+              primaryYAxis: NumericAxis(isInversed: true),
               series: <LineSeries<FrequencyData, double>>[
                 LineSeries<FrequencyData, double>(
-                  dataSource: sink2,
+                  dataSource: frequencyHistory,
                   xValueMapper: (FrequencyData frequencyData, _) =>
                       frequencyData.frequency,
                   yValueMapper: (FrequencyData frequencyData, _) =>
-                      frequencyData.datetime.millisecond,
+                      frequencyHistory.indexOf(frequencyData),
                 )
               ],
             ),
@@ -301,25 +161,7 @@ class _FrequencyDisplayState extends State<FrequencyDisplay> {
       );
     }
 
-    // return Scaffold(
-    //   backgroundColor: Colors.blue,
-    //   appBar: AppBar(
-    //     title: const Text('Play from Mic'),
-    //   ),
-    //   body: makeBody(),
-    // );
     return makeBody();
-    // return Column(
-    //   children: [
-    //     Row(
-    //       children: [],
-    //     ),
-    //     Container(
-    //       height: MediaQuery.of(context).size.height * 0.2,
-    //       child: Text('blabla'),
-    //     )
-    //   ],
-    // );
   }
 }
 
@@ -327,8 +169,11 @@ class FrequencyData {
   FrequencyData(this.datetime, this.frequency);
   final DateTime datetime;
   final double frequency;
-  factory FrequencyData.fromUint8List(Uint8List data) {
-    return FrequencyData(DateTime.now(),
-        data.toList().reduce((value, element) => value + element).toDouble());
+  // factory FrequencyData.fromUint8List(Uint8List data) {
+  //   return FrequencyData(DateTime.now(),
+  //       data.toList().reduce((value, element) => value + element).toDouble());
+  // }
+  factory FrequencyData.fromDouble(double data) {
+    return FrequencyData(DateTime.now(), data);
   }
 }
