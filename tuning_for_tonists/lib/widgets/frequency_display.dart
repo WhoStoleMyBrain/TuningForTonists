@@ -12,6 +12,8 @@ import 'dart:async';
 // import 'package:permission_handler/permission_handler.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
+import 'frequency_display_flutter_sound.dart';
+
 // const audioFormat = AudioFormat.ENCODING_PCM_16BIT;
 
 // const int tSampleRate = 44100;
@@ -61,9 +63,9 @@ class _FrequencyDisplayState extends State<FrequencyDisplay> {
               .difference(frequencyHistory.last.datetime)
               .inMilliseconds >
           100) {
-        print(DateTime.now()
-            .difference(frequencyHistory.last.datetime)
-            .inMilliseconds);
+        // print(DateTime.now()
+        //     .difference(frequencyHistory.last.datetime)
+        //     .inMilliseconds);
         setState(() {
           addDataToFrequencyDisplay(frequencyHistory.last.frequency);
           // frequencyHistory
@@ -88,8 +90,8 @@ class _FrequencyDisplayState extends State<FrequencyDisplay> {
               // frequencyHistory.add(FrequencyData.fromDouble(
               //     frequency ?? frequencyHistory.last.frequency)),
               addDataToFrequencyDisplay(frequency),
-              print(frequencyHistory.length),
-              print("Octave: ${octave!.toString()}")
+              // print(frequencyHistory.length),
+              // print("Octave: ${octave!.toString()}")
             },
         onError: (err) {
           print("Error: $err");
@@ -156,7 +158,8 @@ class _FrequencyDisplayState extends State<FrequencyDisplay> {
                 )
               ],
             ),
-          )
+          ),
+          RecordToStreamExample()
         ],
       );
     }
