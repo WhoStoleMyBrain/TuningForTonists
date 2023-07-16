@@ -11,6 +11,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
   final _bottomNavigationBarItems = {
     'Home':
         const BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+    'chat':
+        const BottomNavigationBarItem(icon: Icon(Icons.home), label: 'chat'),
     'Settings': const BottomNavigationBarItem(
         icon: Icon(Icons.settings), label: 'Settings'),
     'Info':
