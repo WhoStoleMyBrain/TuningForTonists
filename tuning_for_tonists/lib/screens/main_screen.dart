@@ -2,18 +2,13 @@ import 'package:fftea/fftea.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tuning_for_tonists/controllers/mic_technical_data_controller.dart';
+import 'package:tuning_for_tonists/view_controllers/home_controller.dart';
+import 'package:tuning_for_tonists/widgets/app_drawer.dart';
 import '../controllers/wave_data_controller.dart';
 import '../widgets/mic_calculation_widget.dart';
 import 'dart:math';
 
-class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
-
-  @override
-  State<MainScreen> createState() => _MainScreenState();
-}
-
-class _MainScreenState extends State<MainScreen> {
+class MainScreen extends GetView<HomeController> {
   /// Calculate the wave data from the input mic stream.
   void _calculateDisplayData(dynamic samples) {
     WaveDataController waveDataController = Get.find();
@@ -58,7 +53,6 @@ class _MainScreenState extends State<MainScreen> {
     // print('freqValue: $freqValue');
     waveDataController.addVisibleSamples([freqValue > 0 ? freqValue : 0]);
     waveDataController.recalulateMinMax();
-    // setState(() {});
   }
 
   Widget getMicDisplay() {
@@ -80,10 +74,14 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: controller.scaffoldKey,
       appBar: AppBar(
-        leading: const Icon(Icons.ac_unit_rounded),
-      ),
+          leading: IconButton(
+        icon: const Icon(Icons.menu_sharp),
+        onPressed: () => controller.openDrawer(),
+      )),
       body: getMicDisplay(),
+      drawer: AppDrawer(),
     );
   }
 }

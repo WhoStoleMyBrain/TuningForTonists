@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({super.key});
+import '../view_controllers/settings_controller.dart';
+import '../widgets/app_drawer.dart';
 
-  @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
-}
-
-class _SettingsScreenState extends State<SettingsScreen> {
+class SettingsScreen extends GetView<SettingsController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(leading: const Icon(Icons.key)),
+      key: controller.scaffoldKey,
+      appBar: AppBar(
+          leading: IconButton(
+        icon: const Icon(Icons.menu_sharp),
+        onPressed: () => controller.openDrawer(),
+      )),
       body: const Center(
         child: Column(
           children: [Text('SETTINGS')],
         ),
       ),
+      drawer: AppDrawer(),
     );
   }
 }

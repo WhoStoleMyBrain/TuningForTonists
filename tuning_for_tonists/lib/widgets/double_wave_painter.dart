@@ -10,11 +10,6 @@ class DoubleWavePainter extends CustomPainter {
   Color? color;
   BuildContext? context;
   Size? size;
-
-  // Set max val possible in stream, depending on the config
-  // int absMax = 255*4; //(AUDIO_FORMAT == AudioFormat.ENCODING_PCM_8BIT) ? 127 : 32767;
-  // int absMin; //(AUDIO_FORMAT == AudioFormat.ENCODING_PCM_8BIT) ? 127 : 32767;
-
   DoubleWavePainter(
       {this.samples, this.color, this.context, this.localMax, this.localMin});
 
@@ -41,7 +36,7 @@ class DoubleWavePainter extends CustomPainter {
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => true;
 
-  // Maps a list of ints and their indices to a list of points on a cartesian grid
+  /// Maps a list of ints and their indices to a list of points on a cartesian grid
   List<Offset> toPoints(List<double>? samples) {
     List<Offset> points = [];
     samples ??= List<double>.filled(size!.width.toInt(), 0.5);

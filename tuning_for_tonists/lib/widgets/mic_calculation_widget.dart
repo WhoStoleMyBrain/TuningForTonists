@@ -113,7 +113,9 @@ class _MicDataState extends State<MicData>
 
   @override
   void dispose() {
-    listener.cancel();
+    if (isRecording) {
+      listener.cancel();
+    }
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }

@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:tuning_for_tonists/view_controllers/info_controller.dart';
 
-class InfoScreen extends StatefulWidget {
-  const InfoScreen({super.key});
+import '../widgets/app_drawer.dart';
 
-  @override
-  State<InfoScreen> createState() => _InfoScreenState();
-}
-
-class _InfoScreenState extends State<InfoScreen> {
+class InfoScreen extends GetView<InfoController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(leading: const Icon(Icons.key)),
-      body: Center(
+      key: controller.scaffoldKey,
+      appBar: AppBar(
+          leading: IconButton(
+        icon: const Icon(Icons.menu_sharp),
+        onPressed: () => controller.openDrawer(),
+      )),
+      body: const Center(
         child: Column(
           children: [Text.rich(TextSpan(text: 'Info Screen'))],
         ),
       ),
+      drawer: AppDrawer(),
     );
   }
 }
