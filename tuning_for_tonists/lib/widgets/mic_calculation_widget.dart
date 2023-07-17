@@ -1,14 +1,9 @@
 import 'dart:async';
 import 'dart:core';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-
-import 'package:mic_stream/mic_stream.dart';
-import 'package:tuning_for_tonists/controllers/mic_technical_data_controller.dart';
-import '../controllers/mic_initialization_values_controller.dart';
-import '../models/mic_technical_data.dart';
-import '../models/wave_data.dart';
+import 'package:tuning_for_tonists/helpers/get_mic_stream.dart';
 
 enum Command {
   start,
@@ -18,11 +13,7 @@ enum Command {
 
 class MicData extends StatefulWidget {
   const MicData(
-      {super.key,
-      // required this.micInitializationValues,
-      required this.calculateDisplayData,
-      required this.child});
-  // final MicInitializationValuesController micInitializationValues;
+      {super.key, required this.calculateDisplayData, required this.child});
   final Function? calculateDisplayData;
   final Widget child;
   @override
@@ -33,8 +24,6 @@ class _MicDataState extends State<MicData>
     with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   Stream? stream;
   late StreamSubscription listener;
-  WaveData waveData = WaveData();
-  late MicTechnicalData micTechnicalData;
 
   bool isRecording = false;
   bool memRecordingState = false;
@@ -49,9 +38,11 @@ class _MicDataState extends State<MicData>
     });
   }
 
-  // Responsible for switching between recording / idle state
+  /// Responsible for switching between recording / idle state
   void _controlMicStream({Command command = Command.change}) async {
-    print("Switching command: $command, recording: $isRecording");
+    if (kDebugMode) {
+      print("Switching command: $command, recording: $isRecording");
+    }
     switch (command) {
       case Command.change:
         _changeListening();
@@ -69,30 +60,10 @@ class _MicDataState extends State<MicData>
       !isRecording ? await _startListening() : _stopListening();
 
   Future<bool> _startListening() async {
-    MicInitializationValuesController micInitializationValuesController =
-        Get.find();
-    MicTechnicalDataController micTechnicalDataController = Get.find();
-    if (isRecording) return false;
-    MicStream.shouldRequestPermission(true);
-
-    stream = await MicStream.microphone(
-        audioSource: micInitializationValuesController.audioSource.value,
-        sampleRate: micInitializationValuesController.sampleRate.value,
-        channelConfig: micInitializationValuesController.channelConfig.value,
-        audioFormat: micInitializationValuesController.audioFormat.value);
-
-    var bytesPerSample = (await MicStream.bitDepth)! ~/ 8;
-    var samplesPerSecond = (await MicStream.sampleRate)!.toInt();
-    var bufferSize = (await MicStream.bufferSize)!.toInt();
-    micTechnicalDataController.setMicTechnicalData(
-        bytesPerSample = bytesPerSample,
-        samplesPerSecond = samplesPerSecond,
-        bufferSize = bufferSize);
-
+    stream = await GetMicStream.getMicStream();
     setState(() {
       isRecording = true;
     });
-    waveData.visibleSamples = [];
     listener = stream!.listen((data) => widget.calculateDisplayData!(data));
     return true;
   }
@@ -102,7 +73,6 @@ class _MicDataState extends State<MicData>
     listener.cancel();
     setState(() {
       isRecording = false;
-      waveData.currentSamples = null;
     });
     return true;
   }

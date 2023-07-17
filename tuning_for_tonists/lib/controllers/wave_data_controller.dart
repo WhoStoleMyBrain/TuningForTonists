@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:tuning_for_tonists/controllers/mic_technical_data_controller.dart';
 
@@ -43,8 +44,10 @@ class WaveDataController extends GetxController {
     MicTechnicalDataController micTechnicalDataController = Get.find();
     if (visibleSamples.length >
         micTechnicalDataController.samplesPerSecond * 1) {
-      print(
-          'Setting visible data length back to ${micTechnicalDataController.samplesPerSecond * 1}');
+      if (kDebugMode) {
+        print(
+            'Setting visible data length back to ${micTechnicalDataController.samplesPerSecond * 1}');
+      }
       visibleSamples = visibleSamples
           .sublist(
               visibleSamples.length -
@@ -58,8 +61,10 @@ class WaveDataController extends GetxController {
     MicTechnicalDataController micTechnicalDataController = Get.find();
     if (fftCurrentSamples.length >
         micTechnicalDataController.samplesPerSecond * 1) {
-      print(
-          'Setting fft data length back to ${micTechnicalDataController.samplesPerSecond * 1}');
+      if (kDebugMode) {
+        print(
+            'Setting fft data length back to ${micTechnicalDataController.samplesPerSecond * 1}');
+      }
       fftCurrentSamples = fftCurrentSamples
           .sublist(
               fftCurrentSamples.length -
@@ -73,8 +78,10 @@ class WaveDataController extends GetxController {
     MicTechnicalDataController micTechnicalDataController = Get.find();
     if (currentSamples.length >
         micTechnicalDataController.samplesPerSecond * 1) {
-      print(
-          'Setting wave data length back to ${micTechnicalDataController.samplesPerSecond * 1}');
+      if (kDebugMode) {
+        print(
+            'Setting wave data length back to ${micTechnicalDataController.samplesPerSecond * 1}');
+      }
       currentSamples = currentSamples
           .sublist(
               currentSamples.length -

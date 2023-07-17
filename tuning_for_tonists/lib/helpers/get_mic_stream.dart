@@ -5,10 +5,8 @@ import 'package:mic_stream/mic_stream.dart';
 import 'package:tuning_for_tonists/controllers/mic_initialization_values_controller.dart';
 import 'package:tuning_for_tonists/controllers/mic_technical_data_controller.dart';
 
-import '../models/mic_technical_data.dart';
-
 class GetMicStream {
-  Future<Stream<Uint8List>?> getMicStream() async {
+  static Future<Stream<Uint8List>?> getMicStream() async {
     final MicInitializationValuesController micInitializationValuesController =
         Get.find();
     final MicTechnicalDataController micTechnicalDataController = Get.find();
@@ -22,11 +20,8 @@ class GetMicStream {
     var bytesPerSample = (await MicStream.bitDepth)! ~/ 8;
     var samplesPerSecond = (await MicStream.sampleRate)!.toInt();
     var bufferSize = (await MicStream.bufferSize)!.toInt();
-    micTechnicalDataController.micTechnicalData = MicTechnicalData(
-            bytesPerSample: bytesPerSample,
-            samplesPerSecond: samplesPerSecond,
-            bufferSize: bufferSize)
-        .obs;
+    micTechnicalDataController.setMicTechnicalData(
+        bytesPerSample, samplesPerSecond, bufferSize);
     return stream;
   }
 }

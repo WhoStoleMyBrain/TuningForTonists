@@ -13,14 +13,7 @@ class MainScreen extends StatefulWidget {
   State<MainScreen> createState() => _MainScreenState();
 }
 
-// void _calculateDisplayData(dynamic samples) {
-
-//   print('Calculating data...');
-// }
-
 class _MainScreenState extends State<MainScreen> {
-  // WaveData waveData = WaveData();
-
   /// Calculate the wave data from the input mic stream.
   void _calculateDisplayData(dynamic samples) {
     WaveDataController waveDataController = Get.find();
@@ -71,10 +64,10 @@ class _MainScreenState extends State<MainScreen> {
   Widget getMicDisplay() {
     return Column(
       children: [
-        Text('Text before calculation Widget'),
+        const Text('Text before calculation Widget'),
         MicData(
           calculateDisplayData: _calculateDisplayData,
-          child: Text('Displaying data...'),
+          child: const Text('Displaying data...'),
         )
       ],
     );
