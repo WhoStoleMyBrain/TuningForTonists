@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tuning_for_tonists/widgets/bottom_nav_bar.dart';
 
 class InfoScreen extends StatefulWidget {
   const InfoScreen({super.key});
@@ -18,7 +17,6 @@ class _InfoScreenState extends State<InfoScreen> {
           children: [Text.rich(TextSpan(text: 'Info Screen'))],
         ),
       ),
-      bottomNavigationBar: BottomNavBar(),
     );
   }
 }

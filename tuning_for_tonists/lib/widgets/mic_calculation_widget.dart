@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:mic_stream/mic_stream.dart';
+import 'package:tuning_for_tonists/controllers/mic_technical_data_controller.dart';
 import '../controllers/mic_initialization_values_controller.dart';
 import '../models/mic_technical_data.dart';
 import '../models/wave_data.dart';
@@ -18,10 +19,10 @@ enum Command {
 class MicData extends StatefulWidget {
   const MicData(
       {super.key,
-      required this.micInitializationValues,
+      // required this.micInitializationValues,
       required this.calculateDisplayData,
       required this.child});
-  final MicInitializationValuesController micInitializationValues;
+  // final MicInitializationValuesController micInitializationValues;
   final Function? calculateDisplayData;
   final Widget child;
   @override
@@ -68,21 +69,25 @@ class _MicDataState extends State<MicData>
       !isRecording ? await _startListening() : _stopListening();
 
   Future<bool> _startListening() async {
+    MicInitializationValuesController micInitializationValuesController =
+        Get.find();
+    MicTechnicalDataController micTechnicalDataController = Get.find();
     if (isRecording) return false;
     MicStream.shouldRequestPermission(true);
+
     stream = await MicStream.microphone(
-        audioSource: widget.micInitializationValues.audioSource.value,
-        sampleRate: widget.micInitializationValues.sampleRate.value,
-        channelConfig: widget.micInitializationValues.channelConfig.value,
-        audioFormat: widget.micInitializationValues.audioFormat.value);
+        audioSource: micInitializationValuesController.audioSource.value,
+        sampleRate: micInitializationValuesController.sampleRate.value,
+        channelConfig: micInitializationValuesController.channelConfig.value,
+        audioFormat: micInitializationValuesController.audioFormat.value);
 
     var bytesPerSample = (await MicStream.bitDepth)! ~/ 8;
     var samplesPerSecond = (await MicStream.sampleRate)!.toInt();
     var bufferSize = (await MicStream.bufferSize)!.toInt();
-    micTechnicalData = MicTechnicalData(
-        bytesPerSample: bytesPerSample,
-        samplesPerSecond: samplesPerSecond,
-        bufferSize: bufferSize);
+    micTechnicalDataController.setMicTechnicalData(
+        bytesPerSample = bytesPerSample,
+        samplesPerSecond = samplesPerSecond,
+        bufferSize = bufferSize);
 
     setState(() {
       isRecording = true;

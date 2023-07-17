@@ -1,12 +1,8 @@
 import 'package:fftea/fftea.dart';
 import 'package:flutter/material.dart';
-import 'package:mic_stream/mic_stream.dart';
-import 'package:provider/provider.dart';
 import 'package:get/get.dart';
-import '../controllers/mic_initialization_values_controller.dart';
-import '../models/mic_technical_data.dart';
-import '../models/wave_data.dart';
-import '../providers/mic_technical_data.dart';
+import 'package:tuning_for_tonists/controllers/mic_technical_data_controller.dart';
+import '../controllers/wave_data_controller.dart';
 import '../widgets/mic_calculation_widget.dart';
 import 'dart:math';
 
@@ -23,64 +19,69 @@ class MainScreen extends StatefulWidget {
 // }
 
 class _MainScreenState extends State<MainScreen> {
-  WaveData waveData = WaveData();
+  // WaveData waveData = WaveData();
+
+  /// Calculate the wave data from the input mic stream.
   void _calculateDisplayData(dynamic samples) {
+    WaveDataController waveDataController = Get.find();
+    MicTechnicalDataController micTechnicalDataController = Get.find();
     bool first = true;
-    waveData.visibleSamples = [];
     int tmp = 0;
+    List<int> waveData = [];
     for (int sample in samples) {
       if (sample > 128) sample -= 255;
       if (first) {
         tmp = sample * 128;
       } else {
         tmp += sample;
-        waveData.visibleSamples?.add(tmp);
-
-        waveData.localMax ??= waveData.visibleSamples?.last;
-        waveData.localMin ??= waveData.visibleSamples?.last;
-        waveData.localMax =
-            max(waveData.localMax!, waveData.visibleSamples?.last ?? 0);
-        waveData.localMin =
-            min(waveData.localMin!, waveData.visibleSamples?.last ?? 0);
+        waveData.add(tmp);
         tmp = 0;
       }
       first = !first;
     }
-    waveData.currentSamples ??= [];
-    List<double> doubleSamples =
-        waveData.visibleSamples?.map((e) => e.toDouble()).toList() ?? [];
-    final fft = FFT(doubleSamples.length);
-    final freq = fft.realFft(doubleSamples).discardConjugates();
+    waveDataController.addCurrentSamples(waveData);
+
+    List<double> doubleWaveData =
+        waveDataController.currentSamples.map((e) => e.toDouble()).toList();
+    final fftLength = micTechnicalDataController.samplesPerSecond;
+    // print('fftLength: $fftLength');
+    final fft = FFT(fftLength);
+    if (doubleWaveData.length < fftLength) {
+      return;
+    }
+    final freq = fft
+        .realFft(doubleWaveData.sublist(doubleWaveData.length - fftLength))
+        .discardConjugates();
     var realFreq = freq
         .map((e) => sqrt(pow(e.x.toDouble(), 2) + pow(e.y.toDouble(), 2)))
         .where((element) => element.isNaN ? false : true)
         .toList();
-    waveData.fftCurrentSamples = realFreq.sublist(0, realFreq.length ~/ 2);
+    waveDataController.fftCurrentSamples =
+        realFreq.sublist(0, realFreq.length ~/ 2).obs;
     var maxFreq = realFreq.reduce(max);
-    MicTechnicalData? micTechnicalData =
-        Provider.of<MicTechnicalDataProvider>(context, listen: false)
-            .micTechnicalData;
     final freqValue = realFreq.indexOf(maxFreq) *
-        (Provider.of<MicTechnicalDataProvider>(context)
-                .micTechnicalData
-                ?.samplesPerSecond ??
-            1) /
-        doubleSamples.length;
-    waveData.fftVisibleSamples?.add(freqValue > 0 ? log(freqValue.toInt()) : 0);
-    if ((waveData.fftVisibleSamples?.length ?? 0) >
-        (micTechnicalData?.samplesPerSecond ?? 1) *
-            10 /
-            (micTechnicalData?.bufferSize ?? 1)) {
-      waveData.fftVisibleSamples = waveData.fftVisibleSamples?.sublist(1);
-    }
-    waveData.fftLocalMax ??= waveData.fftVisibleSamples?.reduce(max);
-    waveData.fftLocalMin ??= waveData.fftVisibleSamples?.reduce(min);
-    waveData.fftLocalMax =
-        max(waveData.fftLocalMax!, waveData.fftVisibleSamples?.last ?? 1);
-    waveData.fftLocalMin =
-        min(waveData.fftLocalMin!, waveData.fftVisibleSamples?.last ?? 0);
-    waveData.fftCurrentSamples = [];
-    setState(() {});
+        (micTechnicalDataController.samplesPerSecond) /
+        fftLength;
+    // print('freqValue: $freqValue');
+    waveDataController.addVisibleSamples([freqValue > 0 ? freqValue : 0]);
+    waveDataController.recalulateMinMax();
+    // setState(() {});
+  }
+
+  Widget getMicDisplay() {
+    return Column(
+      children: [
+        Text('Text before calculation Widget'),
+        MicData(
+          calculateDisplayData: _calculateDisplayData,
+          child: Text('Displaying data...'),
+        )
+      ],
+    );
+  }
+
+  Future<bool> checkMicSettingsData() async {
+    return false;
   }
 
   @override
@@ -89,20 +90,7 @@ class _MainScreenState extends State<MainScreen> {
       appBar: AppBar(
         leading: const Icon(Icons.ac_unit_rounded),
       ),
-      body: Column(
-        children: [
-          Text('Text before calculation Widget'),
-          MicData(
-            micInitializationValues: MicInitializationValuesController(
-                audioFormat: AudioFormat.ENCODING_PCM_16BIT.obs,
-                sampleRate: 48000.obs,
-                channelConfig: ChannelConfig.CHANNEL_IN_MONO.obs,
-                audioSource: AudioSource.DEFAULT.obs),
-            calculateDisplayData: _calculateDisplayData,
-            child: Text('Displaying data...'),
-          )
-        ],
-      ),
+      body: getMicDisplay(),
     );
   }
 }

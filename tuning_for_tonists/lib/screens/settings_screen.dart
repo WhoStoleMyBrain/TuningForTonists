@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tuning_for_tonists/widgets/bottom_nav_bar.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -18,7 +17,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [Text('SETTINGS')],
         ),
       ),
-      bottomNavigationBar: BottomNavBar(),
     );
   }
 }
