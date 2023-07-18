@@ -13,11 +13,10 @@ class MicTechnicalDataController extends GetxController {
         .obs;
   }
 
-  int get samplesPerSecond => micTechnicalData == null
-      ? 48000
-      : micTechnicalData!.value.samplesPerSecond;
+  int get samplesPerSecond =>
+      micTechnicalData == null ? 0 : micTechnicalData!.value.samplesPerSecond;
   int get bytesPerSample =>
-      micTechnicalData == null ? 1 : micTechnicalData!.value.bytesPerSample;
+      micTechnicalData == null ? 0 : micTechnicalData!.value.bytesPerSample;
   int get bufferSize =>
-      micTechnicalData == null ? 1 : micTechnicalData!.value.bufferSize;
+      micTechnicalData == null ? 0 : micTechnicalData!.value.bufferSize;
 }

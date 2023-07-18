@@ -11,8 +11,11 @@ class WaveDataController extends GetxController {
       <double>[].obs; // strongest frequency in fft Data interval
   //TODO: localMax and localMin will be either redundant or handled differently in the future.
   //TODO: therefore they must be removed
-  Rx<double>? localMax;
-  Rx<double>? localMin;
+  Rx<double>? _localMax;
+  Rx<double>? _localMin;
+
+  double get localMax => _localMax?.value ?? 1;
+  double get localMin => _localMin?.value ?? 1;
 
   void addCurrentSamples(List<int> newCurrentSamples) {
     currentSamples.addAll(newCurrentSamples);
@@ -30,13 +33,13 @@ class WaveDataController extends GetxController {
   }
 
   void recalulateMinMax() {
-    localMax = visibleSamples.reduce(max).obs;
-    localMin = visibleSamples.reduce(min).obs;
-    if ((localMax?.value ?? 1) < 3) {
-      localMax?.value = 2;
+    _localMax = visibleSamples.reduce(max).obs;
+    _localMin = visibleSamples.reduce(min).obs;
+    if ((_localMax?.value ?? 1) < 3) {
+      _localMax?.value = 2;
     }
-    if ((localMin?.value ?? 0) < 1) {
-      localMin?.value = 1;
+    if ((_localMin?.value ?? 0) < 1) {
+      _localMin?.value = 1;
     }
   }
 

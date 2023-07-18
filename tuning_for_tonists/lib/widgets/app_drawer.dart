@@ -24,6 +24,15 @@ class AppDrawer extends StatelessWidget {
             },
           ),
           ListTile(
+            title: const Text('Mic Details'),
+            tileColor:
+                Get.currentRoute == '/mic_detail' ? Colors.grey[300] : null,
+            onTap: () {
+              Get.back();
+              Get.offNamed('/mic_detail');
+            },
+          ),
+          ListTile(
             title: const Text('Settings'),
             tileColor:
                 Get.currentRoute == '/settings' ? Colors.grey[300] : null,

@@ -1,0 +1,10 @@
+settings:
+    mic:
+        audio format
+        sample rate
+        channel config
+        audio source
+    general:
+        dark mode
+        fft window (in % of sample rate)
+        peak detection parameters (?)
