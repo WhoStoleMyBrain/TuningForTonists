@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:tuning_for_tonists/controllers/mic_technical_data_controller.dart';
@@ -17,22 +18,36 @@ class WaveDataController extends GetxController {
   double get localMax => _localMax?.value ?? 1;
   double get localMin => _localMin?.value ?? 1;
 
+  // List<int> get currentSamples => currentSamples.iterator;
+
   void addCurrentSamples(List<int> newCurrentSamples) {
     currentSamples.addAll(newCurrentSamples);
     setNumberOfWaveDataPoints();
+    update();
   }
 
   void addFftCurrentSamples(List<double> newFftCurrentSamples) {
     fftCurrentSamples.addAll(newFftCurrentSamples);
     setNumberOfFftDataPoints();
+    update();
   }
 
   void addVisibleSamples(List<double> newVisibleSamples) {
+    newVisibleSamples.removeWhere((element) => element == 0);
     visibleSamples.addAll(newVisibleSamples);
+    if (kDebugMode) {
+      print('length of visible Samples: ${visibleSamples.length}');
+      print(
+          'just added the following data to visible samples: $newVisibleSamples');
+    }
     setNumberOfVisibleDataPoints();
+    update();
   }
 
   void recalulateMinMax() {
+    if (visibleSamples.isEmpty) {
+      return;
+    }
     _localMax = visibleSamples.reduce(max).obs;
     _localMin = visibleSamples.reduce(min).obs;
     if ((_localMax?.value ?? 1) < 3) {
@@ -45,17 +60,13 @@ class WaveDataController extends GetxController {
 
   void setNumberOfVisibleDataPoints() {
     MicTechnicalDataController micTechnicalDataController = Get.find();
-    if (visibleSamples.length >
-        micTechnicalDataController.samplesPerSecond * 1) {
+    if (visibleSamples.length > 200) {
       if (kDebugMode) {
         print(
             'Setting visible data length back to ${micTechnicalDataController.samplesPerSecond * 1}');
       }
       visibleSamples = visibleSamples
-          .sublist(
-              visibleSamples.length -
-                  micTechnicalDataController.samplesPerSecond * 1,
-              visibleSamples.length)
+          .sublist(visibleSamples.length - 200, visibleSamples.length)
           .obs;
     }
   }
@@ -92,5 +103,15 @@ class WaveDataController extends GetxController {
               currentSamples.length)
           .obs;
     }
+  }
+
+  List<FlSpot> visibleDataToSpots() {
+    List<FlSpot> result = [];
+    visibleSamples.asMap().forEach(
+      (key, value) {
+        result.add(FlSpot(key.toDouble(), value));
+      },
+    );
+    return result;
   }
 }

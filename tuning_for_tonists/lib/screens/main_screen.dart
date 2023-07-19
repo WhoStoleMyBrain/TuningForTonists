@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tuning_for_tonists/widgets/frequency_number_display.dart';
+import 'package:tuning_for_tonists/widgets/mic_stream_control_button.dart';
 import '../view_controllers/home_controller.dart';
 import '../widgets/app_drawer.dart';
-import '../widgets/mic_calculation_widget.dart';
 
+// ignore: must_be_immutable
 class MainScreen extends GetView<HomeController> {
   /// Calculate the wave data from the input mic stream.
 
+  HomeController homeController = Get.find();
+
+  MainScreen({super.key});
+
   Widget getMicDisplay() {
-    return const Column(
+    return Column(
       children: [
-        Text('Text before calculation Widget'),
-        MicData(
-          child: Text('Displaying data...'),
-        )
+        MicStreamControlButton(),
+        const Text('Displaying data...'),
+        const FrequencyNumberDisplay(),
       ],
     );
-  }
-
-  Future<bool> checkMicSettingsData() async {
-    return false;
   }
 
   @override

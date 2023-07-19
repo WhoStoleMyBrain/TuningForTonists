@@ -11,6 +11,7 @@ class MicTechnicalDataController extends GetxController {
             samplesPerSecond: samplesPerSecond,
             bufferSize: bufferSize)
         .obs;
+    refresh();
   }
 
   int get samplesPerSecond =>

@@ -18,19 +18,20 @@ class MicrophoneController extends FullLifeCycleController
   Stream? stream;
   late StreamSubscription listener;
 
-  bool isRecording = false;
-  bool memRecordingState = false;
-  bool isActive = false;
+  RxBool isRecording = false.obs;
+  RxBool memRecordingState = false.obs;
+  RxBool isActive = false.obs;
   Function calculateDisplayData;
 
   // Mandatory
   @override
   void onDetached() {
     print('HomeController - onDetached called');
-    if (isActive) {
+    if (isActive.isTrue) {
       memRecordingState = isRecording;
       controlMicStream(command: Command.stop);
-      isActive = false;
+      isActive.toggle();
+      update();
     }
   }
 
@@ -38,10 +39,11 @@ class MicrophoneController extends FullLifeCycleController
   @override
   void onInactive() {
     print('HomeController - onInative called');
-    if (isActive) {
+    if (isActive.isTrue) {
       memRecordingState = isRecording;
       controlMicStream(command: Command.stop);
-      isActive = false;
+      isActive.toggle();
+      update();
     }
   }
 
@@ -49,10 +51,11 @@ class MicrophoneController extends FullLifeCycleController
   @override
   void onPaused() {
     print('HomeController - onPaused called');
-    if (isActive) {
+    if (isActive.isTrue) {
       memRecordingState = isRecording;
       controlMicStream(command: Command.stop);
-      isActive = false;
+      isActive.toggle();
+      update();
     }
   }
 
@@ -60,8 +63,10 @@ class MicrophoneController extends FullLifeCycleController
   @override
   void onResumed() {
     print('HomeController - onResumed called');
-    isActive = true;
-    controlMicStream(command: memRecordingState ? Command.start : Command.stop);
+    isActive = true.obs;
+    controlMicStream(
+        command: memRecordingState.value ? Command.start : Command.stop);
+    update();
   }
 
   // Optional
@@ -110,34 +115,33 @@ class MicrophoneController extends FullLifeCycleController
   }
 
   Future<bool> _changeListening() async =>
-      !isRecording ? await _startListening() : _stopListening();
+      isRecording.isFalse ? await _startListening() : _stopListening();
 
   Future<bool> _startListening() async {
     stream = await MicrophoneHelper.getMicStream();
-    // setState(() {
-    isActive = true;
-    isRecording = true;
-    // });
+    isActive = true.obs;
+    isRecording = true.obs;
     listener = stream!.listen((data) => calculateDisplayData(data));
+    update();
     return true;
   }
 
   bool _stopListening() {
-    if (!isRecording) return false;
+    if (isRecording.isFalse) return false;
     listener.cancel();
-    // setState(() {
-    isActive = false;
-    isRecording = false;
-    // });
+    isActive.toggle();
+    isRecording.toggle();
+    update();
     return true;
   }
 
   @override
   void dispose() {
-    if (isRecording) {
+    if (isRecording.isTrue) {
       listener.cancel();
-      isActive = false;
-      isRecording = false;
+      isActive.toggle();
+      isRecording.toggle();
+      update();
     }
     super.dispose();
   }

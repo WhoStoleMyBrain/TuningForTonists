@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mic_stream/mic_stream.dart';
 import 'package:tuning_for_tonists/bindings/mic_detail_binding.dart';
+import 'package:tuning_for_tonists/controllers/tuning_controller.dart';
 import 'package:tuning_for_tonists/screens/mic_detail_screen.dart';
 import 'package:tuning_for_tonists/view_controllers/mic_detail_controller.dart';
 import 'package:tuning_for_tonists/controllers/microphone_controller.dart';
@@ -60,6 +61,7 @@ class _MyAppState extends State<MyApp> {
     Get.put(MicDetailController());
     Get.put(MicrophoneController(
         calculateDisplayData: MicrophoneHelper.calculateDisplayData));
+    Get.put(TuningController());
     return GetMaterialApp(
       title: 'Tuning for Tonists',
       // The theme of your application.
