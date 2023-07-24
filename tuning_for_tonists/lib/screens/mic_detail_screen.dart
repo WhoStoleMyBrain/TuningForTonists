@@ -60,7 +60,7 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                     hint: const Text('Encoding'),
                     onChanged: (value) {
                       micInitializationValuesController.setAudioFormat(
-                          value ?? AudioFormat.ENCODING_PCM_16BIT);
+                          value ?? AudioFormat.ENCODING_PCM_8BIT);
                       setState(
                         () {},
                       );
@@ -175,7 +175,7 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                   const SizedBox(
                     height: 100,
                   ),
-                  MicStreamControlButton(),
+                  const MicStreamControlButton(),
                   const DataDisplay(),
                 ],
               ),
@@ -183,7 +183,7 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
           ),
         ),
       ),
-      drawer: AppDrawer(),
+      drawer: const AppDrawer(),
     );
   }
 }

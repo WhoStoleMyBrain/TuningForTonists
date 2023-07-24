@@ -1,4 +1,7 @@
+import 'package:fftea/fftea.dart';
 import 'package:get/get.dart';
+import 'package:iirjdart/butterworth.dart';
+import 'package:tuning_for_tonists/controllers/fft_controller.dart';
 
 import '../models/mic_technical_data.dart';
 
@@ -11,8 +14,16 @@ class MicTechnicalDataController extends GetxController {
             samplesPerSecond: samplesPerSecond,
             bufferSize: bufferSize)
         .obs;
+    butterworth.lowPass(10, samplesPerSecond.toDouble(), 1200);
+    FftController fftController = Get.find();
+    fftController.setFft(FFT(bufferSize ~/ bytesPerSample));
+    fftController.setFftLength(bufferSize ~/ bytesPerSample);
     refresh();
   }
+
+  Butterworth butterworth = Butterworth();
+  // butterworth.lowPass(10,
+  //     micInitializationValuesController.sampleRate.value.toDouble(), 1200);
 
   int get samplesPerSecond =>
       micTechnicalData == null ? 0 : micTechnicalData!.value.samplesPerSecond;

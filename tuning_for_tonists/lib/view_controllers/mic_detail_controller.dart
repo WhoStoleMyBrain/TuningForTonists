@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -16,19 +17,25 @@ class MicDetailController extends GetxController {
 
   @override
   void onInit() {
-    print('>>> MicDetailController init');
+    if (kDebugMode) {
+      print('>>> MicDetailController init');
+    }
     super.onInit();
   }
 
   @override
   void onReady() {
-    print('>>> MicDetailController ready');
+    if (kDebugMode) {
+      print('>>> MicDetailController ready');
+    }
     super.onReady();
   }
 
   @override
   void onClose() {
-    print('>>> MicDetailController close');
+    if (kDebugMode) {
+      print('>>> MicDetailController close');
+    }
     super.onClose();
   }
 }

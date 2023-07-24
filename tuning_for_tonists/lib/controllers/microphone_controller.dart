@@ -26,7 +26,9 @@ class MicrophoneController extends FullLifeCycleController
   // Mandatory
   @override
   void onDetached() {
-    print('HomeController - onDetached called');
+    if (kDebugMode) {
+      print('HomeController - onDetached called');
+    }
     if (isActive.isTrue) {
       memRecordingState = isRecording;
       controlMicStream(command: Command.stop);
@@ -38,7 +40,9 @@ class MicrophoneController extends FullLifeCycleController
   // Mandatory
   @override
   void onInactive() {
-    print('HomeController - onInative called');
+    if (kDebugMode) {
+      print('HomeController - onInative called');
+    }
     if (isActive.isTrue) {
       memRecordingState = isRecording;
       controlMicStream(command: Command.stop);
@@ -50,7 +54,9 @@ class MicrophoneController extends FullLifeCycleController
   // Mandatory
   @override
   void onPaused() {
-    print('HomeController - onPaused called');
+    if (kDebugMode) {
+      print('HomeController - onPaused called');
+    }
     if (isActive.isTrue) {
       memRecordingState = isRecording;
       controlMicStream(command: Command.stop);
@@ -62,7 +68,9 @@ class MicrophoneController extends FullLifeCycleController
   // Mandatory
   @override
   void onResumed() {
-    print('HomeController - onResumed called');
+    if (kDebugMode) {
+      print('HomeController - onResumed called');
+    }
     isActive = true.obs;
     controlMicStream(
         command: memRecordingState.value ? Command.start : Command.stop);
@@ -72,28 +80,36 @@ class MicrophoneController extends FullLifeCycleController
   // Optional
   @override
   Future<bool> didPushRoute(String route) {
-    print('HomeController - the route $route will be open');
+    if (kDebugMode) {
+      print('HomeController - the route $route will be open');
+    }
     return super.didPushRoute(route);
   }
 
   // Optional
   @override
   Future<bool> didPopRoute() {
-    print('HomeController - the current route will be closed');
+    if (kDebugMode) {
+      print('HomeController - the current route will be closed');
+    }
     return super.didPopRoute();
   }
 
   // Optional
   @override
   void didChangeMetrics() {
-    print('HomeController - the window size did change');
+    if (kDebugMode) {
+      print('HomeController - the window size did change');
+    }
     super.didChangeMetrics();
   }
 
   // Optional
   @override
   void didChangePlatformBrightness() {
-    print('HomeController - platform change ThemeMode');
+    if (kDebugMode) {
+      print('HomeController - platform change ThemeMode');
+    }
     super.didChangePlatformBrightness();
   }
 

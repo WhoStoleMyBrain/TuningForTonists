@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tuning_for_tonists/widgets/frequency_number_display.dart';
 import 'package:tuning_for_tonists/widgets/mic_stream_control_button.dart';
+import 'package:tuning_for_tonists/widgets/string_display.dart';
 import '../view_controllers/home_controller.dart';
 import '../widgets/app_drawer.dart';
+import '../widgets/main_data_display.dart';
 
 // ignore: must_be_immutable
 class MainScreen extends GetView<HomeController> {
@@ -14,12 +16,14 @@ class MainScreen extends GetView<HomeController> {
   MainScreen({super.key});
 
   Widget getMicDisplay() {
-    return Column(
-      children: [
-        MicStreamControlButton(),
-        const Text('Displaying data...'),
-        const FrequencyNumberDisplay(),
-      ],
+    return const SingleChildScrollView(
+      child: Column(
+        children: [
+          MainDataDisplay(),
+          FrequencyNumberDisplay(),
+          StringDisplay(),
+        ],
+      ),
     );
   }
 
@@ -33,7 +37,8 @@ class MainScreen extends GetView<HomeController> {
         onPressed: () => controller.openDrawer(),
       )),
       body: getMicDisplay(),
-      drawer: AppDrawer(),
+      drawer: const AppDrawer(),
+      floatingActionButton: const MicStreamControlButton(),
     );
   }
 }

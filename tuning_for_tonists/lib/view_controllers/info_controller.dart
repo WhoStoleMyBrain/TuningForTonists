@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -16,19 +17,25 @@ class InfoController extends GetxController {
 
   @override
   void onInit() {
-    print('>>> InfoController init');
+    if (kDebugMode) {
+      print('>>> InfoController init');
+    }
     super.onInit();
   }
 
   @override
   void onReady() {
-    print('>>> InfoController ready');
+    if (kDebugMode) {
+      print('>>> InfoController ready');
+    }
     super.onReady();
   }
 
   @override
   void onClose() {
-    print('>>> InfoController close');
+    if (kDebugMode) {
+      print('>>> InfoController close');
+    }
     super.onClose();
   }
 }

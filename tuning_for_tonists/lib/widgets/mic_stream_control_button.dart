@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:tuning_for_tonists/controllers/microphone_controller.dart';
 
 class MicStreamControlButton extends StatefulWidget {
-  MicStreamControlButton({super.key});
+  const MicStreamControlButton({super.key});
 
   @override
   State<MicStreamControlButton> createState() => _MicStreamControlButtonState();

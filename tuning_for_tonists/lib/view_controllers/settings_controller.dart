@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 
@@ -16,19 +17,25 @@ class SettingsController extends GetxController {
 
   @override
   void onInit() {
-    print('>>> SettingsController init');
+    if (kDebugMode) {
+      print('>>> SettingsController init');
+    }
     super.onInit();
   }
 
   @override
   void onReady() {
-    print('>>> SettingsController ready');
+    if (kDebugMode) {
+      print('>>> SettingsController ready');
+    }
     super.onReady();
   }
 
   @override
   void onClose() {
-    print('>>> SettingsController close');
+    if (kDebugMode) {
+      print('>>> SettingsController close');
+    }
     super.onClose();
   }
 }

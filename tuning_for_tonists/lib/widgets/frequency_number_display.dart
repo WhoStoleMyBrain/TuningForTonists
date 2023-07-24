@@ -9,19 +9,20 @@ class FrequencyNumberDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<TuningController>(
-        builder: (tuningController) => GetBuilder<WaveDataController>(
-              builder: (waveDataController) => Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                        'Goal Frequency: ${tuningController.targetNote.value.frequency}'),
-                    Text(
-                        'Current Frequency: ${waveDataController.visibleSamples.isNotEmpty ? waveDataController.visibleSamples.last : 0}'),
-                  ],
-                ),
-              ),
-            ));
+      builder: (tuningController) => GetBuilder<WaveDataController>(
+        builder: (waveDataController) => Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                  'Goal Frequency: ${tuningController.targetNote.value.frequency.toStringAsFixed(2)}'),
+              Text(
+                  'Current Frequency: ${waveDataController.visibleSamples.isNotEmpty ? waveDataController.visibleSamples.last.toStringAsFixed(2) : 0}'),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

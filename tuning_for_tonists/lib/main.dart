@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mic_stream/mic_stream.dart';
 import 'package:tuning_for_tonists/bindings/mic_detail_binding.dart';
+import 'package:tuning_for_tonists/controllers/fft_controller.dart';
 import 'package:tuning_for_tonists/controllers/tuning_controller.dart';
+import 'package:tuning_for_tonists/screens/advanced_mic_data_screen.dart';
 import 'package:tuning_for_tonists/screens/mic_detail_screen.dart';
 import 'package:tuning_for_tonists/view_controllers/mic_detail_controller.dart';
 import 'package:tuning_for_tonists/controllers/microphone_controller.dart';
@@ -17,6 +19,7 @@ import './controllers/wave_data_controller.dart';
 import './screens/info_screen.dart';
 import './screens/main_screen.dart';
 import './screens/settings_screen.dart';
+import 'bindings/advanced_mic_data_binding.dart';
 import 'helpers/microphone_helper.dart';
 
 MaterialColor createMaterialColor(Color color) {
@@ -52,16 +55,17 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     Get.put(MicInitializationValuesController(
-        audioFormat: AudioFormat.ENCODING_PCM_16BIT.obs,
-        sampleRate: 48000.obs,
+        audioFormat: AudioFormat.ENCODING_PCM_8BIT.obs,
+        sampleRate: 44100.obs,
         channelConfig: ChannelConfig.CHANNEL_IN_MONO.obs,
         audioSource: AudioSource.DEFAULT.obs));
     Get.put(MicTechnicalDataController());
+    Get.put(TuningController());
     Get.put(WaveDataController());
     Get.put(MicDetailController());
     Get.put(MicrophoneController(
         calculateDisplayData: MicrophoneHelper.calculateDisplayData));
-    Get.put(TuningController());
+    Get.put(FftController());
     return GetMaterialApp(
       title: 'Tuning for Tonists',
       // The theme of your application.
@@ -84,14 +88,20 @@ class _MyAppState extends State<MyApp> {
             name: '/home', page: () => MainScreen(), binding: HomeBinding()),
         GetPage(
             name: '/settings',
-            page: () => SettingsScreen(),
+            page: () => const SettingsScreen(),
             binding: SettingsBinding()),
         GetPage(
-            name: '/info', page: () => InfoScreen(), binding: InfoBinding()),
+            name: '/info',
+            page: () => const InfoScreen(),
+            binding: InfoBinding()),
         GetPage(
             name: '/mic_detail',
             page: () => const MicDetailScreen(),
             binding: MicDetailBinding()),
+        GetPage(
+            name: '/advanced_mic_data',
+            page: () => const AdvancedMicDataScreen(),
+            binding: AdvancedMicDataBinding()),
       ],
     );
   }

@@ -1,7 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class AppDrawer extends StatelessWidget {
+  const AppDrawer({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -18,7 +21,9 @@ class AppDrawer extends StatelessWidget {
             title: const Text('Home'),
             tileColor: Get.currentRoute == '/home' ? Colors.grey[300] : null,
             onTap: () {
-              print(Get.currentRoute);
+              if (kDebugMode) {
+                print(Get.currentRoute);
+              }
               Get.back();
               Get.offNamed('/home');
             },
@@ -47,6 +52,16 @@ class AppDrawer extends StatelessWidget {
             onTap: () {
               Get.back();
               Get.offNamed('/info');
+            },
+          ),
+          ListTile(
+            title: const Text('Advanced Microphone'),
+            tileColor: Get.currentRoute == '/advanced_mic_data'
+                ? Colors.grey[300]
+                : null,
+            onTap: () {
+              Get.back();
+              Get.offNamed('/advanced_mic_data');
             },
           ),
         ],

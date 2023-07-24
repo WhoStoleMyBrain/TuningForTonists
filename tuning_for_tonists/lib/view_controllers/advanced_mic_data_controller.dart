@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class HomeController extends GetxController {
+class AdvancedMicDataController extends GetxController {
   var scaffoldKey = GlobalKey<ScaffoldState>();
 
   void openDrawer() {
@@ -16,7 +16,7 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     if (kDebugMode) {
-      print('>>> HomeController init');
+      print('>>> AdvancedMicController init');
     }
     super.onInit();
   }
@@ -24,7 +24,7 @@ class HomeController extends GetxController {
   @override
   void onReady() {
     if (kDebugMode) {
-      print('>>> HomeController ready');
+      print('>>> AdvancedMicController ready');
     }
     super.onReady();
   }
