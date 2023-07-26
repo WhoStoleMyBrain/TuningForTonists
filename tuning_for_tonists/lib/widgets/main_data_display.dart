@@ -66,6 +66,7 @@ class MainDataDisplay extends StatelessWidget {
               return GetBuilder<TuningController>(builder: (tuningController) {
                 return GetBuilder<WaveDataController>(
                   builder: (waveDataController) => LineChart(
+                    duration: const Duration(milliseconds: 0),
                     LineChartData(
                       lineTouchData: LineTouchData(
                         touchTooltipData: LineTouchTooltipData(
@@ -89,6 +90,7 @@ class MainDataDisplay extends StatelessWidget {
                         handleBuiltInTouches: true,
                         getTouchLineStart: (data, index) => 0,
                       ),
+
                       lineBarsData: [
                         LineChartBarData(
                           color: AppColors.contentColorPink,
@@ -102,6 +104,7 @@ class MainDataDisplay extends StatelessWidget {
                           dotData: const FlDotData(show: false),
                         ),
                       ],
+
                       minY: tuningController.targetFrequency -
                           tuningController.frequencyRange,
                       // maxY: waveDataController.visibleSamples.reduce(max),
@@ -122,6 +125,7 @@ class MainDataDisplay extends StatelessWidget {
                           strokeWidth: 0.8,
                         ),
                       ),
+
                       borderData: FlBorderData(show: false),
                     ),
                   ),

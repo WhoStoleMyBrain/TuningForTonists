@@ -1,6 +1,6 @@
 import 'dart:math';
-import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:mic_stream/mic_stream.dart';
 import 'package:tuning_for_tonists/controllers/fft_controller.dart';
@@ -31,26 +31,19 @@ class MicrophoneHelper {
   }
 
   static List<double> eightBitWaveDataCalculation(Uint8List samples) {
+    Stopwatch stopwatch = Stopwatch()..start();
+    print('start 8bit calc: ${stopwatch.elapsed}');
     List<double> waveData = [];
-    // MicTechnicalDataController micTechnicalDataController = Get.find();
-    // Uint8List newSamples = samples.buffer.asUint8List();
     Uint8List newSamples = samples.buffer.asUint8List(samples.offsetInBytes);
-    double tmpSample = 0;
-    // bool first = true;
+    print('new samples uint8list: ${stopwatch.elapsed}');
     for (int sample in newSamples) {
       if (sample > 255) sample -= 255;
-      // if (first) {
-      //   tmpSample = sample * 128;
-      // } else {
-      tmpSample += sample;
-      // tmpSample =
-      //     micTechnicalDataController.butterworth.filter(sample.toDouble());
       waveData.add(sample.toDouble());
-      tmpSample = 0;
-      // }
-      // first = !first;
     }
-    calculateAutocorrelation(waveData);
+    print('wavedata added: ${stopwatch.elapsed}');
+    calculateNewAutocorrelation(waveData);
+    print('autocorrelation calculated: ${stopwatch.elapsed}');
+    // calculateAutocorrelation(waveData);
     return waveData;
   }
 
@@ -69,20 +62,12 @@ class MicrophoneHelper {
     double tmpSample = 0;
     for (int sample in newSamples) {
       // if (sample > 32768) sample -= 65536;
-      tmpSample = sample / 32768;
       tmpSample =
-          micTechnicalDataController.butterworth.filter(tmpSample.toDouble());
-      // if (first) {
-      // tmp =
-      // tmp = sample * 32768;
-      // } else {
-      // tmp += sample;
+          micTechnicalDataController.butterworth.filter(sample.toDouble());
       waveData.add(tmpSample.toDouble());
-      // tmp = 0;
     }
-    // first = !first;
-    // }
-    calculateAutocorrelation(waveData);
+    // calculateAutocorrelation(waveData);
+    calculateNewAutocorrelation(waveData);
     return waveData;
   }
 
@@ -104,21 +89,50 @@ class MicrophoneHelper {
     waveDataController.setAutocorrelationData(autocorrelation.sublist(1));
   }
 
+  static void calculateNewAutocorrelation(List<double> samples) {
+    Stopwatch stopwatch = Stopwatch()..start();
+    print('autocorrelation start: ${stopwatch.elapsed}');
+    WaveDataController waveDataController = Get.find();
+    List<double> autocorrelation = [];
+    // List<double> waveData = waveDataController.waveData;
+    double integral = 0;
+    for (var i = 0; i < waveDataController.waveData.length; i++) {
+      for (var j = i; j < waveDataController.waveData.length - i; j++) {
+        integral +=
+            waveDataController.waveData[i] * waveDataController.waveData[j];
+      }
+      autocorrelation.add(integral);
+      integral = 0;
+    }
+    print('autocorrelation after loop calculation: ${stopwatch.elapsed}');
+    waveDataController.setAutocorrelationData(autocorrelation.sublist(1));
+    print(
+        'autocorrelation after setting controller data: ${stopwatch.elapsed}');
+  }
+
   static List<double> calculateWaveData(Uint8List samples) {
+    Stopwatch stopwatch = Stopwatch()..start();
+    print('start: ${stopwatch.elapsed}');
     MicInitializationValuesController micInitializationValuesController =
         Get.find();
+    print('found mic init controller: ${stopwatch.elapsed}');
 
     List<double> waveData = [];
     if (micInitializationValuesController.audioFormat.value ==
         AudioFormat.ENCODING_PCM_8BIT) {
-      // print('Äcalculationg with 8 bit data');
+      print('before calculate 8bit: ${stopwatch.elapsed}');
       waveData = eightBitWaveDataCalculation(samples);
+      print('after calculate 8bit: ${stopwatch.elapsed}');
     } else if (micInitializationValuesController.audioFormat.value ==
         AudioFormat.ENCODING_PCM_16BIT) {
+      print('before calculate 16bit: ${stopwatch.elapsed}');
       waveData = sixteenBitWaveDataCalculation(samples);
+      print('after calculate 16bit: ${stopwatch.elapsed}');
     } else {
-      print(
-          'Major error in wave data calculation. The defined audio format ${micInitializationValuesController.audioFormat.value} is not implemented!!');
+      if (kDebugMode) {
+        print(
+            'Major error in wave data calculation. The defined audio format ${micInitializationValuesController.audioFormat.value} is not implemented!!');
+      }
     }
     return waveData;
   }
@@ -126,14 +140,23 @@ class MicrophoneHelper {
   static void calculateDisplayData(dynamic samples) {
     WaveDataController waveDataController = Get.find();
     FftController fftController = Get.find();
+    Stopwatch stopwatch = Stopwatch()..start();
     waveDataController.addWaveData(calculateWaveData(samples));
-    final freq = fftController.applyRealFft(waveDataController.doubleWaveData);
+    print('calculate Wavedata executed: ${stopwatch.elapsed}');
+    final frequenciesList =
+        fftController.applyRealFft(waveDataController.doubleWaveData);
+    print('realFft: ${stopwatch.elapsed}');
 
     // Sublist: 2 removes first to instances, needed for 8 bit data. length/2
     // refers to the nyquist frequency cutoff
-    waveDataController.setFrequencyData(freq.sublist(2, freq.length ~/ 2));
+    waveDataController.setFrequencyData(
+        frequenciesList.sublist(2, frequenciesList.length ~/ 2));
+    print('set frequency data: ${stopwatch.elapsed}');
     var freqValue = fftController.getMaxFrequency(waveDataController.fftData);
+    print('get max frequency: ${stopwatch.elapsed}');
     waveDataController.addVisibleSample(freqValue);
+    print('add visible sample: ${stopwatch.elapsed}');
+    stopMicrophone();
   }
 
   static void stopMicrophone() {

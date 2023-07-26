@@ -1,7 +1,7 @@
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:fftea/fftea.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:tuning_for_tonists/controllers/mic_technical_data_controller.dart';
 
@@ -34,8 +34,10 @@ class FftController extends GetxController {
         (micTechnicalDataController.samplesPerSecond) /
         fftLength /
         micTechnicalDataController.bytesPerSample;
-    print(
-        'maxFreq: $maxFreq, tmp: $tmp, samplesPS: ${micTechnicalDataController.samplesPerSecond}, fftLength: $fftLength, freqValue: $freqValue');
+    if (kDebugMode) {
+      print(
+          'maxFreq: $maxFreq, tmp: $tmp, samplesPS: ${micTechnicalDataController.samplesPerSecond}, fftLength: $fftLength, freqValue: $freqValue');
+    }
     return freqValue;
   }
 }

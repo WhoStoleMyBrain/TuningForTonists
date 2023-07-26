@@ -33,7 +33,9 @@ class WaveDataController extends GetxController {
 
   void setNumberOfWaveData() {
     if (waveData.length > micTechnicalDataController.bufferSize * 2) {
-      print('waveData length exceeded 48000: ${waveData.length}');
+      if (kDebugMode) {
+        print('waveData length exceeded 48000: ${waveData.length}');
+      }
       waveData = waveData
           .sublist(waveData.length - micTechnicalDataController.bufferSize * 2)
           .obs;
@@ -49,7 +51,6 @@ class WaveDataController extends GetxController {
   }
 
   void addVisibleSample(double newVisibleSample) {
-    // newVisibleSamples.removeWhere((element) => element == 0);
     visibleSamples.add(newVisibleSample);
 
     setNumberOfVisibleDataPoints();

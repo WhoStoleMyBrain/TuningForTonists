@@ -12,7 +12,9 @@ class StringDisplay extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: Column(children: [
           ...tuningController.allNotes.map((element) => GestureDetector(
-                onTap: () => tuningController.setTargetNote(element),
+                onTap: () {
+                  tuningController.targetNote = element;
+                },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -25,7 +27,11 @@ class StringDisplay extends StatelessWidget {
                         ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Text('${element.name}'),
+                          child: Text(element.name),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text('${element.frequency} Hz'),
                         ),
                       ],
                     ),

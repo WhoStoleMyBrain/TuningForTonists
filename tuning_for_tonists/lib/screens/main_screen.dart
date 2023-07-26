@@ -20,6 +20,9 @@ class MainScreen extends GetView<HomeController> {
       child: Column(
         children: [
           MainDataDisplay(),
+          SizedBox(
+            height: 48,
+          ),
           FrequencyNumberDisplay(),
           StringDisplay(),
         ],

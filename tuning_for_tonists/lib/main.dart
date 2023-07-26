@@ -3,9 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mic_stream/mic_stream.dart';
 import 'package:tuning_for_tonists/bindings/mic_detail_binding.dart';
+import 'package:tuning_for_tonists/constants/routes.dart';
 import 'package:tuning_for_tonists/controllers/fft_controller.dart';
+import 'package:tuning_for_tonists/controllers/tuning_configurations_controller.dart';
 import 'package:tuning_for_tonists/controllers/tuning_controller.dart';
 import 'package:tuning_for_tonists/screens/advanced_mic_data_screen.dart';
+import 'package:tuning_for_tonists/screens/all_tunings_screen.dart';
+import 'package:tuning_for_tonists/screens/create_tuning_screen.dart';
 import 'package:tuning_for_tonists/screens/mic_detail_screen.dart';
 import 'package:tuning_for_tonists/view_controllers/mic_detail_controller.dart';
 import 'package:tuning_for_tonists/controllers/microphone_controller.dart';
@@ -54,13 +58,23 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
+    TuningConfigurationsController tuningConfigurationsController =
+        TuningConfigurationsController()
+          ..loadDefaultTuningConfigurations()
+          ..loadCustomTuningConfigurations();
     Get.put(MicInitializationValuesController(
         audioFormat: AudioFormat.ENCODING_PCM_8BIT.obs,
         sampleRate: 44100.obs,
         channelConfig: ChannelConfig.CHANNEL_IN_MONO.obs,
         audioSource: AudioSource.DEFAULT.obs));
+
     Get.put(MicTechnicalDataController());
-    Get.put(TuningController());
+    Get.put(tuningConfigurationsController);
+
+    //TODO: Recheck this call, there has to be a way better way
+    Get.put(TuningController()
+      ..setTuningConfiguration(tuningConfigurationsController
+          .defaultTuningConfigurations!.values.first.first));
     Get.put(WaveDataController());
     Get.put(MicDetailController());
     Get.put(MicrophoneController(
@@ -80,28 +94,34 @@ class _MyAppState extends State<MyApp> {
             accentColor: Colors.white,
           ),
           // canvasColor: Colors.black45,
-          textTheme: Typography.blackRedwoodCity),
+          textTheme: const TextTheme()),
       navigatorKey: Get.key,
-      initialRoute: '/home',
+      initialRoute: Routes.home,
       getPages: [
         GetPage(
-            name: '/home', page: () => MainScreen(), binding: HomeBinding()),
+            name: Routes.home,
+            page: () => MainScreen(),
+            binding: HomeBinding()),
         GetPage(
-            name: '/settings',
+            name: Routes.settings,
             page: () => const SettingsScreen(),
             binding: SettingsBinding()),
         GetPage(
-            name: '/info',
+            name: Routes.info,
             page: () => const InfoScreen(),
             binding: InfoBinding()),
         GetPage(
-            name: '/mic_detail',
+            name: Routes.micDetail,
             page: () => const MicDetailScreen(),
             binding: MicDetailBinding()),
         GetPage(
-            name: '/advanced_mic_data',
+            name: Routes.advancedMicData,
             page: () => const AdvancedMicDataScreen(),
             binding: AdvancedMicDataBinding()),
+        GetPage(name: Routes.allTunings, page: () => const AllTuningsScreen()),
+        GetPage(
+            name: Routes.createCustomTuning,
+            page: () => const CreateTuningScreen()),
       ],
     );
   }
