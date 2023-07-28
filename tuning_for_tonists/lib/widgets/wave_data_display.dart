@@ -51,7 +51,7 @@ class WaveDataDisplay extends StatelessWidget {
         ),
         Padding(
           padding: const EdgeInsets.only(
-            left: 12,
+            left: 48,
             bottom: 12,
             right: 20,
             top: 20,

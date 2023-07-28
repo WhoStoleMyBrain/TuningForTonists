@@ -46,6 +46,7 @@ dependencies:
   fl_chart: ^0.63.0
   iirjdart: ^0.1.0
   shared_preferences: ^2.2.0
+  scidart: ^0.0.2-dev.12
   
 dev_dependencies:
   flutter_test:

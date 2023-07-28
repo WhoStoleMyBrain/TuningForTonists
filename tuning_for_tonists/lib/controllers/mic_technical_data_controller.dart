@@ -14,10 +14,13 @@ class MicTechnicalDataController extends GetxController {
             samplesPerSecond: samplesPerSecond,
             bufferSize: bufferSize)
         .obs;
-    butterworth.lowPass(10, samplesPerSecond.toDouble(), 1200);
+    butterworth.lowPass(4, samplesPerSecond.toDouble(), 1200);
+    // butterworth.lowPass(4, 250, 50);
     FftController fftController = Get.find();
     fftController.setFft(FFT(bufferSize ~/ bytesPerSample));
     fftController.setFftLength(bufferSize ~/ bytesPerSample);
+    // fftController.setFft(FFT(4096));
+    // fftController.setFftLength(4096);
     refresh();
   }
 

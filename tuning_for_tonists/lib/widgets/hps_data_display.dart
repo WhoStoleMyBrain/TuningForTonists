@@ -7,8 +7,8 @@ import 'dart:math';
 import '../fl_chart_data/app_resources.dart';
 import 'package:fl_chart/fl_chart.dart';
 
-class AutocorrelationDataDisplay extends StatelessWidget {
-  const AutocorrelationDataDisplay({super.key});
+class HPSDataDisplay extends StatelessWidget {
+  const HPSDataDisplay({super.key});
 
   Widget bottomTitleWidgets(double value, TitleMeta meta, double chartWidth) {
     if (value % 1 != 0) {
@@ -45,7 +45,7 @@ class AutocorrelationDataDisplay extends StatelessWidget {
       children: [
         const Center(
           child: Text(
-            'Autocorrelation Data Display',
+            'HPS Data Display',
             style: TextStyle(fontSize: 24),
           ),
         ),
@@ -88,8 +88,7 @@ class AutocorrelationDataDisplay extends StatelessWidget {
                       lineBarsData: [
                         LineChartBarData(
                           color: AppColors.contentColorPink,
-                          spots:
-                              waveDataController.autocorrelationDataToSpots(),
+                          spots: waveDataController.hpsDataToSpots(),
                           isCurved: true,
                           isStrokeCapRound: true,
                           barWidth: 2,
@@ -100,15 +99,10 @@ class AutocorrelationDataDisplay extends StatelessWidget {
                         ),
                       ],
                       // minY: 0,
-                      minY: waveDataController.autocorrelationData
-                          .reduce(min)
-                          .toDouble(),
-                      maxY: waveDataController.autocorrelationData
-                          .reduce(max)
-                          .toDouble(),
+                      minY: waveDataController.hpsData.reduce(min).toDouble(),
+                      maxY: waveDataController.hpsData.reduce(max).toDouble(),
                       minX: 0,
-                      maxX: waveDataController.autocorrelationData.length
-                          .toDouble(),
+                      maxX: waveDataController.hpsData.length.toDouble(),
                       titlesData: const FlTitlesData(
                         show: false,
                       ),

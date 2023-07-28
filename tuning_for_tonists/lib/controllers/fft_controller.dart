@@ -6,11 +6,11 @@ import 'package:get/get.dart';
 import 'package:tuning_for_tonists/controllers/mic_technical_data_controller.dart';
 
 class FftController extends GetxController {
-  Rx<FFT> _fft = FFT(1024).obs;
+  Rx<FFT> _fft = FFT(4096).obs;
 
   FFT get fft => _fft.value;
 
-  Rx<int> _fftLength = 1024.obs;
+  Rx<int> _fftLength = 4096.obs;
 
   int get fftLength => _fftLength.value;
   MicTechnicalDataController micTechnicalDataController = Get.find();
@@ -24,6 +24,9 @@ class FftController extends GetxController {
   }
 
   Float64List applyRealFft(List<double> waveData) {
+    // fft.realInverseFft(complexArray)
+    print('length fft: ${_fft.value.size}');
+    print('length wavedata: ${waveData.length}');
     return fft.realFft(waveData).discardConjugates().squareMagnitudes();
   }
 

@@ -51,89 +51,111 @@ class MainDataDisplay extends StatelessWidget {
             style: TextStyle(fontSize: 24),
           ),
         ),
-        const Padding(
-          padding: EdgeInsets.only(
+        Padding(
+          padding: const EdgeInsets.only(
             left: 24,
             bottom: 24,
             right: 40,
             top: 40,
           ),
-        ),
-        AspectRatio(
-          aspectRatio: 1,
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return GetBuilder<TuningController>(builder: (tuningController) {
-                return GetBuilder<WaveDataController>(
-                  builder: (waveDataController) => LineChart(
-                    duration: const Duration(milliseconds: 0),
-                    LineChartData(
-                      lineTouchData: LineTouchData(
-                        touchTooltipData: LineTouchTooltipData(
-                          maxContentWidth: 100,
-                          tooltipBgColor: Colors.black,
-                          getTooltipItems: (touchedSpots) {
-                            return touchedSpots.map((LineBarSpot touchedSpot) {
-                              final textStyle = TextStyle(
-                                color: touchedSpot.bar.gradient?.colors[0] ??
-                                    touchedSpot.bar.color,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              );
-                              return LineTooltipItem(
-                                '${touchedSpot.x}, ${touchedSpot.y.toStringAsFixed(2)}',
-                                textStyle,
-                              );
-                            }).toList();
-                          },
-                        ),
-                        handleBuiltInTouches: true,
-                        getTouchLineStart: (data, index) => 0,
-                      ),
-
-                      lineBarsData: [
-                        LineChartBarData(
-                          color: AppColors.contentColorPink,
-                          spots: waveDataController.visibleDataToSpots(),
-                          isCurved: true,
-                          isStrokeCapRound: true,
-                          barWidth: 2,
-                          belowBarData: BarAreaData(
-                            show: false,
+          child: AspectRatio(
+            aspectRatio: 1,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return GetBuilder<TuningController>(
+                    builder: (tuningController) {
+                  return GetBuilder<WaveDataController>(
+                    builder: (waveDataController) => LineChart(
+                      duration: const Duration(milliseconds: 0),
+                      LineChartData(
+                        lineTouchData: LineTouchData(
+                          touchTooltipData: LineTouchTooltipData(
+                            maxContentWidth: 100,
+                            tooltipBgColor: Colors.black,
+                            getTooltipItems: (touchedSpots) {
+                              return touchedSpots
+                                  .map((LineBarSpot touchedSpot) {
+                                final textStyle = TextStyle(
+                                  color: touchedSpot.bar.gradient?.colors[0] ??
+                                      touchedSpot.bar.color,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                );
+                                return LineTooltipItem(
+                                  '${touchedSpot.x}, ${touchedSpot.y.toStringAsFixed(2)}',
+                                  textStyle,
+                                );
+                              }).toList();
+                            },
                           ),
-                          dotData: const FlDotData(show: false),
+                          handleBuiltInTouches: true,
+                          getTouchLineStart: (data, index) => 0,
                         ),
-                      ],
 
-                      minY: tuningController.targetFrequency -
-                          tuningController.frequencyRange,
-                      // maxY: waveDataController.visibleSamples.reduce(max),
-                      maxY: tuningController.targetFrequency +
-                          tuningController.frequencyRange,
-                      minX: 0,
-                      maxX: waveDataController.visibleSamples.length.toDouble(),
-                      titlesData: const FlTitlesData(
-                        show: false,
-                      ),
-                      gridData: FlGridData(
-                        show: true,
-                        drawHorizontalLine: true,
-                        drawVerticalLine: false,
-                        getDrawingHorizontalLine: (_) => FlLine(
-                          color: AppColors.contentColorBlue.withOpacity(1),
-                          dashArray: [8, 0],
-                          strokeWidth: 0.8,
+                        lineBarsData: [
+                          LineChartBarData(
+                            color: AppColors.contentColorPink,
+                            spots: waveDataController.visibleDataToSpots(false),
+                            isCurved: true,
+                            isStrokeCapRound: true,
+                            barWidth: 2,
+                            belowBarData: BarAreaData(
+                              show: false,
+                            ),
+                            dotData: const FlDotData(show: false),
+                          ),
+                          LineChartBarData(
+                            color: AppColors.contentColorOrange,
+                            spots:
+                                waveDataController.hpsVisibleDataToSpots(false),
+                            isCurved: true,
+                            isStrokeCapRound: true,
+                            barWidth: 2,
+                            belowBarData: BarAreaData(
+                              show: false,
+                            ),
+                            dotData: const FlDotData(show: false),
+                          ),
+                        ],
+
+                        // minY: tuningController.targetFrequency -
+                        //     tuningController.frequencyRange,
+                        minY: (waveDataController.visibleSamples.reduce(min) >
+                                waveDataController.hpsVisibleData.reduce(min)
+                            ? waveDataController.hpsVisibleData.reduce(min)
+                            : waveDataController.visibleSamples.reduce(min)),
+                        maxY: (waveDataController.visibleSamples.reduce(max) >
+                                waveDataController.hpsVisibleData.reduce(max)
+                            ? waveDataController.visibleSamples.reduce(max)
+                            : waveDataController.hpsVisibleData.reduce(max)),
+                        // maxY: tuningController.targetFrequency +
+                        //     tuningController.frequencyRange,
+                        minX: 0,
+                        maxX:
+                            waveDataController.visibleSamples.length.toDouble(),
+                        titlesData: const FlTitlesData(
+                          show: false,
                         ),
-                      ),
+                        gridData: FlGridData(
+                          show: true,
+                          drawHorizontalLine: true,
+                          drawVerticalLine: false,
+                          getDrawingHorizontalLine: (_) => FlLine(
+                            color: AppColors.contentColorBlue.withOpacity(1),
+                            dashArray: [8, 0],
+                            strokeWidth: 0.8,
+                          ),
+                        ),
 
-                      borderData: FlBorderData(show: false),
+                        borderData: FlBorderData(show: false),
+                      ),
                     ),
-                  ),
-                );
-              });
-            },
+                  );
+                });
+              },
+            ),
           ),
-        ),
+        )
       ],
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tuning_for_tonists/view_controllers/advanced_mic_data_controller.dart';
+import 'package:tuning_for_tonists/widgets/hps_data_display.dart';
 
 import '../widgets/app_drawer.dart';
 import '../widgets/autocorrelation_data_display.dart';
@@ -38,6 +39,10 @@ class AdvancedMicDataScreen extends GetView<AdvancedMicDataController> {
             height: 48,
           ),
           FrequencyDataDisplay(),
+          SizedBox(
+            height: 48,
+          ),
+          HPSDataDisplay(),
           SizedBox(
             height: 48,
           ),
