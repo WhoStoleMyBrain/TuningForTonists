@@ -24,9 +24,6 @@ class FftController extends GetxController {
   }
 
   Float64List applyRealFft(List<double> waveData) {
-    // fft.realInverseFft(complexArray)
-    print('length fft: ${_fft.value.size}');
-    print('length wavedata: ${waveData.length}');
     return fft.realFft(waveData).discardConjugates().squareMagnitudes();
   }
 

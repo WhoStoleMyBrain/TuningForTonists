@@ -54,12 +54,8 @@ class _AllTuningsScreenState extends State<AllTuningsScreen> {
       for (var e in element.value) {
         returnWidgets.add(GestureDetector(
           onTap: () {
-            print('Tap detected');
             tuningController.setTuningConfiguration(e);
-            //TODO Check if I want to go back after the tuning got selected
             setState(() {});
-            // Get.back();
-            // Get.offNamed(Routes.home);
           },
           child: Container(
             color: tuningController.tuningConfiguration == e

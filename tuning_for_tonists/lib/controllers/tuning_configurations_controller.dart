@@ -30,7 +30,6 @@ class TuningConfigurationsController extends GetxController {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     var data = prefs.getString(PreferenceNames.customTunings);
     data ??= '[]';
-    print('loaded custom configurations: $data');
     Iterable jsonData = jsonDecode(data) as List;
     var tmp = List<TuningConfiguration>.from(
         jsonData.map((e) => TuningConfiguration.fromJson(e)));

@@ -41,7 +41,6 @@ class _CreateTuningScreenState extends State<CreateTuningScreen> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     _textEditingController.dispose();
     _noteNameController.dispose();
@@ -191,8 +190,6 @@ class _CreateTuningScreenState extends State<CreateTuningScreen> {
         }
         var encodedString = jsonEncode(newConfigurations);
         prefs.setString(PreferenceNames.customTunings, encodedString);
-        print('saved configuration!');
-        print('saved text was: $encodedString');
 
         tuningConfigurationsController.customTuningConfigurations = {
           'Custom Configurations': newConfigurations
