@@ -88,8 +88,8 @@ class AutocorrelationDataDisplay extends StatelessWidget {
                       lineBarsData: [
                         LineChartBarData(
                           color: AppColors.contentColorPink,
-                          spots:
-                              waveDataController.autocorrelationDataToSpots(),
+                          spots: waveDataController.dataToSpots(
+                              waveDataController.autocorrelationData, false),
                           isCurved: true,
                           isStrokeCapRound: true,
                           barWidth: 2,

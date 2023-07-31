@@ -1,8 +1,10 @@
 import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:mic_stream/mic_stream.dart';
 import 'package:tuning_for_tonists/bindings/mic_detail_binding.dart';
+import 'package:tuning_for_tonists/constants/app_colors.dart';
 import 'package:tuning_for_tonists/constants/routes.dart';
 import 'package:tuning_for_tonists/controllers/fft_controller.dart';
 import 'package:tuning_for_tonists/controllers/tuning_configurations_controller.dart';
@@ -71,11 +73,11 @@ class _MyAppState extends State<MyApp> {
     Get.put(MicTechnicalDataController());
     Get.put(tuningConfigurationsController);
 
+    Get.put(WaveDataController());
     //TODO: Recheck this call, there has to be a way better way
     Get.put(TuningController()
       ..setTuningConfiguration(tuningConfigurationsController
           .defaultTuningConfigurations!.values.first.first));
-    Get.put(WaveDataController());
     Get.put(MicDetailController());
     Get.put(MicrophoneController(
         calculateDisplayData: MicrophoneHelper.calculateDisplayData));
@@ -83,18 +85,63 @@ class _MyAppState extends State<MyApp> {
     return GetMaterialApp(
       title: 'Tuning for Tonists',
       // The theme of your application.
+
       theme: ThemeData(
-          // primarySwatch:
-          //     createMaterialColor(const Color.fromRGBO(32, 32, 32, 0.7)),
+        primarySwatch: createMaterialColor(AppColors.colorForSwatch),
+        dropdownMenuTheme: const DropdownMenuThemeData(
+          textStyle: TextStyle(
+              color: AppColors.onPrimaryColor,
+              backgroundColor: AppColors.backgroundColor),
+        ),
+        colorScheme: ColorScheme.fromSwatch(
+          primarySwatch: createMaterialColor(AppColors.colorForSwatch),
+          backgroundColor: AppColors.backgroundColor,
+        ),
+        canvasColor: AppColors.backgroundColor,
+        appBarTheme: const AppBarTheme(
+            backgroundColor: AppColors.backgroundColor,
+            shadowColor: AppColors.backgroundColor,
+            elevation: 0.0),
+        scaffoldBackgroundColor: AppColors.backgroundColor,
+        // canvasColor: Colors.black45,
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(),
+          bodyMedium: TextStyle(),
+          bodySmall: TextStyle(),
+          labelLarge: TextStyle(),
+          labelMedium: TextStyle(),
+          labelSmall: TextStyle(),
+          displayLarge: TextStyle(),
+          displayMedium: TextStyle(),
+          displaySmall: TextStyle(),
+          headlineLarge: TextStyle(),
+          headlineMedium: TextStyle(),
+          headlineSmall: TextStyle(),
+          titleLarge: TextStyle(),
+          titleMedium: TextStyle(),
+          titleSmall: TextStyle(),
+        ).apply(
+          displayColor: AppColors.onPrimaryColor,
+          bodyColor: AppColors.onPrimaryColor,
+          decorationColor: AppColors.onPrimaryColor,
+        ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+              foregroundColor: AppColors.onPrimaryColor,
+              backgroundColor: AppColors.primaryColor),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+              foregroundColor: AppColors.onPrimaryColor,
+              backgroundColor: AppColors.primaryColor),
+        ),
+        buttonTheme: ButtonThemeData(
+          buttonColor: AppColors.primaryColor,
           colorScheme: ColorScheme.fromSwatch(
-            primarySwatch: createMaterialColor(
-              const Color.fromRGBO(23, 23, 120, 1.0),
-            ),
-            backgroundColor: const Color.fromRGBO(32, 32, 32, 0.7),
-            accentColor: Colors.white,
-          ),
-          // canvasColor: Colors.black45,
-          textTheme: const TextTheme()),
+              primarySwatch: createMaterialColor(AppColors.colorForSwatch),
+              backgroundColor: AppColors.primaryColor),
+        ),
+      ),
       navigatorKey: Get.key,
       initialRoute: Routes.home,
       getPages: [

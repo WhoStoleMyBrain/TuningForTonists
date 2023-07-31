@@ -88,7 +88,8 @@ class FrequencyDataDisplay extends StatelessWidget {
                       lineBarsData: [
                         LineChartBarData(
                           color: AppColors.contentColorPink,
-                          spots: waveDataController.frequencyDataToSpots(),
+                          spots: waveDataController.dataToSpots(
+                              waveDataController.fftData, false),
                           isCurved: true,
                           isStrokeCapRound: true,
                           barWidth: 2,

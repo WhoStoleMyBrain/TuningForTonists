@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:mic_stream/mic_stream.dart';
 import 'package:scidart/numdart.dart';
 import 'package:tuning_for_tonists/controllers/fft_controller.dart';
+import 'package:tuning_for_tonists/controllers/tuning_controller.dart';
 import '../controllers/mic_initialization_values_controller.dart';
 import '../controllers/mic_technical_data_controller.dart';
 import '../controllers/microphone_controller.dart';
@@ -20,7 +21,6 @@ class MicrophoneHelper {
         sampleRate: micInitializationValuesController.sampleRate.value,
         channelConfig: micInitializationValuesController.channelConfig.value,
         audioFormat: micInitializationValuesController.audioFormat.value);
-
     var bytesPerSample = (await MicStream.bitDepth)! ~/ 8;
     var samplesPerSecond = (await MicStream.sampleRate)!.toInt();
     var bufferSize = (await MicStream.bufferSize)!.toInt();
@@ -33,11 +33,7 @@ class MicrophoneHelper {
     List<double> waveData = [];
     Uint8List newSamples = samples.buffer.asUint8List(samples.offsetInBytes);
     for (int sample in newSamples) {
-      double newSample = sample.toDouble();
-      // if (newSample > 128) {
-      newSample -= 128;
-      // }
-      newSample = newSample / 128;
+      double newSample = (sample - 128) / 128.0;
       waveData.add(newSample);
     }
     return waveData;
@@ -50,11 +46,11 @@ class MicrophoneHelper {
     if (micTechnicalDataController.bytesPerSample == 2) {
       newSamples = samples.buffer.asUint8List(4);
     } else {
-      newSamples = samples.buffer.asUint8List(4);
+      newSamples = samples.buffer.asUint8List();
     }
     double tmpSample = 0;
-    bool first = true;
-    for (int sample in newSamples) {
+    bool first = false;
+    for (int sample in newSamples.sublist(1)) {
       if (sample > 128) sample -= 255;
       if (first) {
         tmpSample = sample * 128;
@@ -102,7 +98,7 @@ class MicrophoneHelper {
         hps[i] = hps[i] * fft[(i * downSampling).remainder(fft.length)];
       }
     }
-    waveDataController.setHPSData(hps);
+    waveDataController.setHPSData(hps.sublist(0, 50));
     var maxValue = hps.reduce(max);
     var maxIdx = hps.indexOf(maxValue);
     var freq = maxIdx *
@@ -117,10 +113,50 @@ class MicrophoneHelper {
     FftController fftController = Get.find();
     final frequenciesList =
         fftController.applyRealFft(waveDataController.doubleWaveData);
+    // waveDataController.setFrequencyData(frequenciesList.sublist(2, 100));
     waveDataController.setFrequencyData(
         frequenciesList.sublist(2, frequenciesList.length ~/ 2));
     var freqValue = fftController.getMaxFrequency(waveDataController.fftData);
     waveDataController.addVisibleSample(freqValue);
+  }
+
+  static void calculateZeroCrossing() {
+    WaveDataController waveDataController = Get.find();
+    int zeroCrossingCount = 0;
+    for (var i = 0; i < waveDataController.waveData.length; i += 2) {
+      if (waveDataController.waveData[i].sign !=
+          waveDataController.waveData[i + 1].sign) {
+        zeroCrossingCount++;
+      }
+    }
+    var frequency =
+        zeroCrossingCount / waveDataController.waveData.length / 2 * 44100.0;
+    waveDataController.addZeroCrossingData(frequency);
+  }
+
+  static void calculateAutocorrelation() {
+    WaveDataController waveDataController = Get.find();
+    List<double> autocorrelations = [];
+    double autocorrelation = 0;
+    for (var i = 0; i < waveDataController.waveData.length; i++) {
+      for (var k = 0; k < waveDataController.waveData.length - 1 - i; k++) {
+        autocorrelation +=
+            waveDataController.waveData[k] * waveDataController.waveData[i + k];
+      }
+      autocorrelations
+          .add(autocorrelation / (waveDataController.waveData.length - i));
+      // autocorrelations
+      //     .add(autocorrelation);
+      autocorrelation = 0;
+    }
+    // print('autocorrelations: $autocorrelations');
+
+    var maxIdx = autocorrelations.indexOf(
+        autocorrelations.sublist(30, 530).reduce(max), 30);
+    var frequency = 1 / maxIdx * 44100;
+    // print('autocorrelations: $autocorrelations');
+    waveDataController.setAutocorrelationData(autocorrelations);
+    waveDataController.addAutocorrelationVisibleSamples(frequency);
   }
 
   static void calculateDisplayData(dynamic samples) {
@@ -128,7 +164,11 @@ class MicrophoneHelper {
     Stopwatch stopwatch = Stopwatch()..start();
     waveDataController.addWaveData(calculateWaveData(samples));
     calculateFrequency();
-    calculateHPSManually();
+    // calculateHPSManually();
+    // calculateAutocorrelation();
+    // calculateZeroCrossing();
+    TuningController tuningController = Get.find();
+    tuningController.checkIfNoteTuned();
     if (kDebugMode) {
       print('done with all calculations: ${stopwatch.elapsed}');
     }

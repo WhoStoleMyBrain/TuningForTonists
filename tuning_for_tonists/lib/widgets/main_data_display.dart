@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tuning_for_tonists/controllers/tuning_controller.dart';
@@ -95,7 +97,8 @@ class MainDataDisplay extends StatelessWidget {
                         lineBarsData: [
                           LineChartBarData(
                             color: AppColors.contentColorPink,
-                            spots: waveDataController.visibleDataToSpots(false),
+                            spots: waveDataController.dataToSpots(
+                                waveDataController.visibleSamples, false),
                             isCurved: true,
                             isStrokeCapRound: true,
                             barWidth: 2,
@@ -106,8 +109,34 @@ class MainDataDisplay extends StatelessWidget {
                           ),
                           LineChartBarData(
                             color: AppColors.contentColorOrange,
-                            spots:
-                                waveDataController.hpsVisibleDataToSpots(false),
+                            spots: waveDataController.dataToSpots(
+                                waveDataController.hpsVisibleData, false),
+                            isCurved: true,
+                            isStrokeCapRound: true,
+                            barWidth: 2,
+                            belowBarData: BarAreaData(
+                              show: false,
+                            ),
+                            dotData: const FlDotData(show: false),
+                          ),
+                          LineChartBarData(
+                            // color: AppColors.contentColorRed,
+                            spots: waveDataController.dataToSpots(
+                                waveDataController.zeroCrossingData, false),
+                            isCurved: true,
+                            isStrokeCapRound: true,
+                            barWidth: 2,
+                            belowBarData: BarAreaData(
+                              show: false,
+                            ),
+                            dotData: const FlDotData(show: false),
+                            // gradient: const LinearGradient(colors: [Color.fromRGBO(1, 0, 0, 1.0), Color.fromRGBO(0, 1, 0, 1.0)]),
+                          ),
+                          LineChartBarData(
+                            color: AppColors.contentColorYellow,
+                            spots: waveDataController.dataToSpots(
+                                waveDataController.autocorrelationVisibleData,
+                                false),
                             isCurved: true,
                             isStrokeCapRound: true,
                             barWidth: 2,

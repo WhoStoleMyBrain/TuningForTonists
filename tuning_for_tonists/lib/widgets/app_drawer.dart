@@ -1,11 +1,30 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tuning_for_tonists/constants/app_colors.dart';
 
 import '../constants/routes.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
+
+  Color selectedColor() {
+    return AppColors.onBackgroundColor;
+  }
+
+  Widget getListTile(String name, String route) {
+    return ListTile(
+      title: Text(name),
+      tileColor: Get.currentRoute == route ? selectedColor() : null,
+      onTap: () {
+        if (kDebugMode) {
+          print(Get.currentRoute);
+        }
+        Get.back();
+        Get.offNamed(route);
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,59 +34,15 @@ class AppDrawer extends StatelessWidget {
         children: <Widget>[
           const DrawerHeader(
             decoration: BoxDecoration(
-              color: Colors.blue,
+              color: AppColors.backgroundColor,
             ),
-            child: Text('Tuning for Tonists'),
+            child: Text('Tuning for Tonists \nNavigation'),
           ),
-          ListTile(
-            title: const Text('Home'),
-            tileColor:
-                Get.currentRoute == Routes.home ? Colors.grey[300] : null,
-            onTap: () {
-              if (kDebugMode) {
-                print(Get.currentRoute);
-              }
-              Get.back();
-              Get.offNamed(Routes.home);
-            },
-          ),
-          ListTile(
-            title: const Text('Mic Details'),
-            tileColor:
-                Get.currentRoute == Routes.micDetail ? Colors.grey[300] : null,
-            onTap: () {
-              Get.back();
-              Get.offNamed(Routes.micDetail);
-            },
-          ),
-          ListTile(
-            title: const Text('Settings'),
-            tileColor:
-                Get.currentRoute == Routes.settings ? Colors.grey[300] : null,
-            onTap: () {
-              Get.back();
-              Get.offNamed(Routes.settings);
-            },
-          ),
-          ListTile(
-            title: const Text('Info'),
-            tileColor:
-                Get.currentRoute == Routes.info ? Colors.grey[300] : null,
-            onTap: () {
-              Get.back();
-              Get.offNamed(Routes.info);
-            },
-          ),
-          ListTile(
-            title: const Text('Advanced Microphone'),
-            tileColor: Get.currentRoute == Routes.advancedMicData
-                ? Colors.grey[300]
-                : null,
-            onTap: () {
-              Get.back();
-              Get.offNamed(Routes.advancedMicData);
-            },
-          ),
+          getListTile('Home', Routes.home),
+          getListTile('Mic Details', Routes.micDetail),
+          getListTile('Settings', Routes.settings),
+          getListTile('Info', Routes.info),
+          getListTile('Advanced Microphone', Routes.advancedMicData),
         ],
       ),
     );
