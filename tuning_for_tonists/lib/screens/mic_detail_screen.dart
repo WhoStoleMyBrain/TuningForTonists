@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:mic_stream/mic_stream.dart';
-import 'package:tuning_for_tonists/constants/app_colors.dart';
 import 'package:tuning_for_tonists/controllers/mic_initialization_values_controller.dart';
 import 'package:tuning_for_tonists/controllers/mic_technical_data_controller.dart';
 import 'package:tuning_for_tonists/widgets/data_display.dart';

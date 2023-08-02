@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tuning_for_tonists/controllers/mic_technical_data_controller.dart';
-import 'package:tuning_for_tonists/controllers/wave_data_controller.dart';
-import 'dart:math';
+import '../controllers/mic_technical_data_controller.dart';
+import '../controllers/wave_data_controller.dart';
 
 import '../models/note.dart';
 import '../models/tuning_configuration.dart';
 
 class TuningController extends GetxController {
   Rx<Note> _targetNote = Note(frequency: 440, name: 'A4', tuned: false).obs;
-  Rx<double> _frequencyRange = 30.0.obs;
-  Rx<double> _percentageRight = 0.0.obs;
-  Rx<double> _percentageWrong = 0.0.obs;
-  Rx<double> _tuningThreshold = 0.95.obs;
-  Rx<double> tuningDistance = 0.0.obs;
-  Rx<Color> tuningColor = const Color.fromRGBO(255, 0, 0, 1.0).obs;
+  final Rx<double> _frequencyRange = 30.0.obs;
+  final Rx<double> _percentageRight = 0.0.obs;
+  final Rx<double> _percentageWrong = 0.0.obs;
+  final Rx<double> _tuningThreshold = 0.95.obs;
+  final Rx<double> _tuningDistance = 0.0.obs;
+  final Rx<Color> _tuningColor = const Color.fromRGBO(255, 0, 0, 1.0).obs;
 
+  Rx<String>? _activeInstrumentGroup;
   Rx<TuningConfiguration>? _tuningConfiguration;
 
   WaveDataController waveDataController = Get.find();
@@ -27,6 +27,17 @@ class TuningController extends GetxController {
     refresh();
   }
 
+  void setActiveInstrumentGroup(String newInstrumentGroup) {
+    _activeInstrumentGroup = newInstrumentGroup.obs;
+    refresh();
+  }
+
+  Color get tuningColor => _tuningColor.value;
+
+  double get tuningDistance => _tuningDistance.value;
+
+  String get activeInstrumentGroup => _activeInstrumentGroup!.value;
+
   TuningConfiguration get tuningConfiguration => _tuningConfiguration!.value;
 
   double get frequencyRange => _frequencyRange.value;
@@ -36,30 +47,40 @@ class TuningController extends GetxController {
 
   double get tuningThreshold => _tuningThreshold.value;
 
+  set tuningColor(Color newColor) {
+    _tuningColor.value = newColor;
+    refresh();
+  }
+
+  set tuningDistance(double newTuningDistance) {
+    _tuningDistance.value = newTuningDistance;
+    refresh();
+  }
+
   set frequencyRange(double newFrequencyRange) {
-    _frequencyRange = newFrequencyRange.obs;
+    _frequencyRange.value = newFrequencyRange;
     update();
   }
 
   set percentageRight(double newPercentage) {
-    _percentageRight = newPercentage.obs;
+    _percentageRight.value = newPercentage;
     // refresh();
   }
 
   set percentageWrong(double newPercentage) {
-    _percentageWrong = newPercentage.obs;
+    _percentageWrong.value = newPercentage;
     // refresh();
   }
 
   set tuningThreshold(double newTuningThreshold) {
-    _tuningThreshold = newTuningThreshold.obs;
+    _tuningThreshold.value = newTuningThreshold;
     refresh();
   }
 
   double get targetFrequency => _targetNote.value.frequency;
 
   set targetNote(Note note) {
-    _targetNote = note.obs;
+    _targetNote.value = note;
     update();
   }
 
@@ -106,10 +127,10 @@ class TuningController extends GetxController {
             sampleInFrequencyBand.length;
     percentageRight = newPercentageRight;
     percentageWrong = newPercentageWrong;
-    tuningDistance = (lastSeconds.reduce(
-                (value, element) => value + (element - targetFrequency).abs()) /
-            lastSeconds.length)
-        .obs;
+    tuningDistance = (lastSeconds
+            .reduce((value, element) => value + (element - targetFrequency)) /
+        lastSeconds.length);
+
     setTuningColor();
     if (percentageRight >= tuningThreshold) {
       return true;
@@ -119,10 +140,11 @@ class TuningController extends GetxController {
   }
 
   void setTuningColor() {
-    var averageDistance =
-        tuningDistance > frequencyRange ? frequencyRange : tuningDistance.value;
-    int factor = (255 * (averageDistance / tuningDistance.value)).toInt();
-    tuningColor = Color.fromRGBO(255 - factor, 0 + factor, 0, 1.0).obs;
+    var averageDistance = tuningDistance.abs() > frequencyRange
+        ? frequencyRange
+        : tuningDistance.abs();
+    int factor = (255 * (averageDistance / tuningDistance.abs())).toInt();
+    tuningColor = Color.fromRGBO(255 - factor, 0 + factor, 0, 1.0);
     refresh();
   }
 }

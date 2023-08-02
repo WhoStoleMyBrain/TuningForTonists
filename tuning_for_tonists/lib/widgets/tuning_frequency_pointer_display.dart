@@ -22,7 +22,7 @@ class TuningFrequencyPointerDisplay extends StatelessWidget {
               currentFrequency: waveDataController.visibleSamples.last,
               targetFrequency: tuningController.targetFrequency,
               frequencyRange: tuningController.frequencyRange,
-              tuningColor: tuningController.tuningColor.value),
+              tuningColor: tuningController.tuningColor),
           size: Size(MediaQuery.of(context).size.width,
               MediaQuery.of(context).size.height / 2),
           willChange: true,

@@ -2,15 +2,15 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:mic_stream/mic_stream.dart';
 import 'package:scidart/numdart.dart';
-import 'package:tuning_for_tonists/controllers/fft_controller.dart';
-import 'package:tuning_for_tonists/controllers/tuning_controller.dart';
+import '../controllers/fft_controller.dart';
+import '../controllers/tuning_controller.dart';
 import '../controllers/mic_initialization_values_controller.dart';
 import '../controllers/mic_technical_data_controller.dart';
 import '../controllers/microphone_controller.dart';
 
 import '../controllers/wave_data_controller.dart';
 
-class MicrophoneHelper {
+abstract class MicrophoneHelper {
   static Future<Stream<Uint8List>?> getMicStream() async {
     final MicInitializationValuesController micInitializationValuesController =
         Get.find();

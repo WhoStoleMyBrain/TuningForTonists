@@ -1,7 +1,7 @@
 import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
+// import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:mic_stream/mic_stream.dart';
 import 'package:tuning_for_tonists/bindings/mic_detail_binding.dart';
 import 'package:tuning_for_tonists/constants/app_colors.dart';
@@ -12,6 +12,7 @@ import 'package:tuning_for_tonists/controllers/tuning_controller.dart';
 import 'package:tuning_for_tonists/screens/advanced_mic_data_screen.dart';
 import 'package:tuning_for_tonists/screens/all_tunings_screen.dart';
 import 'package:tuning_for_tonists/screens/create_tuning_screen.dart';
+import 'package:tuning_for_tonists/screens/loading_page.dart';
 import 'package:tuning_for_tonists/screens/mic_detail_screen.dart';
 import 'package:tuning_for_tonists/view_controllers/mic_detail_controller.dart';
 import 'package:tuning_for_tonists/controllers/microphone_controller.dart';
@@ -64,6 +65,7 @@ class _MyAppState extends State<MyApp> {
         TuningConfigurationsController()
           ..loadDefaultTuningConfigurations()
           ..loadCustomTuningConfigurations();
+    //TODO: Recheck this call, there has to be a way better way
     Get.put(MicInitializationValuesController(
         audioFormat: AudioFormat.ENCODING_PCM_8BIT.obs,
         sampleRate: 44100.obs,
@@ -71,13 +73,15 @@ class _MyAppState extends State<MyApp> {
         audioSource: AudioSource.DEFAULT.obs));
 
     Get.put(MicTechnicalDataController());
-    Get.put(tuningConfigurationsController);
-
     Get.put(WaveDataController());
-    //TODO: Recheck this call, there has to be a way better way
-    Get.put(TuningController()
+    TuningController tuningController = TuningController()
       ..setTuningConfiguration(tuningConfigurationsController
-          .defaultTuningConfigurations!.values.first.first));
+          .defaultTuningConfigurations!.values.first.first)
+      ..setActiveInstrumentGroup(tuningConfigurationsController
+          .defaultTuningConfigurations!.keys.first);
+
+    Get.put(tuningConfigurationsController);
+    Get.put(tuningController);
     Get.put(MicDetailController());
     Get.put(MicrophoneController(
         calculateDisplayData: MicrophoneHelper.calculateDisplayData));
@@ -143,8 +147,12 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
       navigatorKey: Get.key,
-      initialRoute: Routes.home,
+      initialRoute: Routes.loadingPage,
       getPages: [
+        GetPage(
+          name: Routes.loadingPage,
+          page: () => const LoadingPage(),
+        ),
         GetPage(
             name: Routes.home,
             page: () => MainScreen(),

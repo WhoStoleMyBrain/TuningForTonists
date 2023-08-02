@@ -7,8 +7,8 @@ import 'package:tuning_for_tonists/controllers/tuning_controller.dart';
 class WaveDataController extends GetxController {
   RxList<double> visibleSamples =
       <double>[0].obs; // strongest frequency in fft Data interval
-  RxList<double> hpsVisibleData = <double>[0].obs;
-  RxList<double> autocorrelationVisibleData = <double>[0].obs;
+  RxList<double> hpsVisibleData = RxList.filled(200, 0);
+  RxList<double> autocorrelationVisibleData = RxList.filled(200, 0);
 
   RxList<double> waveData = RxList.filled(2048, 0);
   RxList<double> fftData = <double>[0].obs;
@@ -94,6 +94,7 @@ class WaveDataController extends GetxController {
 
   void addVisibleSample(double newVisibleSample) {
     visibleSamples.add(newVisibleSample);
+    print('Added $newVisibleSample to frequencies');
 
     setNumberOfVisibleDataPoints();
     update();
@@ -129,154 +130,6 @@ class WaveDataController extends GetxController {
           .obs;
     }
   }
-
-  // List<FlSpot> visibleDataToSpots(bool capped) {
-  //   TuningController tuningController = Get.find();
-  //   List<FlSpot> result = [];
-  //   if (capped) {
-  //     visibleSamples.asMap().forEach(
-  //       (key, value) {
-  //         if (value >
-  //             tuningController.targetFrequency +
-  //                 tuningController.frequencyRange) {
-  //           result.add(FlSpot(
-  //               key.toDouble(),
-  //               tuningController.targetFrequency +
-  //                   tuningController.frequencyRange));
-  //         } else if (value <
-  //             tuningController.targetFrequency -
-  //                 tuningController.frequencyRange) {
-  //           result.add(FlSpot(
-  //               key.toDouble(),
-  //               tuningController.targetFrequency -
-  //                   tuningController.frequencyRange));
-  //         } else {
-  //           result.add(FlSpot(key.toDouble(), value));
-  //         }
-  //       },
-  //     );
-  //     return result;
-  //   } else {
-  //     visibleSamples.asMap().forEach(
-  //       (key, value) {
-  //         result.add(FlSpot(key.toDouble(), value.toDouble()));
-  //       },
-  //     );
-  //     return result;
-  //   }
-  // }
-
-  // List<FlSpot> hpsVisibleDataToSpots(bool capped) {
-  //   TuningController tuningController = Get.find();
-  //   List<FlSpot> result = [];
-  //   if (capped) {
-  //     hpsVisibleData.asMap().forEach(
-  //       (key, value) {
-  //         if (value >
-  //             tuningController.targetFrequency +
-  //                 tuningController.frequencyRange) {
-  //           result.add(FlSpot(
-  //               key.toDouble(),
-  //               tuningController.targetFrequency +
-  //                   tuningController.frequencyRange));
-  //         } else if (value <
-  //             tuningController.targetFrequency -
-  //                 tuningController.frequencyRange) {
-  //           result.add(FlSpot(
-  //               key.toDouble(),
-  //               tuningController.targetFrequency -
-  //                   tuningController.frequencyRange));
-  //         } else {
-  //           result.add(FlSpot(key.toDouble(), value));
-  //         }
-  //       },
-  //     );
-  //     return result;
-  //   } else {
-  //     hpsVisibleData.asMap().forEach(
-  //       (key, value) {
-  //         result.add(FlSpot(key.toDouble(), value.toDouble()));
-  //       },
-  //     );
-  //     return result;
-  //   }
-  // }
-
-  // List<FlSpot> waveDataToSpots() {
-  //   List<FlSpot> result = [];
-  //   waveData.asMap().forEach(
-  //     (key, value) {
-  //       result.add(FlSpot(key.toDouble(), value.toDouble()));
-  //     },
-  //   );
-  //   return result;
-  // }
-
-  // List<FlSpot> frequencyDataToSpots() {
-  //   List<FlSpot> result = [];
-  //   fftData.asMap().forEach(
-  //     (key, value) {
-  //       result.add(FlSpot(key.toDouble(), value.toDouble()));
-  //     },
-  //   );
-  //   return result;
-  // }
-
-  // List<FlSpot> autocorrelationDataToSpots() {
-  //   List<FlSpot> result = [];
-  //   autocorrelationData.asMap().forEach(
-  //     (key, value) {
-  //       result.add(FlSpot(key.toDouble(), value.toDouble()));
-  //     },
-  //   );
-  //   return result;
-  // }
-
-  // List<FlSpot> hpsDataToSpots() {
-  //   List<FlSpot> result = [];
-  //   hpsData.asMap().forEach(
-  //     (key, value) {
-  //       result.add(FlSpot(key.toDouble(), value.toDouble()));
-  //     },
-  //   );
-  //   return result;
-  // }
-
-  // List<FlSpot> zeroCrossingDataToSpots(bool capped) {
-  //   TuningController tuningController = Get.find();
-  //   List<FlSpot> result = [];
-  //   if (capped) {
-  //     zeroCrossingData.asMap().forEach(
-  //       (key, value) {
-  //         if (value >
-  //             tuningController.targetFrequency +
-  //                 tuningController.frequencyRange) {
-  //           result.add(FlSpot(
-  //               key.toDouble(),
-  //               tuningController.targetFrequency +
-  //                   tuningController.frequencyRange));
-  //         } else if (value <
-  //             tuningController.targetFrequency -
-  //                 tuningController.frequencyRange) {
-  //           result.add(FlSpot(
-  //               key.toDouble(),
-  //               tuningController.targetFrequency -
-  //                   tuningController.frequencyRange));
-  //         } else {
-  //           result.add(FlSpot(key.toDouble(), value));
-  //         }
-  //       },
-  //     );
-  //     return result;
-  //   } else {
-  //     zeroCrossingData.asMap().forEach(
-  //       (key, value) {
-  //         result.add(FlSpot(key.toDouble(), value.toDouble()));
-  //       },
-  //     );
-  //     return result;
-  //   }
-  // }
 
   List<FlSpot> dataToSpots(List<double> data, bool capped) {
     TuningController tuningController = Get.find();

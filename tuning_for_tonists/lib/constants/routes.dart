@@ -6,4 +6,5 @@ class Routes {
   static String advancedMicData = '/advanced_mic_data';
   static String allTunings = '/all_tunings';
   static String createCustomTuning = '/create_custom_tuning';
+  static String loadingPage = '/loading_page';
 }

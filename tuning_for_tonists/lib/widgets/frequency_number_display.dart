@@ -19,7 +19,7 @@ class FrequencyNumberDisplay extends StatelessWidget {
                   'Goal Frequency: ${tuningController.targetFrequency.toStringAsFixed(2)}'),
               Text(
                 'Current Frequency: ${waveDataController.visibleSamples.isNotEmpty ? waveDataController.visibleSamples.last.toStringAsFixed(2) : 0}',
-                style: TextStyle(color: tuningController.tuningColor.value),
+                style: TextStyle(color: tuningController.tuningColor),
               ),
             ],
           ),

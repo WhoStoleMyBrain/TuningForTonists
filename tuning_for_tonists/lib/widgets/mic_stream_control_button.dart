@@ -16,8 +16,6 @@ class _MicStreamControlButtonState extends State<MicStreamControlButton> {
     return GetBuilder<MicrophoneController>(
       builder: (microphoneController) => FloatingActionButton(
         onPressed: microphoneController.controlMicStream,
-        // foregroundColor: Colors.white,
-        // backgroundColor: Colors.black,
         tooltip: (microphoneController.isRecording.isTrue)
             ? "Stop recording"
             : "Start recording",
