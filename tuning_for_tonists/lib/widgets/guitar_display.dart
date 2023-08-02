@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../constants/app_colors.dart';
 import '../controllers/tuning_controller.dart';
+import '../enums/guitar_side.dart';
+import '../helpers/guitar_size_helper.dart';
 import '../models/note.dart';
 import '../widgets/guitar_painter.dart';
-
-enum GuitarSide { left, right, all }
 
 class GuitarDisplay extends StatelessWidget {
   GuitarDisplay({super.key});
@@ -13,6 +12,11 @@ class GuitarDisplay extends StatelessWidget {
   final TuningController tuningController = Get.find();
 
   final bool oneSided = false;
+
+  Widget getSizedBoxForClickableAreas(Size guitarSize) {
+    return SizedBox.fromSize(
+        size: GuitarSizeHelper.getSizedBoxSize(guitarSize));
+  }
 
   Widget getGuitarDisplay(Size guitarSize) {
     return Stack(
@@ -22,22 +26,15 @@ class GuitarDisplay extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(
-              width: guitarSize.width * 0.1,
-              height: guitarSize.height * 0.1,
-            ),
+            getSizedBoxForClickableAreas(guitarSize),
             CustomPaint(
               painter: GuitarPainter(
-                targetNotes: tuningController.allNotes,
-                oneSided: false,
+                allNotes: tuningController.allNotes,
+                oneSided: oneSided,
               ),
               size: guitarSize,
-              willChange: true,
             ),
-            SizedBox(
-              width: guitarSize.width * 0.1,
-              height: guitarSize.height * 0.1,
-            ),
+            getSizedBoxForClickableAreas(guitarSize),
           ],
         ),
         ...getStringButtons(guitarSize),
@@ -53,23 +50,10 @@ class GuitarDisplay extends StatelessWidget {
 
   Widget getStringButton(Note note) {
     return SizedBox(
-      height: tuningController.targetNote == note ? 57 : 45,
-      width: tuningController.targetNote == note ? 57 : 45,
+      height: GuitarSizeHelper.stringButtonHeight(note),
+      width: GuitarSizeHelper.stringButtonWidth(note),
       child: TextButton(
-          style: TextButton.styleFrom(
-              side: BorderSide(
-                  width: tuningController.targetNote == note ? 8 : 1.5,
-                  color: AppColors.primaryColor),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(100),
-              ),
-              elevation: 0,
-              backgroundColor: tuningController.targetNote == note
-                  ? AppColors.onPrimaryColor
-                  : AppColors.backgroundColor,
-              foregroundColor: tuningController.targetNote == note
-                  ? AppColors.black
-                  : AppColors.white),
+          style: GuitarSizeHelper.stringButtonStyle(note),
           onPressed: () {
             tuningController.targetNote = note;
           },
@@ -79,34 +63,17 @@ class GuitarDisplay extends StatelessWidget {
 
   Widget getPositionedStringButton(int index, Size guitarSize, Note note) {
     return Positioned(
-        left: getPositionedLeft(index, guitarSize, note),
-        top: getPositionedTop(index, guitarSize, note),
+        left: GuitarSizeHelper.getLeftPositionStringButton(
+            oneSided, index, guitarSize, note),
+        top: GuitarSizeHelper.getTopPositionStringButton(
+            oneSided, index, guitarSize, note),
         child: getStringButton(note));
-  }
-
-  double getPositionedLeft(int index, Size guitarSize, Note note) {
-    return (oneSided
-            ? 25
-            : index < tuningController.allNotes.length ~/ 2
-                ? guitarSize.width * 0.2
-                : guitarSize.width * 1.5) +
-        (tuningController.targetNote == note ? -6 : 0);
-  }
-
-  double getPositionedTop(int index, Size guitarSize, Note note) {
-    return (oneSided
-            ? 25
-            : index < tuningController.allNotes.length ~/ 2
-                ? guitarSize.height * (0.875 - index * 0.35)
-                : guitarSize.height *
-                    (0.175 +
-                        index.remainder(tuningController.allNotes.length ~/ 2) *
-                            0.35)) +
-        (tuningController.targetNote == note ? -6 : 0);
   }
 
   List<Widget> getTwoSidedStringButtons(Size guitarSize) {
     List<Widget> allButtons = [];
+    // print(
+    //     'Getting a button for a total length of ${tuningController.allNotes.length}');
     for (var i = 0; i < tuningController.allNotes.length; i++) {
       allButtons.add(getPositionedStringButton(
           i, guitarSize, tuningController.allNotes[i]));
