@@ -89,21 +89,23 @@ abstract class MicrophoneHelper {
     WaveDataController waveDataController = Get.find();
     MicInitializationValuesController micInitializationValuesController =
         Get.find();
-    MicTechnicalDataController micTechnicalDataController = Get.find();
+    // MicTechnicalDataController micTechnicalDataController = Get.find();
     List<double> fft = waveDataController.fftData;
-    int N = 3;
+    int N = 5;
     List<double> hps = List.from(fft);
     for (var downSampling = 2; downSampling <= N; downSampling++) {
       for (var i = 0; i < fft.length; i++) {
         hps[i] = hps[i] * fft[(i * downSampling).remainder(fft.length)];
       }
     }
-    waveDataController.setHPSData(hps.sublist(0, 50));
+    waveDataController.setHPSData(hps.sublist(0, hps.length ~/ N));
+    // waveDataController.setHPSData(hps);
+    // waveDataController.setHPSData(hps.sublist(0, 100));
     var maxValue = hps.reduce(max);
     var maxIdx = hps.indexOf(maxValue);
-    var freq = maxIdx *
+    var freq = (maxIdx + 1) *
         micInitializationValuesController.sampleRate.value /
-        micTechnicalDataController.bufferSize;
+        waveDataController.waveData.length;
 
     waveDataController.addHPSVisibleSamples([freq]);
   }
@@ -113,9 +115,26 @@ abstract class MicrophoneHelper {
     FftController fftController = Get.find();
     final frequenciesList =
         fftController.applyRealFft(waveDataController.doubleWaveData);
-    // waveDataController.setFrequencyData(frequenciesList.sublist(2, 100));
-    waveDataController.setFrequencyData(
-        frequenciesList.sublist(2, frequenciesList.length ~/ 2));
+    print('fftlength: ${fftController.fftLength}');
+    print('length of frequencies: ${frequenciesList.length}');
+    waveDataController.setFrequencyData(frequenciesList.sublist(1));
+    print('length of freq data: ${waveDataController.fftData.length}');
+    var freqValue = fftController.getMaxFrequency(waveDataController.fftData);
+    waveDataController.addVisibleSample(freqValue);
+  }
+
+  static void calculateFrequency2() {
+    WaveDataController waveDataController = Get.find();
+    FftController fftController = Get.find();
+    MicTechnicalDataController micTechnicalDataController = Get.find();
+    final frequenciesList =
+        fftController.applyRealFft(waveDataController.doubleWaveData);
+    List<double> filteredFrequencies = [];
+    for (var freq in frequenciesList) {
+      filteredFrequencies.add(micTechnicalDataController.butterworthHighpass
+          .filter(micTechnicalDataController.butterworthLowpass.filter(freq)));
+    }
+    waveDataController.setFrequencyData(frequenciesList.sublist(1));
     var freqValue = fftController.getMaxFrequency(waveDataController.fftData);
     waveDataController.addVisibleSample(freqValue);
   }
@@ -163,8 +182,8 @@ abstract class MicrophoneHelper {
     WaveDataController waveDataController = Get.find();
     Stopwatch stopwatch = Stopwatch()..start();
     waveDataController.addWaveData(calculateWaveData(samples));
-    calculateFrequency();
-    // calculateHPSManually();
+    calculateFrequency2();
+    calculateHPSManually();
     // calculateAutocorrelation();
     // calculateZeroCrossing();
     TuningController tuningController = Get.find();

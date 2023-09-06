@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tuning_for_tonists/controllers/tuning_controller.dart';
@@ -98,7 +96,9 @@ class MainDataDisplay extends StatelessWidget {
                           LineChartBarData(
                             color: AppColors.contentColorPink,
                             spots: waveDataController.dataToSpots(
-                                waveDataController.visibleSamples, false),
+                                waveDataController.visibleSamples,
+                                false,
+                                false),
                             isCurved: true,
                             isStrokeCapRound: true,
                             barWidth: 2,
@@ -110,7 +110,9 @@ class MainDataDisplay extends StatelessWidget {
                           LineChartBarData(
                             color: AppColors.contentColorOrange,
                             spots: waveDataController.dataToSpots(
-                                waveDataController.hpsVisibleData, false),
+                                waveDataController.hpsVisibleData,
+                                false,
+                                false),
                             isCurved: true,
                             isStrokeCapRound: true,
                             barWidth: 2,
@@ -120,9 +122,11 @@ class MainDataDisplay extends StatelessWidget {
                             dotData: const FlDotData(show: false),
                           ),
                           LineChartBarData(
-                            // color: AppColors.contentColorRed,
+                            color: AppColors.contentColorRed,
                             spots: waveDataController.dataToSpots(
-                                waveDataController.zeroCrossingData, false),
+                                waveDataController.zeroCrossingData,
+                                false,
+                                false),
                             isCurved: true,
                             isStrokeCapRound: true,
                             barWidth: 2,
@@ -136,6 +140,7 @@ class MainDataDisplay extends StatelessWidget {
                             color: AppColors.contentColorYellow,
                             spots: waveDataController.dataToSpots(
                                 waveDataController.autocorrelationVisibleData,
+                                false,
                                 false),
                             isCurved: true,
                             isStrokeCapRound: true,

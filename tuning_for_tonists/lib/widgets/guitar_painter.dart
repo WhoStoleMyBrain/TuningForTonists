@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:tuning_for_tonists/helpers/guitar_size_helper.dart';
-import 'package:tuning_for_tonists/helpers/predefined_matrices.dart';
-import 'package:tuning_for_tonists/models/guitar_head.dart';
-import 'package:tuning_for_tonists/models/guitar_knob.dart';
-import 'package:tuning_for_tonists/models/guitar_string.dart';
+import '../helpers/guitar_size_helper.dart';
+import '../helpers/predefined_matrices.dart';
+import '../models/guitar_head.dart';
+import '../models/guitar_knob.dart';
+import '../models/guitar_string.dart';
 import '../constants/app_colors.dart';
 
 import '../helpers/guitar_drawer_helper.dart';

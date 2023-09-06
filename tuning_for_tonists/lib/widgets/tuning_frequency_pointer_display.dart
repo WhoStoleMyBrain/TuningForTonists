@@ -2,15 +2,15 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:tuning_for_tonists/controllers/tuning_controller.dart';
-import 'package:tuning_for_tonists/controllers/wave_data_controller.dart';
+import '../controllers/tuning_controller.dart';
+import '../controllers/wave_data_controller.dart';
 
 // ignore: must_be_immutable
 class TuningFrequencyPointerDisplay extends StatelessWidget {
   TuningFrequencyPointerDisplay({super.key});
 
   // TuningController tuningController = Get.find();
-  WaveDataController waveDataController = Get.find();
+  final WaveDataController waveDataController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class TuningFrequencyPointerDisplay extends StatelessWidget {
               frequencyRange: tuningController.frequencyRange,
               tuningColor: tuningController.tuningColor),
           size: Size(MediaQuery.of(context).size.width,
-              MediaQuery.of(context).size.height / 2),
+              MediaQuery.of(context).size.height * 0.3),
           willChange: true,
           // child: ,
         ),
@@ -49,7 +49,7 @@ class FrequencyDialPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final double radius = size.width / 2;
-    final Offset center = Offset(size.width / 2, size.height / 2);
+    final Offset center = Offset(size.width / 2, size.height * 0.9);
 
     final Paint dialPaint = Paint()
       ..style = PaintingStyle.stroke

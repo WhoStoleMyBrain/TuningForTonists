@@ -81,7 +81,7 @@ class DataDisplay extends StatelessWidget {
                     LineChartBarData(
                       color: AppColors.contentColorPink,
                       spots: waveDataController.dataToSpots(
-                          waveDataController.visibleSamples, false),
+                          waveDataController.visibleSamples, false, true),
                       isCurved: true,
                       isStrokeCapRound: true,
                       barWidth: 2,

@@ -89,7 +89,7 @@ class HPSDataDisplay extends StatelessWidget {
                         LineChartBarData(
                           color: AppColors.contentColorPink,
                           spots: waveDataController.dataToSpots(
-                              waveDataController.hpsData, false),
+                              waveDataController.hpsData, false, true),
                           isCurved: true,
                           isStrokeCapRound: true,
                           barWidth: 2,

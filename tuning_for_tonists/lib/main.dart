@@ -1,8 +1,8 @@
 import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-// import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:mic_stream/mic_stream.dart';
+import 'package:tuning_for_tonists/bindings/knowledgebase_binding.dart';
 import 'package:tuning_for_tonists/bindings/mic_detail_binding.dart';
 import 'package:tuning_for_tonists/constants/app_colors.dart';
 import 'package:tuning_for_tonists/constants/routes.dart';
@@ -12,6 +12,7 @@ import 'package:tuning_for_tonists/controllers/tuning_controller.dart';
 import 'package:tuning_for_tonists/screens/advanced_mic_data_screen.dart';
 import 'package:tuning_for_tonists/screens/all_tunings_screen.dart';
 import 'package:tuning_for_tonists/screens/create_tuning_screen.dart';
+import 'package:tuning_for_tonists/screens/knowledgebase_screen.dart';
 import 'package:tuning_for_tonists/screens/loading_page.dart';
 import 'package:tuning_for_tonists/screens/mic_detail_screen.dart';
 import 'package:tuning_for_tonists/view_controllers/mic_detail_controller.dart';
@@ -67,8 +68,9 @@ class _MyAppState extends State<MyApp> {
           ..loadCustomTuningConfigurations();
     //TODO: Recheck this call, there has to be a way better way
     Get.put(MicInitializationValuesController(
-        audioFormat: AudioFormat.ENCODING_PCM_8BIT.obs,
-        sampleRate: 44100.obs,
+        audioFormat: AudioFormat.ENCODING_PCM_16BIT.obs,
+        sampleRate: 8192.obs,
+        // sampleRate: 44100.obs,
         channelConfig: ChannelConfig.CHANNEL_IN_MONO.obs,
         audioSource: AudioSource.DEFAULT.obs));
 
@@ -155,11 +157,11 @@ class _MyAppState extends State<MyApp> {
         ),
         GetPage(
             name: Routes.home,
-            page: () => MainScreen(),
+            page: () => const MainScreen(),
             binding: HomeBinding()),
         GetPage(
             name: Routes.settings,
-            page: () => const SettingsScreen(),
+            page: () => SettingsScreen(),
             binding: SettingsBinding()),
         GetPage(
             name: Routes.info,
@@ -177,6 +179,11 @@ class _MyAppState extends State<MyApp> {
         GetPage(
             name: Routes.createCustomTuning,
             page: () => const CreateTuningScreen()),
+        GetPage(
+          name: Routes.knowledgebase,
+          page: () => const KnowledgebaseScreen(),
+          binding: KnowledgebaseBinding(),
+        )
       ],
     );
   }

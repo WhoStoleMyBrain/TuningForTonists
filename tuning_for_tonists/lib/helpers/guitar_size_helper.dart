@@ -56,7 +56,7 @@ abstract class GuitarSizeHelper {
     return (oneSided
             ? 25
             : index < getNotesLengthHalved()
-                ? guitarSize.width * 0.2
+                ? guitarSize.width * 0.25
                 : guitarSize.width * 1.5) +
         (tuningController.targetNote == note ? -6 : 0);
   }
@@ -64,17 +64,35 @@ abstract class GuitarSizeHelper {
   static int getNotesLengthHalved() {
     return tuningController.allNotes.length > 1
         ? tuningController.allNotes.length ~/ 2
-        : 1;
+        : tuningController.allNotes.length;
+  }
+
+  static double getNotesLengthHalvedMinusOne() {
+    var notesLengthHalved = getNotesLengthHalved();
+    if (notesLengthHalved == 1) {
+      return 1;
+    } else {
+      return notesLengthHalved - 1;
+    }
   }
 
   static double getTopPositionStringButton(
       bool oneSided, int index, Size guitarSize, Note note) {
+    print('index: $index');
     return (oneSided
             ? 25
             : index < getNotesLengthHalved()
-                ? guitarSize.height * (0.8 - index * 0.35)
+                ? guitarSize.height *
+                    (0.1 +
+                        0.7 *
+                            (getNotesLengthHalved() == 1
+                                ? 0
+                                : 1 - index / getNotesLengthHalvedMinusOne()))
                 : guitarSize.height *
-                    (0.1 + index.remainder(getNotesLengthHalved()) * 0.35)) +
+                    (0.1 +
+                        index.remainder(getNotesLengthHalved()) *
+                            0.7 /
+                            getNotesLengthHalvedMinusOne())) +
         (tuningController.targetNote == note ? -6 : 0);
   }
 

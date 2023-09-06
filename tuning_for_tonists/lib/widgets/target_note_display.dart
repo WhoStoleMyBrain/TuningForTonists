@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tuning_for_tonists/constants/app_colors.dart';
@@ -11,7 +12,9 @@ class TargetNoteDisplay extends StatelessWidget {
   String getNoteDistanceName() {
     double threshold = tuningController.tuningThreshold;
     double distance = tuningController.tuningDistance;
-    print('distance: $distance, threshold: $threshold');
+    if (kDebugMode) {
+      print('distance: $distance, threshold: $threshold');
+    }
     if (distance < threshold) {
       return 'Low';
     } else if (distance < -threshold) {

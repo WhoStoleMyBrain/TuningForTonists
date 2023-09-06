@@ -1,3 +1,5 @@
+import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/mic_technical_data_controller.dart';
@@ -9,6 +11,7 @@ import '../models/tuning_configuration.dart';
 class TuningController extends GetxController {
   Rx<Note> _targetNote = Note(frequency: 440, name: 'A4', tuned: false).obs;
   final Rx<double> _frequencyRange = 30.0.obs;
+  final Rx<double> _centRange = 60.0.obs;
   final Rx<double> _percentageRight = 0.0.obs;
   final Rx<double> _percentageWrong = 0.0.obs;
   final Rx<double> _tuningThreshold = 0.95.obs;
@@ -36,6 +39,8 @@ class TuningController extends GetxController {
 
   double get tuningDistance => _tuningDistance.value;
 
+  double get centRange => _centRange.value;
+
   String get activeInstrumentGroup => _activeInstrumentGroup!.value;
 
   TuningConfiguration get tuningConfiguration => _tuningConfiguration!.value;
@@ -59,6 +64,11 @@ class TuningController extends GetxController {
 
   set frequencyRange(double newFrequencyRange) {
     _frequencyRange.value = newFrequencyRange;
+    update();
+  }
+
+  set centRange(double newCentRange) {
+    _centRange.value = newCentRange;
     update();
   }
 
@@ -91,7 +101,9 @@ class TuningController extends GetxController {
   void checkIfNoteTuned() {
     // if (!_targetNote.value.tuned) {
     var tuned = checkWaveData();
-    print('tuned: $tuned');
+    if (kDebugMode) {
+      print('tuned: $tuned');
+    }
     _targetNote.value.tuned = tuned;
     update();
     // }
@@ -143,8 +155,31 @@ class TuningController extends GetxController {
     var averageDistance = tuningDistance.abs() > frequencyRange
         ? frequencyRange
         : tuningDistance.abs();
-    int factor = (255 * (averageDistance / tuningDistance.abs())).toInt();
-    tuningColor = Color.fromRGBO(255 - factor, 0 + factor, 0, 1.0);
+    int factor = (255 * (averageDistance / frequencyRange)).toInt();
+    tuningColor = Color.fromRGBO(0 + factor, 255 - factor, 0, 1.0);
     refresh();
+  }
+
+  Color getTuningColorFromFrequency(double inputFrequency) {
+    var averageDistance =
+        (inputFrequency - targetFrequency).abs() > frequencyRange
+            ? frequencyRange
+            : (inputFrequency - targetFrequency).abs();
+    int factor = (255 * (averageDistance / frequencyRange.abs())).toInt();
+    var newColor = Color.fromRGBO(0 + factor, 255 - factor, 0, 1.0);
+    return newColor;
+  }
+
+  List<ScatterSpot> getScatterData() {
+    return waveDataController.visibleSamples
+        // .sublist(150)
+        .asMap()
+        .entries
+        .map<ScatterSpot>((entry) => ScatterSpot(
+            entry.value, entry.key.toDouble(),
+            show: true,
+            radius: 3,
+            color: getTuningColorFromFrequency(entry.value)))
+        .toList();
   }
 }

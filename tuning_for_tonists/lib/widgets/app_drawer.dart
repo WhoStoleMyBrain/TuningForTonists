@@ -43,6 +43,7 @@ class AppDrawer extends StatelessWidget {
           getListTile('Settings', Routes.settings),
           getListTile('Info', Routes.info),
           getListTile('Advanced Microphone', Routes.advancedMicData),
+          getListTile('Knowledgebase', Routes.knowledgebase),
         ],
       ),
     );

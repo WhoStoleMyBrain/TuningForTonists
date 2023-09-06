@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tuning_for_tonists/constants/app_colors.dart';
@@ -121,9 +122,29 @@ class FrequencyBarsDisplay extends StatelessWidget {
       top: constraints.maxHeight * 0.3 / 2 +
           (constraints.maxWidth * (1 / 25) * 0.95 - 4) / 2 -
           1,
-      // (constraints.maxWidth * (1 / 25) * 0.95 - 4) / 2
       child: getBarWidget(BarSizes.frequency, constraints),
     );
+  }
+
+  double frequencyToCents() {
+    var sign = tuningController.tuningDistance.sign;
+    if (kDebugMode) {
+      print('Tuning distance sign: $sign');
+    }
+    var d = tuningController.tuningDistance + tuningController.targetFrequency;
+    var dT = d / tuningController.targetFrequency;
+    var lnAlpha = log(1.000577789);
+    var lnVal = log(dT);
+    var x = lnVal / lnAlpha;
+    if (kDebugMode) {
+      print(
+          'd: $d; T: ${tuningController.targetFrequency}; dT: $dT, lnAlpha: $lnAlpha, lnVal: $lnVal');
+    }
+    // double valueInCents = actualValue;
+    if (kDebugMode) {
+      print('calculated cents: $x');
+    }
+    return x + tuningController.centRange;
   }
 
   double getCurrentFrequencyPosition(BoxConstraints constraints) {
@@ -133,15 +154,9 @@ class FrequencyBarsDisplay extends StatelessWidget {
         -tuningController.frequencyRange) {
       return 0;
     } else {
-      var sign = tuningController.tuningDistance.sign;
-      print('Tuning distance sign: $sign');
       return constraints.maxWidth *
-          ((sign == 1
-                  ? tuningController.tuningDistance +
-                      tuningController.frequencyRange
-                  : tuningController.tuningDistance -
-                      tuningController.frequencyRange) /
-              (2 * tuningController.frequencyRange));
+          frequencyToCents() /
+          (2 * tuningController.centRange);
     }
   }
 

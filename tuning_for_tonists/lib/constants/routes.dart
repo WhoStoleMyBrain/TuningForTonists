@@ -7,4 +7,5 @@ class Routes {
   static String allTunings = '/all_tunings';
   static String createCustomTuning = '/create_custom_tuning';
   static String loadingPage = '/loading_page';
+  static String knowledgebase = '/knowledgebase';
 }
