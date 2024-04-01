@@ -71,7 +71,7 @@ class MainDataDisplay extends StatelessWidget {
                         lineTouchData: LineTouchData(
                           touchTooltipData: LineTouchTooltipData(
                             maxContentWidth: 100,
-                            tooltipBgColor: Colors.black,
+                            getTooltipColor: (_) => Colors.black,
                             getTooltipItems: (touchedSpots) {
                               return touchedSpots
                                   .map((LineBarSpot touchedSpot) {

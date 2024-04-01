@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+// import 'package:flutter/src/widgets/router.dart';
 import 'package:get/get.dart';
 
 import '../helpers/microphone_helper.dart';
@@ -77,13 +79,13 @@ class MicrophoneController extends FullLifeCycleController
     update();
   }
 
-  // Optional
   @override
-  Future<bool> didPushRoute(String route) {
+  Future<bool> didPushRouteInformation(RouteInformation routeInformation) {
     if (kDebugMode) {
-      print('HomeController - the route $route will be open');
+      print(
+          'HomeController - the routeInformation $routeInformation was pushed');
     }
-    return super.didPushRoute(route);
+    return super.didPushRouteInformation(routeInformation);
   }
 
   // Optional
@@ -160,5 +162,13 @@ class MicrophoneController extends FullLifeCycleController
       update();
     }
     super.dispose();
+  }
+
+  @override
+  void onHidden() {
+    if (kDebugMode) {
+      print('HomeController - onHidden called');
+    }
+    //TODO: Implement onHidden correctly
   }
 }

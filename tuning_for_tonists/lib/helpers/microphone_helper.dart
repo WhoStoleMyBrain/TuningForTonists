@@ -16,14 +16,14 @@ abstract class MicrophoneHelper {
         Get.find();
     final MicTechnicalDataController micTechnicalDataController = Get.find();
     MicStream.shouldRequestPermission(true);
-    Stream<Uint8List>? stream = await MicStream.microphone(
+    Stream<Uint8List> stream = MicStream.microphone(
         audioSource: micInitializationValuesController.audioSource.value,
         sampleRate: micInitializationValuesController.sampleRate.value,
         channelConfig: micInitializationValuesController.channelConfig.value,
         audioFormat: micInitializationValuesController.audioFormat.value);
-    var bytesPerSample = (await MicStream.bitDepth)! ~/ 8;
-    var samplesPerSecond = (await MicStream.sampleRate)!.toInt();
-    var bufferSize = (await MicStream.bufferSize)!.toInt();
+    var bytesPerSample = (await MicStream.bitDepth) ~/ 8;
+    var samplesPerSecond = (await MicStream.sampleRate);
+    var bufferSize = (await MicStream.bufferSize);
     micTechnicalDataController.setMicTechnicalData(
         bytesPerSample, samplesPerSecond, bufferSize);
     return stream;
@@ -115,10 +115,14 @@ abstract class MicrophoneHelper {
     FftController fftController = Get.find();
     final frequenciesList =
         fftController.applyRealFft(waveDataController.doubleWaveData);
-    print('fftlength: ${fftController.fftLength}');
-    print('length of frequencies: ${frequenciesList.length}');
+    if (kDebugMode) {
+      print('fftlength: ${fftController.fftLength}');
+      print('length of frequencies: ${frequenciesList.length}');
+    }
     waveDataController.setFrequencyData(frequenciesList.sublist(1));
-    print('length of freq data: ${waveDataController.fftData.length}');
+    if (kDebugMode) {
+      print('length of freq data: ${waveDataController.fftData.length}');
+    }
     var freqValue = fftController.getMaxFrequency(waveDataController.fftData);
     waveDataController.addVisibleSample(freqValue);
   }

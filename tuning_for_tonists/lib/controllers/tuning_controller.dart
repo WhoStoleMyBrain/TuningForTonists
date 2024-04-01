@@ -176,10 +176,12 @@ class TuningController extends GetxController {
         .asMap()
         .entries
         .map<ScatterSpot>((entry) => ScatterSpot(
-            entry.value, entry.key.toDouble(),
-            show: true,
-            radius: 3,
-            color: getTuningColorFromFrequency(entry.value)))
+              entry.value,
+              entry.key.toDouble(),
+              show: true,
+              dotPainter: FlDotCirclePainter(
+                  color: getTuningColorFromFrequency(entry.value), radius: 3),
+            ))
         .toList();
   }
 }
