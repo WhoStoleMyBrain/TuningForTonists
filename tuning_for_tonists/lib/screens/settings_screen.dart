@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:tuning_for_tonists/constants/app_colors.dart';
+import 'package:tuning_for_tonists/constants/calculation_type.dart';
 import 'package:tuning_for_tonists/constants/routes.dart';
 import 'package:tuning_for_tonists/controllers/fft_controller.dart';
+import 'package:tuning_for_tonists/controllers/wave_data_controller.dart';
 import '../view_controllers/settings_controller.dart';
 import '../widgets/app_drawer.dart';
 
@@ -11,6 +13,7 @@ class SettingsScreen extends GetView<SettingsController> {
   SettingsScreen({super.key});
 
   final FftController fftController = Get.find();
+  // final WaveDataController waveDataController = Get.find();
 
   void navigateToTuningsPage() {
     Get.toNamed(Routes.allTunings);
@@ -32,7 +35,6 @@ class SettingsScreen extends GetView<SettingsController> {
     Widget amplitudeRange = getAmplitudeRangeRow();
     Widget display = getDisplayRow();
 
-    // allWidgets.add(errorUnits);
     allWidgets.addAll([
       errorUnits,
       temperament,
@@ -244,6 +246,7 @@ class SettingsScreen extends GetView<SettingsController> {
   @override
   Widget build(BuildContext context) {
     // TuningConfigurationsController tuningConfigurationsController = Get.find();
+
     return Scaffold(
       key: controller.scaffoldKey,
       appBar: AppBar(
@@ -262,6 +265,22 @@ class SettingsScreen extends GetView<SettingsController> {
               ElevatedButton(
                   onPressed: () => navigateToTuningsPage(),
                   child: const Text('Set currently used tuning')),
+              GetBuilder<WaveDataController>(
+                builder: (waveDataController) => DropdownButton(
+                  value: waveDataController.calculationType.value,
+                  items: CalculationType.values
+                      .map((e) => DropdownMenuItem(
+                            value: e,
+                            child: Text(e.name),
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      waveDataController.setCalculationType(value);
+                    }
+                  },
+                ),
+              ),
               ...getSettingsRows(),
             ],
           ),

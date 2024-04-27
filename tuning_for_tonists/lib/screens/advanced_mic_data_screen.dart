@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tuning_for_tonists/view_controllers/advanced_mic_data_controller.dart';
 import 'package:tuning_for_tonists/widgets/hps_data_display.dart';
+import 'package:tuning_for_tonists/widgets/performance_display.dart';
 
 import '../widgets/app_drawer.dart';
 import '../widgets/autocorrelation_data_display.dart';
@@ -11,13 +12,7 @@ import '../widgets/main_data_display.dart';
 import '../widgets/mic_stream_control_button.dart';
 import '../widgets/string_display.dart';
 import '../widgets/wave_data_display.dart';
-
-// class AdvancedMicDataScreen extends StatefulWidget {
-//   const AdvancedMicDataScreen({super.key});
-
-//   @override
-//   State<AdvancedMicDataScreen> createState() => _AdvancedMicDataScreenState();
-// }
+import '../widgets/zero_crossing_display.dart';
 
 class AdvancedMicDataScreen extends GetView<AdvancedMicDataController> {
   const AdvancedMicDataScreen({super.key});
@@ -26,7 +21,7 @@ class AdvancedMicDataScreen extends GetView<AdvancedMicDataController> {
     return const SingleChildScrollView(
       child: Column(
         children: [
-          // MicStreamControlButton(),
+          PerformanceDisplay(),
           SizedBox(
             height: 48,
           ),
@@ -43,6 +38,10 @@ class AdvancedMicDataScreen extends GetView<AdvancedMicDataController> {
             height: 48,
           ),
           HPSDataDisplay(),
+          SizedBox(
+            height: 48,
+          ),
+          ZeroCrossingDisplay(),
           SizedBox(
             height: 48,
           ),

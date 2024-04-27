@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:mic_stream/mic_stream.dart';
 import 'package:scidart/numdart.dart';
+import 'package:tuning_for_tonists/constants/calculation_type.dart';
+import 'package:tuning_for_tonists/controllers/performance_controller.dart';
 import '../controllers/fft_controller.dart';
 import '../controllers/tuning_controller.dart';
 import '../controllers/mic_initialization_values_controller.dart';
@@ -14,19 +16,22 @@ abstract class MicrophoneHelper {
   static Future<Stream<Uint8List>?> getMicStream() async {
     final MicInitializationValuesController micInitializationValuesController =
         Get.find();
-    final MicTechnicalDataController micTechnicalDataController = Get.find();
     MicStream.shouldRequestPermission(true);
     Stream<Uint8List> stream = MicStream.microphone(
         audioSource: micInitializationValuesController.audioSource.value,
         sampleRate: micInitializationValuesController.sampleRate.value,
         channelConfig: micInitializationValuesController.channelConfig.value,
         audioFormat: micInitializationValuesController.audioFormat.value);
+    return stream;
+  }
+
+  static Future<void> setMicTechnicalData() async {
+    final MicTechnicalDataController micTechnicalDataController = Get.find();
     var bytesPerSample = (await MicStream.bitDepth) ~/ 8;
     var samplesPerSecond = (await MicStream.sampleRate);
     var bufferSize = (await MicStream.bufferSize);
     micTechnicalDataController.setMicTechnicalData(
         bytesPerSample, samplesPerSecond, bufferSize);
-    return stream;
   }
 
   static List<double> eightBitWaveDataCalculation(Uint8List samples) {
@@ -98,7 +103,8 @@ abstract class MicrophoneHelper {
         hps[i] = hps[i] * fft[(i * downSampling).remainder(fft.length)];
       }
     }
-    waveDataController.setHPSData(hps.sublist(0, hps.length ~/ N));
+    waveDataController.setHPSData(
+        hps.sublist(0, hps.length < 5 ? hps.length : hps.length ~/ N));
     // waveDataController.setHPSData(hps);
     // waveDataController.setHPSData(hps.sublist(0, 100));
     var maxValue = hps.reduce(max);
@@ -158,25 +164,33 @@ abstract class MicrophoneHelper {
   }
 
   static void calculateAutocorrelation() {
+    Stopwatch stopwatch = Stopwatch()..start();
     WaveDataController waveDataController = Get.find();
     List<double> autocorrelations = [];
     double autocorrelation = 0;
     for (var i = 0; i < waveDataController.waveData.length; i++) {
+      // print('Iteration $i start elapsed: ${stopwatch.elapsed}');
+
       for (var k = 0; k < waveDataController.waveData.length - 1 - i; k++) {
         autocorrelation +=
             waveDataController.waveData[k] * waveDataController.waveData[i + k];
       }
+      // 78
+      // print('Iteration $i inner loop elapsed: ${stopwatch.elapsed}');
       autocorrelations
           .add(autocorrelation / (waveDataController.waveData.length - i));
       // autocorrelations
       //     .add(autocorrelation);
       autocorrelation = 0;
+      // 431
+      // print('Iteration $i list division stuff elapsed: ${stopwatch.elapsed}');
     }
     // print('autocorrelations: $autocorrelations');
 
     var maxIdx = autocorrelations.indexOf(
         autocorrelations.sublist(30, 530).reduce(max), 30);
-    var frequency = 1 / maxIdx * 44100;
+    // var frequency = 1 / maxIdx * 44100;
+    var frequency = 1 / maxIdx * 8192;
     // print('autocorrelations: $autocorrelations');
     waveDataController.setAutocorrelationData(autocorrelations);
     waveDataController.addAutocorrelationVisibleSamples(frequency);
@@ -185,15 +199,41 @@ abstract class MicrophoneHelper {
   static void calculateDisplayData(dynamic samples) {
     WaveDataController waveDataController = Get.find();
     Stopwatch stopwatch = Stopwatch()..start();
+    MicrophoneController microphoneController = Get.find();
+    PerformanceController performanceController = Get.find();
     waveDataController.addWaveData(calculateWaveData(samples));
-    calculateFrequency2();
-    calculateHPSManually();
-    // calculateAutocorrelation();
-    // calculateZeroCrossing();
+    switch (waveDataController.calculationType.value) {
+      case CalculationType.Autocorrelation:
+        calculateAutocorrelation();
+        break;
+      case CalculationType.HPS:
+        calculateFrequency();
+        calculateHPSManually();
+        break;
+      case CalculationType.ZeroCrossing:
+        calculateZeroCrossing();
+        break;
+    }
     TuningController tuningController = Get.find();
     tuningController.checkIfNoteTuned();
-    if (kDebugMode) {
-      print('done with all calculations: ${stopwatch.elapsed}');
+    // if (kDebugMode) {
+    //   print('done with all calculations: ${stopwatch.elapsed}');
+    // }
+    microphoneController.samplesCalculated++;
+    // print(
+    //     'set microphone counter to: ${microphoneController.samplesCalculated}');
+    if (true) {
+      // todo: only do this if a screen where performance is needed is used
+      performanceController
+          .addCalculationDuration(stopwatch.elapsed.inMilliseconds / 1000.0);
+    }
+    if (microphoneController.samplesCalculated.value >
+        microphoneController.totalSamplesToCalculate.value) {
+      stopMicrophone();
+      microphoneController.samplesCalculated = 0.obs;
+    } else {
+      print(
+          "Calculated sample: ${microphoneController.samplesCalculated.value}/${microphoneController.totalSamplesToCalculate.value}");
     }
   }
 

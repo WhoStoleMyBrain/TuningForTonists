@@ -7,6 +7,7 @@ import 'package:tuning_for_tonists/bindings/mic_detail_binding.dart';
 import 'package:tuning_for_tonists/constants/app_colors.dart';
 import 'package:tuning_for_tonists/constants/routes.dart';
 import 'package:tuning_for_tonists/controllers/fft_controller.dart';
+import 'package:tuning_for_tonists/controllers/performance_controller.dart';
 import 'package:tuning_for_tonists/controllers/tuning_configurations_controller.dart';
 import 'package:tuning_for_tonists/controllers/tuning_controller.dart';
 import 'package:tuning_for_tonists/screens/advanced_mic_data_screen.dart';
@@ -62,6 +63,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
+    Get.put(PerformanceController());
     TuningConfigurationsController tuningConfigurationsController =
         TuningConfigurationsController()
           ..loadDefaultTuningConfigurations()

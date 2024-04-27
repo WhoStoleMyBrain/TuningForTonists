@@ -13,9 +13,6 @@ class MicTechnicalDataController extends GetxController {
             samplesPerSecond: samplesPerSecond,
             bufferSize: bufferSize)
         .obs;
-    // butterworth.lowPass(4, samplesPerSecond.toDouble(), 1200);
-
-    // butterworth.bandPass(5, samplesPerSecond.toDouble(), );
     butterworthLowpass.lowPass(5, samplesPerSecond.toDouble(), 1320);
     butterworthHighpass.highPass(5, samplesPerSecond.toDouble(), 75);
 
@@ -29,9 +26,9 @@ class MicTechnicalDataController extends GetxController {
   // var window = Window.hamming(1024);
 
   int get samplesPerSecond =>
-      micTechnicalData == null ? 0 : micTechnicalData!.value.samplesPerSecond;
+      micTechnicalData == null ? 1 : micTechnicalData!.value.samplesPerSecond;
   int get bytesPerSample =>
-      micTechnicalData == null ? 0 : micTechnicalData!.value.bytesPerSample;
+      micTechnicalData == null ? 1 : micTechnicalData!.value.bytesPerSample;
   int get bufferSize =>
-      micTechnicalData == null ? 0 : micTechnicalData!.value.bufferSize;
+      micTechnicalData == null ? 1 : micTechnicalData!.value.bufferSize;
 }

@@ -117,12 +117,19 @@ class TuningController extends GetxController {
 
   bool checkWaveData() {
     List<bool> sampleInFrequencyBand = [];
+    List<double> lastSeconds = [];
 
     int visibleSamplesPerSecond = micTechnicalDataController.samplesPerSecond ~/
         micTechnicalDataController.bufferSize;
-    List<double> lastSeconds = waveDataController.visibleSamples.sublist(
-        waveDataController.visibleSamples.length - visibleSamplesPerSecond,
-        waveDataController.visibleSamples.length);
+    try {
+      lastSeconds = waveDataController.visibleSamples.sublist(
+          waveDataController.visibleSamples.length - visibleSamplesPerSecond,
+          waveDataController.visibleSamples.length);
+    } catch (e) {
+      print('error occured: $e');
+      waveDataController.resetVisibleData();
+      return false;
+    }
     for (var element in lastSeconds) {
       if (element < (targetFrequency - frequencyRange) ||
           element > (targetFrequency + frequencyRange)) {

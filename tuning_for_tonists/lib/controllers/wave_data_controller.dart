@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:tuning_for_tonists/constants/calculation_type.dart';
 import '../controllers/mic_technical_data_controller.dart';
 import '../controllers/tuning_controller.dart';
 
@@ -18,15 +19,27 @@ class WaveDataController extends GetxController {
   final RxList<double> autocorrelationData = <double>[1].obs;
   final RxList<double> hpsData = <double>[0].obs;
   final RxList<double> zeroCrossingData = <double>[0].obs;
+  Rx<CalculationType> calculationType = CalculationType.ZeroCrossing.obs;
 
   final MicTechnicalDataController micTechnicalDataController = Get.find();
 
   List<double> get doubleWaveData =>
       waveData.map((element) => element.toDouble()).toList();
 
+  void resetVisibleData() {
+    visibleSamples.addAll(RxList.filled(200, 0));
+    refresh();
+  }
+
   void addWaveData(List<double> newWaveData) {
     waveData.addAll(newWaveData);
     setNumberOfWaveData();
+    refresh();
+    update();
+  }
+
+  void setCalculationType(CalculationType newCalculationType) {
+    calculationType = newCalculationType.obs;
     refresh();
     update();
   }
@@ -78,7 +91,6 @@ class WaveDataController extends GetxController {
 
   void addHPSVisibleSamples(List<double> newVisibleSamples) {
     hpsVisibleData.addAll(newVisibleSamples);
-
     setNumberOfVisibleHPSDataPoints();
     update();
   }

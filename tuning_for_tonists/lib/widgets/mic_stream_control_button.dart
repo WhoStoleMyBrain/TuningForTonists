@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tuning_for_tonists/controllers/microphone_controller.dart';
+import 'package:tuning_for_tonists/controllers/performance_controller.dart';
 
 class MicStreamControlButton extends StatefulWidget {
   const MicStreamControlButton({super.key});
@@ -11,11 +12,15 @@ class MicStreamControlButton extends StatefulWidget {
 
 class _MicStreamControlButtonState extends State<MicStreamControlButton> {
   // MicrophoneController microphoneController = Get.find();
+  PerformanceController performanceController = Get.find();
   @override
   Widget build(BuildContext context) {
     return GetBuilder<MicrophoneController>(
       builder: (microphoneController) => FloatingActionButton(
-        onPressed: microphoneController.controlMicStream,
+        onPressed: () {
+          performanceController.resetCalculationDuration();
+          microphoneController.controlMicStream();
+        },
         tooltip: (microphoneController.isRecording.isTrue)
             ? "Stop recording"
             : "Start recording",

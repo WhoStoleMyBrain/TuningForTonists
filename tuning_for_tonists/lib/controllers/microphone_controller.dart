@@ -24,6 +24,8 @@ class MicrophoneController extends FullLifeCycleController
   RxBool memRecordingState = false.obs;
   RxBool isActive = false.obs;
   Function calculateDisplayData;
+  RxInt samplesCalculated = 0.obs;
+  RxInt totalSamplesToCalculate = 250.obs;
 
   // Mandatory
   @override
@@ -133,23 +135,27 @@ class MicrophoneController extends FullLifeCycleController
   }
 
   Future<bool> _changeListening() async =>
-      isRecording.isFalse ? await _startListening() : _stopListening();
+      isRecording.isFalse ? await _startListening() : await _stopListening();
 
   Future<bool> _startListening() async {
     stream = await MicrophoneHelper.getMicStream();
     isActive = true.obs;
     isRecording = true.obs;
     listener = stream!.listen((data) => calculateDisplayData(data));
+    print('waiting to set mic technical data...');
+    await MicrophoneHelper.setMicTechnicalData();
     update();
+    print('created stream and set everything to true');
     return true;
   }
 
-  bool _stopListening() {
+  Future<bool> _stopListening() async {
     if (isRecording.isFalse) return false;
-    listener.cancel();
-    isActive.toggle();
-    isRecording.toggle();
+    await listener.cancel();
+    isActive = false.obs;
+    isRecording = false.obs;
     update();
+    print('canceled stream and set everything to false');
     return true;
   }
 
@@ -157,8 +163,8 @@ class MicrophoneController extends FullLifeCycleController
   void dispose() {
     if (isRecording.isTrue) {
       listener.cancel();
-      isActive.toggle();
-      isRecording.toggle();
+      isActive.isFalse ? isActive.toggle() : null;
+      isRecording.isFalse ? isRecording.toggle() : null;
       update();
     }
     super.dispose();
