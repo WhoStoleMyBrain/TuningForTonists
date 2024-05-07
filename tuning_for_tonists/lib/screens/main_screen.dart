@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tuning_for_tonists/widgets/guitar_display.dart';
+import 'package:tuning_for_tonists/widgets/performance_display.dart';
 import 'package:tuning_for_tonists/widgets/time_sensitive_tuning_frequency_display.dart';
 import 'package:tuning_for_tonists/widgets/tuning_frequency_pointer_display.dart';
 import '../constants/app_colors.dart';
@@ -50,10 +51,8 @@ class _MainScreenState extends State<MainScreen> {
               }
             },
             child: SizedBox(
-                // width: MediaQuery.of(context).size.width,
-                // height: MediaQuery.of(context).size.height * 0.5,
                 child: Column(
-              children: [...getFrequencyDisplay()],
+              children: [const PerformanceDisplay(), ...getFrequencyDisplay()],
             )),
           ),
           GuitarDisplay()
@@ -106,13 +105,13 @@ class _MainScreenState extends State<MainScreen> {
     return Center(
       child: DropdownButtonHideUnderline(
         child: DropdownButton(
-          style: const TextStyle().apply(color: AppColors.white),
+          style: const TextStyle().apply(color: AppColors.onPrimaryColor),
           value: tuningController.activeInstrumentGroup,
           items: getInstrumentTypes()
               .map((e) => DropdownMenuItem(value: e, child: Text(e)))
               .toList(),
           onChanged: (value) {
-            tuningController.setActiveInstrumentGroup(value ?? 'Guitar');
+            tuningController.activeInstrumentGroup = value ?? 'Guitar';
             if (kDebugMode) {
               print('New Value: $value');
             }
@@ -129,7 +128,10 @@ class _MainScreenState extends State<MainScreen> {
         key: homeController.scaffoldKey,
         appBar: AppBar(
           leading: IconButton(
-            icon: const Icon(Icons.menu_sharp),
+            icon: const Icon(
+              Icons.menu_sharp,
+              color: AppColors.onPrimaryColor,
+            ),
             onPressed: () => homeController.openDrawer(),
           ),
           title: getMenuDropdownButton(),

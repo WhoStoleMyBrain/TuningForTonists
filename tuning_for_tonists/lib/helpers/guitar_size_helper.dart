@@ -48,7 +48,7 @@ abstract class GuitarSizeHelper {
             : AppColors.backgroundColor,
         foregroundColor: tuningController.targetNote == note
             ? AppColors.black
-            : AppColors.white);
+            : AppColors.onPrimaryColor);
   }
 
   static double getLeftPositionStringButton(
@@ -78,7 +78,6 @@ abstract class GuitarSizeHelper {
 
   static double getTopPositionStringButton(
       bool oneSided, int index, Size guitarSize, Note note) {
-    print('index: $index');
     return (oneSided
             ? 25
             : index < getNotesLengthHalved()

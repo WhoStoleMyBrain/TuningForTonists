@@ -1,0 +1,1 @@
+enum TuningMethod { frequency, cent }

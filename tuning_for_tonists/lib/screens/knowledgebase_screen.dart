@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tuning_for_tonists/constants/app_colors.dart';
 import 'package:tuning_for_tonists/view_controllers/knowledgebase_controller.dart';
 import 'package:tuning_for_tonists/widgets/app_drawer.dart';
 
@@ -20,11 +21,14 @@ class _KnowledgebaseScreenState extends State<KnowledgebaseScreen> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => knowledgebaseController.openDrawer(),
-          icon: const Icon(Icons.menu_sharp),
+          icon: const Icon(
+            Icons.menu_sharp,
+            color: AppColors.onPrimaryColor,
+          ),
         ),
         title: const Text('Knowledgebase'),
       ),
-      body: Text('Body'),
+      body: const Center(child: Text('Body')),
       drawer: const AppDrawer(),
     );
   }

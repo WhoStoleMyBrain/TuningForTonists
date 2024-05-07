@@ -6,6 +6,7 @@ import 'package:tuning_for_tonists/bindings/knowledgebase_binding.dart';
 import 'package:tuning_for_tonists/bindings/mic_detail_binding.dart';
 import 'package:tuning_for_tonists/constants/app_colors.dart';
 import 'package:tuning_for_tonists/constants/routes.dart';
+import 'package:tuning_for_tonists/controllers/calculation_controller.dart';
 import 'package:tuning_for_tonists/controllers/fft_controller.dart';
 import 'package:tuning_for_tonists/controllers/performance_controller.dart';
 import 'package:tuning_for_tonists/controllers/tuning_configurations_controller.dart';
@@ -29,7 +30,6 @@ import './screens/info_screen.dart';
 import './screens/main_screen.dart';
 import './screens/settings_screen.dart';
 import 'bindings/advanced_mic_data_binding.dart';
-import 'helpers/microphone_helper.dart';
 
 MaterialColor createMaterialColor(Color color) {
   List strengths = <double>[.05];
@@ -63,33 +63,39 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    Get.put(PerformanceController());
+    Get.lazyPut(() => PerformanceController(), fenix: true);
     TuningConfigurationsController tuningConfigurationsController =
         TuningConfigurationsController()
           ..loadDefaultTuningConfigurations()
           ..loadCustomTuningConfigurations();
     //TODO: Recheck this call, there has to be a way better way
-    Get.put(MicInitializationValuesController(
-        audioFormat: AudioFormat.ENCODING_PCM_16BIT.obs,
-        sampleRate: 8192.obs,
-        // sampleRate: 44100.obs,
-        channelConfig: ChannelConfig.CHANNEL_IN_MONO.obs,
-        audioSource: AudioSource.DEFAULT.obs));
+    Get.lazyPut(
+        () => MicInitializationValuesController(
+            audioFormat: AudioFormat.ENCODING_PCM_16BIT.obs,
+            sampleRate: 8192.obs,
+            // sampleRate: 44100.obs,
+            channelConfig: ChannelConfig.CHANNEL_IN_MONO.obs,
+            audioSource: AudioSource.DEFAULT.obs),
+        fenix: true);
 
-    Get.put(MicTechnicalDataController());
-    Get.put(WaveDataController());
+    Get.lazyPut(() => MicTechnicalDataController(), fenix: true);
+    Get.lazyPut(() => WaveDataController(), fenix: true);
     TuningController tuningController = TuningController()
-      ..setTuningConfiguration(tuningConfigurationsController
-          .defaultTuningConfigurations!.values.first.first)
-      ..setActiveInstrumentGroup(tuningConfigurationsController
-          .defaultTuningConfigurations!.keys.first);
+      ..tuningConfiguration = tuningConfigurationsController
+          .defaultTuningConfigurations!.values.first.first
+      ..activeInstrumentGroup = tuningConfigurationsController
+          .defaultTuningConfigurations!.keys.first;
 
-    Get.put(tuningConfigurationsController);
-    Get.put(tuningController);
-    Get.put(MicDetailController());
-    Get.put(MicrophoneController(
-        calculateDisplayData: MicrophoneHelper.calculateDisplayData));
-    Get.put(FftController());
+    Get.lazyPut(() => tuningConfigurationsController, fenix: true);
+    Get.lazyPut(() => tuningController, fenix: true);
+    Get.lazyPut(() => MicDetailController(), fenix: true);
+    Get.lazyPut(() => FftController(), fenix: true);
+    CalculationController calculationController = CalculationController();
+    Get.lazyPut(() => CalculationController(), fenix: true);
+    Get.lazyPut(
+        () => MicrophoneController(
+            calculateDisplayData: calculationController.calculateDisplayData),
+        fenix: true);
     return GetMaterialApp(
       title: 'Tuning for Tonists',
       // The theme of your application.

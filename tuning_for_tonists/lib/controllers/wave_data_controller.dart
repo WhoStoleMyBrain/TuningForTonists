@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:tuning_for_tonists/constants/calculation_type.dart';
 import '../controllers/mic_technical_data_controller.dart';
@@ -10,10 +9,8 @@ import '../controllers/tuning_controller.dart';
 class WaveDataController extends GetxController {
   final RxList<double> visibleSamples =
       <double>[0].obs; // strongest frequency in fft Data interval
-  final RxList<double> hpsVisibleData = RxList.filled(200, 0);
-  final RxList<double> autocorrelationVisibleData = RxList.filled(200, 0);
 
-  final Rx<int> waveDataLength = 4096.obs;
+  Rx<int> _waveDataLength = 4096.obs;
   final RxList<double> waveData = RxList.filled(4096, 0);
   final RxList<double> fftData = <double>[0].obs;
   final RxList<double> autocorrelationData = <double>[1].obs;
@@ -22,9 +19,18 @@ class WaveDataController extends GetxController {
   Rx<CalculationType> calculationType = CalculationType.ZeroCrossing.obs;
 
   final MicTechnicalDataController micTechnicalDataController = Get.find();
+  // final CalculationController calculationController = Get.find();
 
   List<double> get doubleWaveData =>
       waveData.map((element) => element.toDouble()).toList();
+
+  int get waveDataLength => _waveDataLength.value;
+
+  set waveDataLength(int newLength) {
+    _waveDataLength = newLength.obs;
+    // calculationController.hanningWindow = newLength;
+    refresh();
+  }
 
   void resetVisibleData() {
     visibleSamples.addAll(RxList.filled(200, 0));
@@ -73,12 +79,9 @@ class WaveDataController extends GetxController {
   }
 
   void setNumberOfWaveData() {
-    if (waveData.length > waveDataLength.value) {
-      if (kDebugMode) {
-        print(
-            'waveData length exceeded ${waveDataLength.value}: ${waveData.length}');
-      }
-      waveData.value = waveData.sublist(waveData.length - waveDataLength.value);
+    if (waveData.length > _waveDataLength.value) {
+      waveData.value =
+          waveData.sublist(waveData.length - _waveDataLength.value);
     }
   }
 
@@ -89,25 +92,8 @@ class WaveDataController extends GetxController {
     update();
   }
 
-  void addHPSVisibleSamples(List<double> newVisibleSamples) {
-    hpsVisibleData.addAll(newVisibleSamples);
-    setNumberOfVisibleHPSDataPoints();
-    update();
-  }
-
-  void addAutocorrelationVisibleSamples(double newVisibleSamples) {
-    autocorrelationVisibleData.add(newVisibleSamples);
-
-    setNumberOfVisibleAutocorrelationDataPoints();
-    update();
-  }
-
   void addVisibleSample(double newVisibleSample) {
     visibleSamples.add(newVisibleSample);
-    if (kDebugMode) {
-      print('Added $newVisibleSample to frequencies');
-    }
-
     setNumberOfVisibleDataPoints();
     update();
   }
@@ -116,27 +102,6 @@ class WaveDataController extends GetxController {
     if (visibleSamples.length > 200) {
       visibleSamples.value = visibleSamples.sublist(
           visibleSamples.length - 200, visibleSamples.length);
-    }
-  }
-
-  void setNumberOfVisibleHPSDataPoints() {
-    if (hpsVisibleData.length > 200) {
-      if (kDebugMode) {
-        print('Setting visible data length back to 200');
-      }
-      hpsVisibleData.value = hpsVisibleData.sublist(
-          hpsVisibleData.length - 200, hpsVisibleData.length);
-    }
-  }
-
-  void setNumberOfVisibleAutocorrelationDataPoints() {
-    if (autocorrelationVisibleData.length > 200) {
-      if (kDebugMode) {
-        print('Setting visible data length back to 200');
-      }
-      autocorrelationVisibleData.value = autocorrelationVisibleData.sublist(
-          autocorrelationVisibleData.length - 200,
-          autocorrelationVisibleData.length);
     }
   }
 

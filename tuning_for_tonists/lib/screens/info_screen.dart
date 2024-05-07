@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tuning_for_tonists/constants/app_colors.dart';
 import 'package:tuning_for_tonists/view_controllers/info_controller.dart';
 
 import '../widgets/app_drawer.dart';
@@ -14,7 +15,10 @@ class InfoScreen extends GetView<InfoController> {
       appBar: AppBar(
           title: const Text('Info'),
           leading: IconButton(
-            icon: const Icon(Icons.menu_sharp),
+            icon: const Icon(
+              Icons.menu_sharp,
+              color: AppColors.onPrimaryColor,
+            ),
             onPressed: () => controller.openDrawer(),
           )),
       body: const Center(

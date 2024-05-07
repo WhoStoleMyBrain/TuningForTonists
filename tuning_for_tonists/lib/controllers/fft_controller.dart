@@ -15,16 +15,13 @@ class FftController extends GetxController {
 
   int get fftLength => _fftLength.value;
   MicTechnicalDataController micTechnicalDataController = Get.find();
+  WaveDataController waveDataController = Get.find();
 
   void setFftLength(int newFftLength) {
     _fftLength.value = newFftLength;
     _setFft(FFT(fftLength));
-    WaveDataController waveDataController = Get.find();
-    waveDataController.waveDataLength.value = newFftLength;
+    waveDataController.waveDataLength = newFftLength;
     waveDataController.waveData.value = List.filled(newFftLength, 0);
-    if (kDebugMode) {
-      print('Set fft length to: $newFftLength');
-    }
     refresh();
   }
 

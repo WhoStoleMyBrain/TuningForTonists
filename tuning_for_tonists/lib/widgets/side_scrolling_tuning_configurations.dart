@@ -53,7 +53,7 @@ class SideScrollingTuningConfigurations extends StatelessWidget {
                     ),
                     onPressed: () {
                       // print('setting tuning conf to ${e.configurationName}');
-                      tuningController.setTuningConfiguration(e);
+                      tuningController.tuningConfiguration = e;
                     },
                     child: Text(e.configurationName)),
               ))

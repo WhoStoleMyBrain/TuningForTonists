@@ -91,7 +91,6 @@ class MainDataDisplay extends StatelessWidget {
                           handleBuiltInTouches: true,
                           getTouchLineStart: (data, index) => 0,
                         ),
-
                         lineBarsData: [
                           LineChartBarData(
                             color: AppColors.contentColorPink,
@@ -107,63 +106,9 @@ class MainDataDisplay extends StatelessWidget {
                             ),
                             dotData: const FlDotData(show: false),
                           ),
-                          LineChartBarData(
-                            color: AppColors.contentColorOrange,
-                            spots: waveDataController.dataToSpots(
-                                waveDataController.hpsVisibleData,
-                                false,
-                                false),
-                            isCurved: true,
-                            isStrokeCapRound: true,
-                            barWidth: 2,
-                            belowBarData: BarAreaData(
-                              show: false,
-                            ),
-                            dotData: const FlDotData(show: false),
-                          ),
-                          LineChartBarData(
-                            color: AppColors.contentColorRed,
-                            spots: waveDataController.dataToSpots(
-                                waveDataController.zeroCrossingData,
-                                false,
-                                false),
-                            isCurved: true,
-                            isStrokeCapRound: true,
-                            barWidth: 2,
-                            belowBarData: BarAreaData(
-                              show: false,
-                            ),
-                            dotData: const FlDotData(show: false),
-                            // gradient: const LinearGradient(colors: [Color.fromRGBO(1, 0, 0, 1.0), Color.fromRGBO(0, 1, 0, 1.0)]),
-                          ),
-                          LineChartBarData(
-                            color: AppColors.contentColorYellow,
-                            spots: waveDataController.dataToSpots(
-                                waveDataController.autocorrelationVisibleData,
-                                false,
-                                false),
-                            isCurved: true,
-                            isStrokeCapRound: true,
-                            barWidth: 2,
-                            belowBarData: BarAreaData(
-                              show: false,
-                            ),
-                            dotData: const FlDotData(show: false),
-                          ),
                         ],
-
-                        // minY: tuningController.targetFrequency -
-                        //     tuningController.frequencyRange,
-                        minY: (waveDataController.visibleSamples.reduce(min) >
-                                waveDataController.hpsVisibleData.reduce(min)
-                            ? waveDataController.hpsVisibleData.reduce(min)
-                            : waveDataController.visibleSamples.reduce(min)),
-                        maxY: (waveDataController.visibleSamples.reduce(max) >
-                                waveDataController.hpsVisibleData.reduce(max)
-                            ? waveDataController.visibleSamples.reduce(max)
-                            : waveDataController.hpsVisibleData.reduce(max)),
-                        // maxY: tuningController.targetFrequency +
-                        //     tuningController.frequencyRange,
+                        minY: waveDataController.visibleSamples.reduce(min),
+                        maxY: waveDataController.visibleSamples.reduce(max),
                         minX: 0,
                         maxX:
                             waveDataController.visibleSamples.length.toDouble(),
@@ -180,7 +125,6 @@ class MainDataDisplay extends StatelessWidget {
                             strokeWidth: 0.8,
                           ),
                         ),
-
                         borderData: FlBorderData(show: false),
                       ),
                     ),

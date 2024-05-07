@@ -14,6 +14,8 @@ class AppDrawer extends StatelessWidget {
 
   Widget getListTile(String name, String route) {
     return ListTile(
+      selectedColor: AppColors.white,
+      textColor: AppColors.onPrimaryColor,
       title: Text(name),
       tileColor: Get.currentRoute == route ? selectedColor() : null,
       onTap: () {
@@ -29,14 +31,14 @@ class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
+      backgroundColor: AppColors.backgroundColor,
+      // surfaceTintColor: AppColors.white,
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
           const DrawerHeader(
-            decoration: BoxDecoration(
-              color: AppColors.backgroundColor,
-            ),
             child: Text('Tuning for Tonists \nNavigation'),
+            // margin: EdgeInsets.all(0.0),
           ),
           getListTile('Home', Routes.home),
           getListTile('Mic Details', Routes.micDetail),

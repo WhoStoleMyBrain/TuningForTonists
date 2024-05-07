@@ -5,7 +5,9 @@ import 'package:tuning_for_tonists/constants/app_colors.dart';
 import 'package:tuning_for_tonists/constants/calculation_type.dart';
 import 'package:tuning_for_tonists/constants/routes.dart';
 import 'package:tuning_for_tonists/controllers/fft_controller.dart';
+import 'package:tuning_for_tonists/controllers/tuning_controller.dart';
 import 'package:tuning_for_tonists/controllers/wave_data_controller.dart';
+import 'package:tuning_for_tonists/enums/tuning_method.dart';
 import '../view_controllers/settings_controller.dart';
 import '../widgets/app_drawer.dart';
 
@@ -250,9 +252,15 @@ class SettingsScreen extends GetView<SettingsController> {
     return Scaffold(
       key: controller.scaffoldKey,
       appBar: AppBar(
-          title: const Text('Settings'),
+          title: Text(
+            'Settings',
+            style: TextStyle()..apply(color: AppColors.onPrimaryColor),
+          ),
           leading: IconButton(
-            icon: const Icon(Icons.menu_sharp),
+            icon: const Icon(
+              Icons.menu_sharp,
+              color: AppColors.onPrimaryColor,
+            ),
             onPressed: () => controller.openDrawer(),
           )),
       body: SingleChildScrollView(
@@ -277,6 +285,22 @@ class SettingsScreen extends GetView<SettingsController> {
                   onChanged: (value) {
                     if (value != null) {
                       waveDataController.setCalculationType(value);
+                    }
+                  },
+                ),
+              ),
+              GetBuilder<TuningController>(
+                builder: (tuningController) => DropdownButton(
+                  value: tuningController.tuningMethod,
+                  items: TuningMethod.values
+                      .map((e) => DropdownMenuItem(
+                            value: e,
+                            child: Text(e.name),
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      tuningController.tuningMethod = value;
                     }
                   },
                 ),

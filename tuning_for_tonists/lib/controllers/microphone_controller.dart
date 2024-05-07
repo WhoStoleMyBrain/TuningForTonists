@@ -24,8 +24,6 @@ class MicrophoneController extends FullLifeCycleController
   RxBool memRecordingState = false.obs;
   RxBool isActive = false.obs;
   Function calculateDisplayData;
-  RxInt samplesCalculated = 0.obs;
-  RxInt totalSamplesToCalculate = 250.obs;
 
   // Mandatory
   @override

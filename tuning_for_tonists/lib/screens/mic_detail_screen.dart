@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:mic_stream/mic_stream.dart';
+import 'package:tuning_for_tonists/constants/app_colors.dart';
 import 'package:tuning_for_tonists/controllers/mic_initialization_values_controller.dart';
 import 'package:tuning_for_tonists/controllers/mic_technical_data_controller.dart';
 import 'package:tuning_for_tonists/widgets/data_display.dart';
@@ -30,10 +31,16 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
       key: micDetailController.scaffoldKey,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.menu_sharp),
+          icon: const Icon(
+            Icons.menu_sharp,
+            color: AppColors.onPrimaryColor,
+          ),
           onPressed: () => micDetailController.openDrawer(),
         ),
-        title: const Text('Your Microphone Settings'),
+        title: Text(
+          'Your Microphone Settings',
+          style: const TextStyle()..apply(color: AppColors.onPrimaryColor),
+        ),
       ),
       body: Obx(
         () => Center(
@@ -130,8 +137,17 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                     ],
                   ),
                   TextField(
-                    decoration: const InputDecoration(
-                      labelText: 'Sample Rate',
+                    decoration: InputDecoration(
+                      label: const Text(
+                        "Sample Rate 2",
+                      ),
+                      labelStyle: const TextStyle()
+                        ..apply(color: AppColors.onPrimaryColor),
+                      floatingLabelStyle: const TextStyle()
+                        ..apply(color: AppColors.onPrimaryColor),
+                      prefixStyle: const TextStyle()
+                        ..apply(color: AppColors.onPrimaryColor),
+                      // labelText: 'Sample Rate',
                     ),
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],

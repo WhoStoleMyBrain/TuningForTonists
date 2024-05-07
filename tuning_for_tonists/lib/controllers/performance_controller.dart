@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
 class PerformanceController extends GetxController {
@@ -25,10 +24,6 @@ class PerformanceController extends GetxController {
 
   void setNumberOfCalculationDurationData() {
     if (calculationDuration.length > calculationDurationLength.value) {
-      if (kDebugMode) {
-        print(
-            'waveData length exceeded ${calculationDurationLength.value}: ${calculationDuration.length}');
-      }
       calculationDuration.value = calculationDuration.sublist(
           calculationDuration.length - calculationDurationLength.value);
     }

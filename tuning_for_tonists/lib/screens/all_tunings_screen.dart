@@ -54,7 +54,7 @@ class _AllTuningsScreenState extends State<AllTuningsScreen> {
       for (var e in element.value) {
         returnWidgets.add(GestureDetector(
           onTap: () {
-            tuningController.setTuningConfiguration(e);
+            tuningController.tuningConfiguration = e;
             setState(() {});
           },
           child: Container(
