@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tuning_for_tonists/constants/app_colors.dart';
 import 'package:tuning_for_tonists/constants/routes.dart';
 import 'package:tuning_for_tonists/controllers/tuning_configurations_controller.dart';
 import 'package:tuning_for_tonists/controllers/tuning_controller.dart';
@@ -24,8 +25,16 @@ class _AllTuningsScreenState extends State<AllTuningsScreen> {
 
   TextStyle getTextStyle() {
     return const TextStyle(
-      fontSize: 18,
-    );
+        fontSize: 18,
+        color: AppColors.onPrimaryColor,
+        backgroundColor: Colors.transparent);
+  }
+
+  TextStyle getTextStyleHeader() {
+    return const TextStyle(
+        fontSize: 18,
+        color: AppColors.onPrimaryColor,
+        backgroundColor: Colors.transparent);
   }
 
   TextStyle getSelectedTextStyle() {
@@ -45,9 +54,18 @@ class _AllTuningsScreenState extends State<AllTuningsScreen> {
     List<Widget> returnWidgets = [];
     for (var element
         in tuningConfigurationsController.getTuningConfigurations().entries) {
-      returnWidgets.add(Text(
-        element.key,
-        style: getTextStyle(),
+      returnWidgets.add(Container(
+        color: AppColors.onBackgroundColor,
+        width: MediaQuery.of(context).size.width,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Text(
+              element.key,
+              style: getTextStyleHeader(),
+            ),
+          ),
+        ),
       ));
       returnWidgets.add(getDivider());
       returnWidgets.add(getSizedBox(16));
@@ -60,12 +78,15 @@ class _AllTuningsScreenState extends State<AllTuningsScreen> {
           child: Container(
             color: tuningController.tuningConfiguration == e
                 ? Colors.green
-                : Colors.white,
-            width: double.infinity,
-            child: Text(
-              e.configurationName,
-              textAlign: TextAlign.center,
-              style: getTextStyle(),
+                : Colors.transparent,
+            width: MediaQuery.of(context).size.width * 0.75,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: Text(
+                e.configurationName,
+                textAlign: TextAlign.center,
+                style: getTextStyle(),
+              ),
             ),
           ),
         ));
@@ -85,9 +106,15 @@ class _AllTuningsScreenState extends State<AllTuningsScreen> {
       appBar: AppBar(
         leading: GestureDetector(
           onTap: () => Get.back(),
-          child: const Icon(Icons.arrow_back),
+          child: Icon(
+            Icons.arrow_back,
+            color: AppColors.headerColor,
+          ),
         ),
-        title: const Text('All available tunings'),
+        title: Text(
+          'All available tunings',
+          style: const TextStyle()..apply(color: AppColors.onPrimaryColor),
+        ),
       ),
       body: SingleChildScrollView(
         // child: SliverGrid,

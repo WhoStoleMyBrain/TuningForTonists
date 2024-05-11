@@ -140,10 +140,10 @@ class MicrophoneController extends FullLifeCycleController
     isActive = true.obs;
     isRecording = true.obs;
     listener = stream!.listen((data) => calculateDisplayData(data));
-    print('waiting to set mic technical data...');
+    // print('waiting to set mic technical data...');
     await MicrophoneHelper.setMicTechnicalData();
     update();
-    print('created stream and set everything to true');
+    // print('created stream and set everything to true');
     return true;
   }
 

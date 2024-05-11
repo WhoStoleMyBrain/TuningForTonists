@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:scidart/numdart.dart';
@@ -42,7 +44,7 @@ class CalculationController extends GetxController {
   void calculateFrequency() {
     final frequenciesList =
         fftController.applyRealFft(waveDataController.doubleWaveData);
-    waveDataController.setFrequencyData(frequenciesList.sublist(1));
+    waveDataController.frequencyData = frequenciesList.sublist(1);
   }
 
   Array getHanningWindow() {
@@ -50,12 +52,13 @@ class CalculationController extends GetxController {
       if (waveDataController.waveDataLength != _hanningWindow!.length) {
         logger.d(
             "hanning window length did not equal wavedata length. Needed to create one instance.");
-        return hann(waveDataController.waveDataLength);
+        _hanningWindow = hann(waveDataController.waveDataLength);
       }
       return _hanningWindow!;
     }
     logger.d("hanning window was null. Needed to create one instance.");
-    return hann(waveDataController.waveDataLength);
+    _hanningWindow = hann(waveDataController.waveDataLength);
+    return _hanningWindow!;
   }
 
   void calculateFrequency2() {
@@ -77,7 +80,7 @@ class CalculationController extends GetxController {
     //       .filter(micTechnicalDataController.butterworthLowpass.filter(freq)));
     // }
     // waveDataController.setFrequencyData(filteredFrequencies.sublist(1));
-    waveDataController.setFrequencyData(frequenciesList.sublist(31));
+    waveDataController.frequencyData = frequenciesList.sublist(31);
   }
 
   void calculateHPSManually() {
@@ -134,6 +137,31 @@ class CalculationController extends GetxController {
     waveDataController.addVisibleSample(frequency);
   }
 
+  void calculateCepstrum() {
+    calculateFrequenciesCepstrum();
+    final maximum = waveDataController.frequencyData
+            .indexOf(waveDataController.frequencyData.reduce(max)) +
+        20;
+    final freq = micTechnicalDataController.samplesPerSecond / maximum;
+    if (freq.isInfinite || freq.isNaN) {
+      waveDataController.addVisibleSample(0.0);
+    } else {
+      waveDataController.addVisibleSample(freq);
+    }
+  }
+
+  void calculateFrequenciesCepstrum() {
+    Array waveDat = Array(waveDataController.doubleWaveData);
+    Array hanningedWaveData = getHanningWindow() * waveDat;
+    Float64List frequenciesList1 =
+        fftController.applyRealFft(hanningedWaveData).sublist(1);
+    frequenciesList1 =
+        Float64List.fromList(frequenciesList1.map((e) => log(e)).toList());
+    Float64List frequenciesList2 =
+        fftController.applyRealFftHalf(frequenciesList1).sublist(1);
+    waveDataController.frequencyData = frequenciesList2.sublist(20);
+  }
+
   void calculateDisplayData(dynamic samples) {
     Stopwatch stopwatch = Stopwatch()..start();
     waveDataController.addWaveData(MicrophoneHelper.calculateWaveData(samples));
@@ -147,6 +175,9 @@ class CalculationController extends GetxController {
         break;
       case CalculationType.ZeroCrossing:
         calculateZeroCrossing();
+        break;
+      case CalculationType.Cepstrum:
+        calculateCepstrum();
         break;
     }
 

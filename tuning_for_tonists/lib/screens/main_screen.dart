@@ -6,6 +6,7 @@ import 'package:tuning_for_tonists/widgets/performance_display.dart';
 import 'package:tuning_for_tonists/widgets/time_sensitive_tuning_frequency_display.dart';
 import 'package:tuning_for_tonists/widgets/tuning_frequency_pointer_display.dart';
 import '../constants/app_colors.dart';
+import '../widgets/TestDataFeedButton.dart';
 import '../widgets/frequency_bars_display.dart';
 import '../widgets/mic_stream_control_button.dart';
 import '../widgets/side_scrolling_tuning_configurations.dart';
@@ -156,7 +157,12 @@ class _MainScreenState extends State<MainScreen> {
         ),
         body: getMicDisplay(),
         drawer: const AppDrawer(),
-        floatingActionButton: const MicStreamControlButton(),
+        floatingActionButton: Row(
+          children: [
+            const TestDataFeedButton(),
+            const MicStreamControlButton(),
+          ],
+        ),
       );
     });
   }

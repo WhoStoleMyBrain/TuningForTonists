@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tuning_for_tonists/constants/app_colors.dart';
 import 'package:tuning_for_tonists/constants/preference_names.dart';
 import 'package:tuning_for_tonists/controllers/tuning_configurations_controller.dart';
 
@@ -127,8 +128,18 @@ class _CreateTuningScreenState extends State<CreateTuningScreen> {
           content: Column(
             children: [
               TextFormField(
+                style: TextStyle()
+                  ..apply(
+                      color: AppColors.white,
+                      backgroundColor: AppColors.white,
+                      decorationColor: AppColors.white),
                 controller: _noteFrequencyController,
-                decoration: const InputDecoration(labelText: 'Frequency'),
+                decoration: InputDecoration(
+                    hintText: 'Frequency',
+                    hintStyle: TextStyle()
+                      ..apply(
+                          color: AppColors.white,
+                          backgroundColor: Colors.white)),
                 keyboardType: TextInputType.number,
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
@@ -139,7 +150,7 @@ class _CreateTuningScreenState extends State<CreateTuningScreen> {
               ),
               TextFormField(
                 controller: _noteNameController,
-                decoration: const InputDecoration(labelText: 'Name'),
+                decoration: const InputDecoration(hintText: 'Name'),
                 keyboardType: TextInputType.text,
                 inputFormatters: [
                   FilteringTextInputFormatter.singleLineFormatter
@@ -207,7 +218,10 @@ class _CreateTuningScreenState extends State<CreateTuningScreen> {
           onTap: () {
             Get.back();
           },
-          child: const Icon(Icons.arrow_back),
+          child: const Icon(
+            Icons.arrow_back,
+            color: AppColors.onPrimaryColor,
+          ),
         ),
       ),
       body: SingleChildScrollView(

@@ -38,6 +38,10 @@ class TuningConfigurationsController extends GetxController {
   }
 
   Map<String, List<TuningConfiguration>> getTuningConfigurations() {
-    return defaultTuningConfigurations!..addAll(customTuningConfigurations!);
+    if (defaultTuningConfigurations != null &&
+        customTuningConfigurations != null) {
+      return defaultTuningConfigurations!..addAll(customTuningConfigurations!);
+    }
+    return {};
   }
 }

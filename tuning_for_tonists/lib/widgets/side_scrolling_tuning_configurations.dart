@@ -27,10 +27,11 @@ class SideScrollingTuningConfigurations extends StatelessWidget {
 
   Widget getTuningsRow() {
     Widget row;
-    var tuningConfigurations =
+    Map<String, List<TuningConfiguration>> tuningConfigurations =
         tuningConfigurationsController.getTuningConfigurations();
-    var activeInstrumentGroup = tuningController.activeInstrumentGroup;
-    var tunings = tuningConfigurations[activeInstrumentGroup];
+    String activeInstrumentGroup = tuningController.activeInstrumentGroup;
+    List<TuningConfiguration>? tunings =
+        tuningConfigurations[activeInstrumentGroup];
 
     row = Row(
       children: tunings!

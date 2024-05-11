@@ -3,8 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:mic_stream/mic_stream.dart';
 import 'package:tuning_for_tonists/constants/app_colors.dart';
+import 'package:tuning_for_tonists/controllers/fft_controller.dart';
 import 'package:tuning_for_tonists/controllers/mic_initialization_values_controller.dart';
 import 'package:tuning_for_tonists/controllers/mic_technical_data_controller.dart';
+import 'package:tuning_for_tonists/controllers/wave_data_controller.dart';
 import 'package:tuning_for_tonists/widgets/data_display.dart';
 import 'package:tuning_for_tonists/widgets/mic_stream_control_button.dart';
 
@@ -26,6 +28,8 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
     MicInitializationValuesController micInitializationValuesController =
         Get.find();
     MicDetailController micDetailController = Get.find();
+    WaveDataController waveDataController = Get.find();
+    FftController fftController = Get.find();
     // MicrophoneController microphoneController = Get.find();
     return Scaffold(
       key: micDetailController.scaffoldKey,
@@ -154,6 +158,30 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                     onSubmitted: (value) {
                       micInitializationValuesController
                           .setSampleRate(int.tryParse(value) ?? 0);
+                      setState(
+                        () {},
+                      );
+                    },
+                  ),
+                  TextField(
+                    decoration: InputDecoration(
+                      label: const Text(
+                        "Wave Data Length & FFT Length",
+                      ),
+                      labelStyle: const TextStyle()
+                        ..apply(color: AppColors.onPrimaryColor),
+                      floatingLabelStyle: const TextStyle()
+                        ..apply(color: AppColors.onPrimaryColor),
+                      prefixStyle: const TextStyle()
+                        ..apply(color: AppColors.onPrimaryColor),
+                      // labelText: 'Sample Rate',
+                    ),
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    onSubmitted: (value) {
+                      waveDataController.waveDataLength =
+                          int.tryParse(value) ?? 4096;
+                      fftController.fftLength = int.tryParse(value) ?? 0;
                       setState(
                         () {},
                       );

@@ -114,7 +114,7 @@ class SettingsScreen extends GetView<SettingsController> {
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               onSubmitted: (value) {
-                fftController.setFftLength(int.parse(value));
+                fftController.fftLength = int.parse(value);
               }),
         ),
       ],
@@ -254,7 +254,7 @@ class SettingsScreen extends GetView<SettingsController> {
       appBar: AppBar(
           title: Text(
             'Settings',
-            style: TextStyle()..apply(color: AppColors.onPrimaryColor),
+            style: const TextStyle()..apply(color: AppColors.onPrimaryColor),
           ),
           leading: IconButton(
             icon: const Icon(

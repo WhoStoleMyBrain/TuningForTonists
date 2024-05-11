@@ -1,5 +1,1 @@
-enum CalculationType {
-  HPS,
-  Autocorrelation,
-  ZeroCrossing,
-}
+enum CalculationType { HPS, Autocorrelation, ZeroCrossing, Cepstrum }

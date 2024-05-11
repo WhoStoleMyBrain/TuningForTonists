@@ -8,4 +8,5 @@ class AppColors {
   static const Color onPrimaryColor = Color.fromRGBO(2, 235, 226, 1.0);
   static const Color colorForSwatch = Color.fromRGBO(18, 80, 85, 1.0);
   static const Color onBackgroundColor = Color.fromRGBO(46, 59, 69, 1.0);
+  static Color headerColor = Colors.grey.shade700;
 }

@@ -11,12 +11,13 @@ class WaveDataController extends GetxController {
       <double>[0].obs; // strongest frequency in fft Data interval
 
   Rx<int> _waveDataLength = 4096.obs;
-  final RxList<double> waveData = RxList.filled(4096, 0);
+  RxList<double> waveData = List.filled(4096, 0.0).obs;
+  // final RxList<double> waveData = RxList.filled(4096, 0, growable: true);
   final RxList<double> fftData = <double>[0].obs;
   final RxList<double> autocorrelationData = <double>[1].obs;
   final RxList<double> hpsData = <double>[0].obs;
   final RxList<double> zeroCrossingData = <double>[0].obs;
-  Rx<CalculationType> calculationType = CalculationType.ZeroCrossing.obs;
+  Rx<CalculationType> calculationType = CalculationType.Cepstrum.obs;
 
   final MicTechnicalDataController micTechnicalDataController = Get.find();
   // final CalculationController calculationController = Get.find();
@@ -28,6 +29,7 @@ class WaveDataController extends GetxController {
 
   set waveDataLength(int newLength) {
     _waveDataLength = newLength.obs;
+    waveData = RxList.filled(_waveDataLength.value, 0, growable: true);
     // calculationController.hanningWindow = newLength;
     refresh();
   }
@@ -50,10 +52,12 @@ class WaveDataController extends GetxController {
     update();
   }
 
-  void setFrequencyData(List<double> newFrequencyData) {
+  set frequencyData(List<double> newFrequencyData) {
     fftData.value = newFrequencyData;
     refresh();
   }
+
+  List<double> get frequencyData => fftData;
 
   void setAutocorrelationData(List<double> newCorrelationData) {
     autocorrelationData.value = newCorrelationData;

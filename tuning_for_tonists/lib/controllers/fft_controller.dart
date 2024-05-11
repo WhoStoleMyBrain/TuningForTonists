@@ -9,7 +9,10 @@ import 'package:tuning_for_tonists/controllers/wave_data_controller.dart';
 class FftController extends GetxController {
   final Rx<FFT> _fft = FFT(4096).obs;
 
+  final Rx<FFT> _fftHalf = FFT(2048).obs;
+
   FFT get fft => _fft.value;
+  FFT get fftHalf => _fftHalf.value;
 
   final Rx<int> _fftLength = 4096.obs;
 
@@ -17,9 +20,10 @@ class FftController extends GetxController {
   MicTechnicalDataController micTechnicalDataController = Get.find();
   WaveDataController waveDataController = Get.find();
 
-  void setFftLength(int newFftLength) {
+  set fftLength(int newFftLength) {
     _fftLength.value = newFftLength;
     _setFft(FFT(fftLength));
+    fftHalf = FFT(fftLength ~/ 2);
     waveDataController.waveDataLength = newFftLength;
     waveDataController.waveData.value = List.filled(newFftLength, 0);
     refresh();
@@ -29,8 +33,16 @@ class FftController extends GetxController {
     _fft.value = newFft;
   }
 
+  set fftHalf(FFT newFft) {
+    _fftHalf.value = newFft;
+  }
+
   Float64List applyRealFft(List<double> waveData) {
     return fft.realFft(waveData).discardConjugates().squareMagnitudes();
+  }
+
+  Float64List applyRealFftHalf(List<double> waveData) {
+    return fftHalf.realFft(waveData).discardConjugates().squareMagnitudes();
   }
 
   double getMaxFrequency(List<double> frequencyData) {
