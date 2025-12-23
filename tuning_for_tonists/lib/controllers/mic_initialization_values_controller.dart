@@ -3,12 +3,11 @@ import 'package:mic_stream/mic_stream.dart';
 
 class MicInitializationValuesController extends GetxController {
   Rx<AudioFormat> audioFormat;
-  Rx<int> sampleRate;
+  Rx<int> _sampleRate;
   Rx<ChannelConfig> channelConfig;
   Rx<AudioSource> audioSource;
-  MicInitializationValuesController(
+  MicInitializationValuesController(this._sampleRate,
       {required this.audioFormat,
-      required this.sampleRate,
       required this.channelConfig,
       required this.audioSource});
   void setAudioFormat(AudioFormat newAudioFormat) {
@@ -16,9 +15,11 @@ class MicInitializationValuesController extends GetxController {
     refresh();
   }
 
-  void setSampleRate(int newSampleRate) {
-    sampleRate = newSampleRate.obs;
+  set sampleRate(int newSampleRate) {
+    _sampleRate = newSampleRate.obs;
   }
+
+  int get sampleRate => _sampleRate.value;
 
   void setChannelConfig(ChannelConfig newChannelConfig) {
     channelConfig = newChannelConfig.obs;

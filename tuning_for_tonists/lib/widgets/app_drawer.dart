@@ -38,7 +38,6 @@ class AppDrawer extends StatelessWidget {
         children: <Widget>[
           const DrawerHeader(
             child: Text('Tuning for Tonists \nNavigation'),
-            // margin: EdgeInsets.all(0.0),
           ),
           getListTile('Home', Routes.home),
           getListTile('Mic Details', Routes.micDetail),
@@ -46,6 +45,7 @@ class AppDrawer extends StatelessWidget {
           getListTile('Info', Routes.info),
           getListTile('Advanced Microphone', Routes.advancedMicData),
           getListTile('Knowledgebase', Routes.knowledgebase),
+          getListTile('Testing', Routes.testing),
         ],
       ),
     );

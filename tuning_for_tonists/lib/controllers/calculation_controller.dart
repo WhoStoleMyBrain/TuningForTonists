@@ -97,7 +97,7 @@ class CalculationController extends GetxController {
     var maxValue = hps.reduce(max);
     var maxIdx = hps.indexOf(maxValue);
     var freq = (maxIdx + 31) *
-        micInitializationValuesController.sampleRate.value /
+        micInitializationValuesController.sampleRate /
         waveDataController.waveData.length;
     waveDataController.addVisibleSample(freq);
   }
@@ -110,8 +110,10 @@ class CalculationController extends GetxController {
         zeroCrossingCount++;
       }
     }
-    var frequency =
-        zeroCrossingCount / waveDataController.waveData.length / 2 * 44100.0;
+    var frequency = zeroCrossingCount /
+        waveDataController.waveData.length /
+        2 *
+        micTechnicalDataController.samplesPerSecond;
     waveDataController.addZeroCrossingData(frequency);
     waveDataController.addVisibleSample(frequency);
   }
@@ -132,7 +134,7 @@ class CalculationController extends GetxController {
     }
     int maxIdx = autocorrelations.indexOf(
         autocorrelations.sublist(20, autocorrLength).reduce(max), 20);
-    double frequency = 8192.0 / maxIdx;
+    double frequency = micTechnicalDataController.samplesPerSecond / maxIdx;
     waveDataController.setAutocorrelationData(autocorrelations);
     waveDataController.addVisibleSample(frequency);
   }

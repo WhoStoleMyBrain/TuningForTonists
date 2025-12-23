@@ -136,8 +136,7 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Sample Rate:'),
-                      Text(
-                          ' ${micInitializationValuesController.sampleRate.value}')
+                      Text(' ${micInitializationValuesController.sampleRate}')
                     ],
                   ),
                   TextField(
@@ -156,8 +155,8 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     onSubmitted: (value) {
-                      micInitializationValuesController
-                          .setSampleRate(int.tryParse(value) ?? 0);
+                      micInitializationValuesController.sampleRate =
+                          int.tryParse(value) ?? 0;
                       setState(
                         () {},
                       );

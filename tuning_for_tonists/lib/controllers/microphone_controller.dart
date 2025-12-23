@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter/src/widgets/router.dart';
 import 'package:get/get.dart';
 
 import '../helpers/microphone_helper.dart';
@@ -11,6 +10,11 @@ enum Command {
   start,
   stop,
   change,
+}
+
+enum StreamSource {
+  microphone,
+  audioFile,
 }
 
 class MicrophoneController extends FullLifeCycleController
@@ -24,6 +28,15 @@ class MicrophoneController extends FullLifeCycleController
   RxBool memRecordingState = false.obs;
   RxBool isActive = false.obs;
   Function calculateDisplayData;
+
+  Rx<StreamSource> _streamSource = StreamSource.microphone.obs;
+
+  StreamSource get streamSource => _streamSource.value;
+
+  set streamSource(StreamSource newStreamSource) {
+    _streamSource = newStreamSource.obs;
+    refresh();
+  }
 
   // Mandatory
   @override
@@ -136,14 +149,12 @@ class MicrophoneController extends FullLifeCycleController
       isRecording.isFalse ? await _startListening() : await _stopListening();
 
   Future<bool> _startListening() async {
-    stream = await MicrophoneHelper.getMicStream();
+    stream = await MicrophoneHelper.getMicStream(source: streamSource);
     isActive = true.obs;
     isRecording = true.obs;
     listener = stream!.listen((data) => calculateDisplayData(data));
-    // print('waiting to set mic technical data...');
     await MicrophoneHelper.setMicTechnicalData();
     update();
-    // print('created stream and set everything to true');
     return true;
   }
 
@@ -153,6 +164,7 @@ class MicrophoneController extends FullLifeCycleController
     isActive = false.obs;
     isRecording = false.obs;
     update();
+    refresh();
     print('canceled stream and set everything to false');
     return true;
   }

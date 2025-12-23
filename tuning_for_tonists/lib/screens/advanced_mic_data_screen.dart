@@ -4,6 +4,7 @@ import 'package:tuning_for_tonists/constants/app_colors.dart';
 import 'package:tuning_for_tonists/view_controllers/advanced_mic_data_controller.dart';
 import 'package:tuning_for_tonists/widgets/performance_display.dart';
 
+import '../widgets/test_data_feed_button.dart';
 import '../widgets/app_drawer.dart';
 import '../widgets/frequency_data_display.dart';
 import '../widgets/frequency_number_display.dart';
@@ -49,7 +50,15 @@ class AdvancedMicDataScreen extends GetView<AdvancedMicDataController> {
           )),
       body: getMicDisplay(),
       drawer: const AppDrawer(),
-      floatingActionButton: const MicStreamControlButton(),
+      floatingActionButton: const Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          TestDataFeedButton(),
+          SizedBox(width: 16),
+          MicStreamControlButton(),
+          SizedBox(width: 16),
+        ],
+      ),
     );
   }
 }

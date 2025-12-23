@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:mic_stream/mic_stream.dart';
 import 'package:tuning_for_tonists/controllers/calculation_controller.dart';
+import 'package:tuning_for_tonists/controllers/testing_controller.dart';
 import '../controllers/mic_initialization_values_controller.dart';
 import '../controllers/mic_technical_data_controller.dart';
 import '../controllers/microphone_controller.dart';
@@ -16,14 +17,38 @@ abstract class MicrophoneHelper {
 
   static Logger logger = Logger(filter: DevelopmentFilter());
 
-  static Future<Stream<Uint8List>?> getMicStream() async {
-    MicStream.shouldRequestPermission(true);
-    Stream<Uint8List> stream = MicStream.microphone(
-        audioSource: micInitializationValuesController.audioSource.value,
-        sampleRate: micInitializationValuesController.sampleRate.value,
-        channelConfig: micInitializationValuesController.channelConfig.value,
-        audioFormat: micInitializationValuesController.audioFormat.value);
-    return stream;
+  static Future<Stream<Uint8List>?> getMicStream(
+      {StreamSource source = StreamSource.microphone}) async {
+    switch (source) {
+      case StreamSource.microphone:
+        MicStream.shouldRequestPermission(true);
+        Stream<Uint8List> stream = MicStream.microphone(
+            audioSource: micInitializationValuesController.audioSource.value,
+            sampleRate: micInitializationValuesController.sampleRate,
+            channelConfig:
+                micInitializationValuesController.channelConfig.value,
+            audioFormat: micInitializationValuesController.audioFormat.value);
+        return stream;
+      case StreamSource.audioFile:
+        TestingController testingController = Get.find();
+        Uint8List audioBytes = await testingController.loadCurrentAudioFile();
+        // logger.d("received bytes: ${audioBytes.length}");
+        // Create a stream from the audio file with custom delay and buffer length
+        MicTechnicalDataController micTechnicalDataController = Get.find();
+        Stream<Uint8List> audioStream = testingController.createAudioFileStream(
+            audioBytes,
+            delay: Duration(
+                microseconds: 1000000 ~/
+                    (micInitializationValuesController.sampleRate *
+                        micTechnicalDataController.bytesPerSample)),
+            bufferLength: micTechnicalDataController.bufferSize);
+
+        // Process the audio stream
+        // testingController.processAudioStream(audioStream);
+        // Stream<Uint8List> stream =
+        //     testingController.createAudioFileStream(audioBytes);
+        return audioStream;
+    }
   }
 
   static Future<void> setMicTechnicalData() async {
@@ -75,8 +100,10 @@ abstract class MicrophoneHelper {
   }
 
   static List<double> calculateWaveData(Uint8List samples) {
-    MicInitializationValuesController micInitializationValuesController =
-        Get.find();
+    MicrophoneController microphoneController = Get.find();
+    if (microphoneController.streamSource == StreamSource.audioFile) {
+      return List.from(samples);
+    }
     List<double> waveData = [];
     if (micInitializationValuesController.audioFormat.value ==
         AudioFormat.ENCODING_PCM_8BIT) {

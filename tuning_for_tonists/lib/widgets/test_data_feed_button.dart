@@ -12,24 +12,27 @@ class TestDataFeedButton extends StatefulWidget {
 }
 
 class _TestDataFeedButtonState extends State<TestDataFeedButton> {
-  // MicrophoneController microphoneController = Get.find();
   PerformanceController performanceController = Get.find();
+  TestingController testingController = Get.find();
   @override
   Widget build(BuildContext context) {
     return GetBuilder<TestingController>(builder: (testingController) {
       return GetBuilder<MicrophoneController>(
         builder: (microphoneController) => FloatingActionButton(
+          heroTag: null,
           onPressed: () {
             performanceController.resetCalculationDuration();
-            // microphoneController.calculateDisplayData =
+            microphoneController.streamSource = StreamSource.audioFile;
+            testingController.currentAudioFile =
+                testingController.guitarAudioFilePaths.first;
             microphoneController.controlMicStream();
           },
           tooltip: (microphoneController.isRecording.isTrue)
               ? "Stop recording"
               : "Start recording",
           child: (microphoneController.isRecording.isTrue)
-              ? const Icon(Icons.stop)
-              : const Icon(Icons.keyboard_voice),
+              ? const Icon(Icons.one_x_mobiledata)
+              : const Icon(Icons.four_g_plus_mobiledata),
         ),
       );
     });

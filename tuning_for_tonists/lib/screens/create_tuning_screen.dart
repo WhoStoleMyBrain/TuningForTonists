@@ -128,7 +128,7 @@ class _CreateTuningScreenState extends State<CreateTuningScreen> {
           content: Column(
             children: [
               TextFormField(
-                style: TextStyle()
+                style: const TextStyle()
                   ..apply(
                       color: AppColors.white,
                       backgroundColor: AppColors.white,
@@ -136,7 +136,7 @@ class _CreateTuningScreenState extends State<CreateTuningScreen> {
                 controller: _noteFrequencyController,
                 decoration: InputDecoration(
                     hintText: 'Frequency',
-                    hintStyle: TextStyle()
+                    hintStyle: const TextStyle()
                       ..apply(
                           color: AppColors.white,
                           backgroundColor: Colors.white)),

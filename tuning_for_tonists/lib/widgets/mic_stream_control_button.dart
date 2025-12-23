@@ -17,6 +17,7 @@ class _MicStreamControlButtonState extends State<MicStreamControlButton> {
   Widget build(BuildContext context) {
     return GetBuilder<MicrophoneController>(
       builder: (microphoneController) => FloatingActionButton(
+        heroTag: null,
         onPressed: () {
           performanceController.resetCalculationDuration();
           microphoneController.controlMicStream();

@@ -1,4 +1,5 @@
 import 'dart:core';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mic_stream/mic_stream.dart';
@@ -8,7 +9,9 @@ import 'package:tuning_for_tonists/constants/app_colors.dart';
 import 'package:tuning_for_tonists/constants/routes.dart';
 import 'package:tuning_for_tonists/controllers/calculation_controller.dart';
 import 'package:tuning_for_tonists/controllers/fft_controller.dart';
+import 'package:tuning_for_tonists/controllers/microphone_controller.dart';
 import 'package:tuning_for_tonists/controllers/performance_controller.dart';
+import 'package:tuning_for_tonists/controllers/testing_controller.dart';
 import 'package:tuning_for_tonists/controllers/tuning_configurations_controller.dart';
 import 'package:tuning_for_tonists/controllers/tuning_controller.dart';
 import 'package:tuning_for_tonists/screens/advanced_mic_data_screen.dart';
@@ -17,11 +20,12 @@ import 'package:tuning_for_tonists/screens/create_tuning_screen.dart';
 import 'package:tuning_for_tonists/screens/knowledgebase_screen.dart';
 import 'package:tuning_for_tonists/screens/loading_page.dart';
 import 'package:tuning_for_tonists/screens/mic_detail_screen.dart';
+import 'package:tuning_for_tonists/screens/testing_screen.dart';
+import 'package:tuning_for_tonists/view_controllers/info_controller.dart';
 import 'package:tuning_for_tonists/view_controllers/mic_detail_controller.dart';
-import 'package:tuning_for_tonists/controllers/microphone_controller.dart';
 
-import './bindings/info_binding.dart';
 import './bindings/home_binding.dart';
+import './bindings/info_binding.dart';
 import './bindings/settings_binding.dart';
 import './controllers/mic_initialization_values_controller.dart';
 import './controllers/mic_technical_data_controller.dart';
@@ -63,6 +67,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
+    Get.lazyPut(() => InfoController(), fenix: true);
     Get.lazyPut(() => PerformanceController(), fenix: true);
     TuningConfigurationsController tuningConfigurationsController =
         TuningConfigurationsController()
@@ -70,15 +75,16 @@ class _MyAppState extends State<MyApp> {
           ..loadCustomTuningConfigurations();
     //TODO: Recheck this call, there has to be a way better way
     Get.lazyPut(
-        () => MicInitializationValuesController(
+        () => MicInitializationValuesController(8192.obs,
             audioFormat: AudioFormat.ENCODING_PCM_16BIT.obs,
-            sampleRate: 8192.obs,
             // sampleRate: 44100.obs,
             channelConfig: ChannelConfig.CHANNEL_IN_MONO.obs,
             audioSource: AudioSource.DEFAULT.obs),
         fenix: true);
-
     Get.lazyPut(() => MicTechnicalDataController(), fenix: true);
+    TestingController testingController = TestingController();
+    testingController.initAssets();
+    Get.lazyPut(() => testingController, fenix: true);
     Get.lazyPut(() => WaveDataController(), fenix: true);
     TuningController tuningController = TuningController()
       ..tuningConfiguration = tuningConfigurationsController
@@ -191,6 +197,10 @@ class _MyAppState extends State<MyApp> {
           name: Routes.knowledgebase,
           page: () => const KnowledgebaseScreen(),
           binding: KnowledgebaseBinding(),
+        ),
+        GetPage(
+          name: Routes.testing,
+          page: () => TestingScreen(),
         )
       ],
     );
