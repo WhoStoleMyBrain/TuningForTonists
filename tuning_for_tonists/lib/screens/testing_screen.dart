@@ -12,7 +12,7 @@ import '../widgets/mic_stream_control_button.dart';
 class TestingScreen extends GetView<InfoController> {
   TestingScreen({super.key});
 
-  Logger logger = Logger(filter: DevelopmentFilter());
+  final Logger logger = Logger(filter: DevelopmentFilter());
 
   @override
   Widget build(BuildContext context) {
