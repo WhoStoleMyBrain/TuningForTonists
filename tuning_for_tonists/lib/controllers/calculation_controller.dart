@@ -14,6 +14,8 @@ import 'tuning_controller.dart';
 import 'wave_data_controller.dart';
 
 class CalculationController extends GetxController {
+  static const int _kLowFrequencyBinSkip = 31;
+
   WaveDataController waveDataController = Get.find();
   FftController fftController = Get.find();
   MicTechnicalDataController micTechnicalDataController = Get.find();
@@ -80,7 +82,9 @@ class CalculationController extends GetxController {
     Array hanningedWaveData = getHanningWindow() * waveDataArray;
     final frequenciesList = fftController.applyRealFft(hanningedWaveData);
     // Skip low-frequency bins that are dominated by noise/DC offsets.
-    waveDataController.frequencyData = frequenciesList.sublist(31);
+    // _kLowFrequencyBinSkip corresponds to ~(_kLowFrequencyBinSkip * sampleRate / waveDataLength).
+    waveDataController.frequencyData =
+        frequenciesList.sublist(_kLowFrequencyBinSkip);
     _setPeakStrengthFrom(waveDataController.frequencyData);
   }
 
@@ -98,7 +102,7 @@ class CalculationController extends GetxController {
     _setPeakStrengthFrom(waveDataController.hpsData);
     var maxValue = hps.reduce(max);
     var maxIdx = hps.indexOf(maxValue);
-    var freq = (maxIdx + 31) *
+    var freq = (maxIdx + _kLowFrequencyBinSkip) *
         micTechnicalDataController.samplesPerSecond /
         waveDataController.waveData.length;
     waveDataController.addVisibleSample(freq);
