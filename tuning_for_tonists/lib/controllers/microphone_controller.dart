@@ -1,8 +1,12 @@
 import 'dart:async';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 
 import '../helpers/microphone_helper.dart';
 import '../controllers/mic_initialization_values_controller.dart';
@@ -31,6 +35,11 @@ class MicrophoneController extends FullLifeCycleController
   RxBool memRecordingState = false.obs;
   RxBool isActive = false.obs;
   Function calculateDisplayData;
+  RxBool isCapturing = false.obs;
+  RxString lastCapturePath = ''.obs;
+  RxString lastCaptureStatus = ''.obs;
+  BytesBuilder? _captureBuffer;
+  int _captureTargetBytes = 0;
 
   Rx<StreamSource> _streamSource = StreamSource.microphone.obs;
 
@@ -148,7 +157,12 @@ class MicrophoneController extends FullLifeCycleController
     stream = await MicrophoneHelper.getMicStream(source: streamSource);
     isActive = true.obs;
     isRecording = true.obs;
-    listener = stream!.listen((data) => calculateDisplayData(data));
+    listener = stream!.listen((data) {
+      calculateDisplayData(data);
+      if (data is Uint8List) {
+        _handlePcmCapture(data);
+      }
+    });
     if (streamSource == StreamSource.audioFile) {
       TestingController testingController = Get.find();
       if (testingController.useSyntheticTone.isTrue) {
@@ -170,6 +184,7 @@ class MicrophoneController extends FullLifeCycleController
 
   Future<bool> _stopListening() async {
     if (isRecording.isFalse) return false;
+    _stopCapture();
     await listener.cancel();
     isActive = false.obs;
     isRecording = false.obs;
@@ -177,6 +192,61 @@ class MicrophoneController extends FullLifeCycleController
     refresh();
     print('canceled stream and set everything to false');
     return true;
+  }
+
+  void startPcmCapture({int durationSeconds = 3}) {
+    if (streamSource != StreamSource.microphone) {
+      lastCaptureStatus.value =
+          'Capture is only available when using the microphone.';
+      return;
+    }
+    if (isRecording.isFalse) {
+      lastCaptureStatus.value = 'Start the microphone stream before capturing.';
+      return;
+    }
+    MicTechnicalDataController micTechnicalDataController = Get.find();
+    if (micTechnicalDataController.bytesPerSample == 0 ||
+        micTechnicalDataController.samplesPerSecond == 0) {
+      lastCaptureStatus.value =
+          'Microphone technical data not initialized yet.';
+      return;
+    }
+    _captureTargetBytes = micTechnicalDataController.samplesPerSecond *
+        micTechnicalDataController.bytesPerSample *
+        durationSeconds;
+    _captureBuffer = BytesBuilder(copy: false);
+    isCapturing.value = true;
+    lastCaptureStatus.value = 'Capturing ${durationSeconds}s of raw PCM...';
+  }
+
+  void _handlePcmCapture(Uint8List data) {
+    if (isCapturing.isFalse || _captureBuffer == null) return;
+    _captureBuffer!.add(data);
+    if (_captureBuffer!.length >= _captureTargetBytes) {
+      _finalizeCapture();
+    }
+  }
+
+  Future<void> _finalizeCapture() async {
+    if (_captureBuffer == null) return;
+    final bytes = _captureBuffer!.takeBytes();
+    _captureBuffer = null;
+    isCapturing.value = false;
+    final directory = await getApplicationDocumentsDirectory();
+    MicTechnicalDataController micTechnicalDataController = Get.find();
+    final fileName = 'capture_${micTechnicalDataController.samplesPerSecond}hz_'
+        '${micTechnicalDataController.bytesPerSample * 8}bit_mono_'
+        '${DateTime.now().millisecondsSinceEpoch}.pcm';
+    final filePath = path.join(directory.path, fileName);
+    await File(filePath).writeAsBytes(bytes);
+    lastCapturePath.value = filePath;
+    lastCaptureStatus.value = 'Saved raw PCM to $filePath';
+  }
+
+  void _stopCapture() {
+    _captureBuffer = null;
+    _captureTargetBytes = 0;
+    isCapturing.value = false;
   }
 
   @override
