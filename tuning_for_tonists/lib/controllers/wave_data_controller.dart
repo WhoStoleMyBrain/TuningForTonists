@@ -17,6 +17,7 @@ class WaveDataController extends GetxController {
   final RxList<double> autocorrelationData = <double>[1].obs;
   final RxList<double> hpsData = <double>[0].obs;
   final RxList<double> zeroCrossingData = <double>[0].obs;
+  final RxDouble _peakStrength = 0.0.obs;
   Rx<CalculationType> calculationType = CalculationType.Cepstrum.obs;
 
   final MicTechnicalDataController micTechnicalDataController = Get.find();
@@ -58,6 +59,13 @@ class WaveDataController extends GetxController {
   }
 
   List<double> get frequencyData => fftData;
+
+  double get peakStrength => _peakStrength.value;
+
+  void setPeakStrength(double newPeakStrength) {
+    _peakStrength.value = newPeakStrength;
+    refresh();
+  }
 
   void setAutocorrelationData(List<double> newCorrelationData) {
     autocorrelationData.value = newCorrelationData;

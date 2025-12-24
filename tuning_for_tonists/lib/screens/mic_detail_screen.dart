@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -46,8 +47,16 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
           style: const TextStyle()..apply(color: AppColors.onPrimaryColor),
         ),
       ),
-      body: Obx(
-        () => Center(
+      body: Obx(() {
+        final latestFrequency = waveDataController.visibleSamples.isNotEmpty
+            ? waveDataController.visibleSamples.last
+            : 0.0;
+        final peakStrength = waveDataController.peakStrength;
+        final calculationType = waveDataController.calculationType.value;
+        String runtimeValue(int value) =>
+            value <= 1 ? 'Not Initialized' : value.toString();
+
+        return Center(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: SingleChildScrollView(
@@ -217,6 +226,68 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                           '${micTechnicalDataController.samplesPerSecond == 0 ? "Not Initialized" : micTechnicalDataController.samplesPerSecond}')
                     ],
                   ),
+                  if (kDebugMode) ...[
+                    const SizedBox(
+                      height: 32,
+                    ),
+                    const Text('Debug (runtime):'),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Runtime Sample Rate:'),
+                        Text(
+                            ' ${runtimeValue(micTechnicalDataController.samplesPerSecond)}')
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Runtime Buffer Size:'),
+                        Text(
+                            ' ${runtimeValue(micTechnicalDataController.bufferSize)}')
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Runtime Bit Depth:'),
+                        Text(
+                            ' ${micTechnicalDataController.bytesPerSample <= 1 ? "Not Initialized" : micTechnicalDataController.bytesPerSample * 8}')
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Channel Config:'),
+                        Text(
+                            ' ${micInitializationValuesController.channelConfig.value}')
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Calculation Method:'),
+                        Text(' $calculationType')
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Detected Frequency:'),
+                        Text(' ${latestFrequency.toStringAsFixed(2)} Hz')
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Peak Strength:'),
+                        Text(' ${peakStrength.toStringAsFixed(2)}')
+                      ],
+                    ),
+                  ],
                   const SizedBox(
                     height: 100,
                   ),
@@ -226,8 +297,8 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
               ),
             ),
           ),
-        ),
-      ),
+        );
+      }),
       drawer: const AppDrawer(),
     );
   }
