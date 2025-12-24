@@ -69,7 +69,7 @@ This plan captures the current pitch-detection pipeline, likely error sources, a
   - raw detected frequency + confidence/strength metric (peak magnitude / ratio)
   - Local verification: run on a device to confirm values populate in the debug overlay.
 - Add a “capture a short sample” path that stores a few seconds of **raw PCM** to a local file (if feasible with existing deps).
-- Add an in-app **synthetic tone generator** for validation (pure Dart), so known frequencies can be fed directly into the analysis pipeline.
+- Add an in-app **synthetic tone generator** for validation (pure Dart), so known frequencies can be fed directly into the analysis pipeline. **IMPLEMENTED—NEEDS LOCAL VERIFICATION** (needs device validation for ±3 cents after 300 ms)
 
 **Likely files to change**
 - `tuning_for_tonists/lib/controllers/calculation_controller.dart`
