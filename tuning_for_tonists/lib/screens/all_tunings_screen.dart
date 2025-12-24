@@ -117,7 +117,6 @@ class _AllTuningsScreenState extends State<AllTuningsScreen> {
         ),
       ),
       body: SingleChildScrollView(
-        // child: SliverGrid,
         child: Center(
           child: Obx(
             () => Column(
@@ -132,7 +131,6 @@ class _AllTuningsScreenState extends State<AllTuningsScreen> {
         child: const Icon(Icons.add),
         onPressed: () {
           navigateToTuningCreationPage();
-          // print('Press detected');
         },
       ),
     );

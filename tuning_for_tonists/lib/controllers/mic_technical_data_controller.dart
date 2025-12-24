@@ -4,7 +4,6 @@ import '../models/mic_technical_data.dart';
 
 class MicTechnicalDataController extends GetxController {
   Rx<MicTechnicalData>? micTechnicalData;
-  // WaveDataController waveDataController = Get.find();
   void setMicTechnicalData(
       int bytesPerSample, int samplesPerSecond, int bufferSize) {
     micTechnicalData = MicTechnicalData(
@@ -12,7 +11,6 @@ class MicTechnicalDataController extends GetxController {
             samplesPerSecond: samplesPerSecond,
             bufferSize: bufferSize)
         .obs;
-    // waveDataController.waveDataLength = samplesPerSecond ~/ 2;
     refresh();
     update();
   }

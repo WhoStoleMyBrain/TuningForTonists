@@ -176,25 +176,17 @@ class _CreateTuningScreenState extends State<CreateTuningScreen> {
         final prefs = await SharedPreferences.getInstance();
         var data = prefs.getString(PreferenceNames.customTunings);
         data ??= '[]';
-        // data = '[]';
         Iterable jsonData = jsonDecode(data);
         List<TuningConfiguration> newConfigurations = [];
-        // List<TuningConfiguration> oldConfigurations =
-        //     tuningConfigurationsController
-        //         .customTuningConfigurations!['Custom Configurations']!;
         List<TuningConfiguration> oldConfigurations =
             List<TuningConfiguration>.from(
                 jsonData.map((e) => TuningConfiguration.fromJson(e)));
         int indexOfExistingConfiguration = oldConfigurations.indexWhere(
             (element) => (element.configurationName ==
                 newTuningConfiguration.configurationName));
-        // print(oldConfigurations);
         if (indexOfExistingConfiguration == -1) {
-          // print('index was -1');
-
           newConfigurations = oldConfigurations..add(newTuningConfiguration);
         } else {
-          // print('index is: $indexOfExistingConfiguration');
           oldConfigurations[indexOfExistingConfiguration] =
               newTuningConfiguration;
           newConfigurations = oldConfigurations;
@@ -241,7 +233,6 @@ class _CreateTuningScreenState extends State<CreateTuningScreen> {
           ),
         ),
       ),
-      // floatingActionButton:
     );
   }
 }

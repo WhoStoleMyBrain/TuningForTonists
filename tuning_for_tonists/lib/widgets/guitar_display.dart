@@ -72,8 +72,6 @@ class GuitarDisplay extends StatelessWidget {
 
   List<Widget> getTwoSidedStringButtons(Size guitarSize) {
     List<Widget> allButtons = [];
-    // print(
-    //     'Getting a button for a total length of ${tuningController.allNotes.length}');
     for (var i = 0; i < tuningController.allNotes.length; i++) {
       allButtons.add(getPositionedStringButton(
           i, guitarSize, tuningController.allNotes[i]));

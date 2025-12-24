@@ -41,7 +41,6 @@ class MicrophoneController extends FullLifeCycleController
     refresh();
   }
 
-  // Mandatory
   @override
   void onDetached() {
     if (kDebugMode) {
@@ -55,7 +54,6 @@ class MicrophoneController extends FullLifeCycleController
     }
   }
 
-  // Mandatory
   @override
   void onInactive() {
     if (kDebugMode) {
@@ -69,7 +67,6 @@ class MicrophoneController extends FullLifeCycleController
     }
   }
 
-  // Mandatory
   @override
   void onPaused() {
     if (kDebugMode) {
@@ -83,7 +80,6 @@ class MicrophoneController extends FullLifeCycleController
     }
   }
 
-  // Mandatory
   @override
   void onResumed() {
     if (kDebugMode) {
@@ -104,7 +100,6 @@ class MicrophoneController extends FullLifeCycleController
     return super.didPushRouteInformation(routeInformation);
   }
 
-  // Optional
   @override
   Future<bool> didPopRoute() {
     if (kDebugMode) {
@@ -113,7 +108,6 @@ class MicrophoneController extends FullLifeCycleController
     return super.didPopRoute();
   }
 
-  // Optional
   @override
   void didChangeMetrics() {
     if (kDebugMode) {
@@ -122,7 +116,6 @@ class MicrophoneController extends FullLifeCycleController
     super.didChangeMetrics();
   }
 
-  // Optional
   @override
   void didChangePlatformBrightness() {
     if (kDebugMode) {
@@ -202,6 +195,5 @@ class MicrophoneController extends FullLifeCycleController
     if (kDebugMode) {
       print('HomeController - onHidden called');
     }
-    //TODO: Implement onHidden correctly
   }
 }

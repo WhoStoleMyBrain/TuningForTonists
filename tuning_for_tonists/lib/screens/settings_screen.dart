@@ -15,7 +15,6 @@ class SettingsScreen extends GetView<SettingsController> {
   SettingsScreen({super.key});
 
   final FftController fftController = Get.find();
-  // final WaveDataController waveDataController = Get.find();
 
   void navigateToTuningsPage() {
     Get.toNamed(Routes.allTunings);
@@ -61,7 +60,6 @@ class SettingsScreen extends GetView<SettingsController> {
       children: [
         const Text('Display'),
         DropdownButton(
-          // value: 'A',
           items: const [
             DropdownMenuItem(value: 'default', child: Text('Default'))
           ],
@@ -77,7 +75,6 @@ class SettingsScreen extends GetView<SettingsController> {
       children: [
         const Text('Amplitude Range'),
         DropdownButton(
-          // value: 'A',
           items: const [
             DropdownMenuItem(value: 'default', child: Text('Default'))
           ],
@@ -93,7 +90,6 @@ class SettingsScreen extends GetView<SettingsController> {
       children: [
         const Text('Frequency scale'),
         DropdownButton(
-          // value: 'A',
           items: const [
             DropdownMenuItem(value: 'default', child: Text('Default'))
           ],
@@ -127,7 +123,6 @@ class SettingsScreen extends GetView<SettingsController> {
       children: [
         const Text('Spectrum Display'),
         DropdownButton(
-          // value: 'A',
           items: const [
             DropdownMenuItem(value: 'default', child: Text('Default'))
           ],
@@ -143,7 +138,6 @@ class SettingsScreen extends GetView<SettingsController> {
       children: [
         const Text('Recording level preset'),
         DropdownButton(
-          // value: 'A',
           items: const [
             DropdownMenuItem(value: 'default', child: Text('Default'))
           ],
@@ -159,7 +153,6 @@ class SettingsScreen extends GetView<SettingsController> {
       children: [
         const Text('Tuner sensibility'),
         DropdownButton(
-          // value: 'A',
           items: const [
             DropdownMenuItem(value: 'standard', child: Text('Standard'))
           ],
@@ -175,7 +168,6 @@ class SettingsScreen extends GetView<SettingsController> {
       children: [
         const Text('Tuning Method'),
         DropdownButton(
-          // value: 'A',
           items: const [
             DropdownMenuItem(value: 'noice', child: Text('Noise reduction'))
           ],
@@ -191,7 +183,6 @@ class SettingsScreen extends GetView<SettingsController> {
       children: [
         const Text('Tuner precision'),
         DropdownButton(
-          // value: 'A',
           items: const [
             DropdownMenuItem(value: '2cent', child: Text('2 cent'))
           ],
@@ -207,7 +198,6 @@ class SettingsScreen extends GetView<SettingsController> {
       children: [
         const Text('Notes Naming'),
         DropdownButton(
-          // value: 'A',
           items: const [
             DropdownMenuItem(value: 'english', child: Text('English'))
           ],
@@ -237,7 +227,6 @@ class SettingsScreen extends GetView<SettingsController> {
       children: [
         const Text('Error units'),
         DropdownButton(
-          // value: 'A',
           items: const [DropdownMenuItem(value: 'a', child: Text('A'))],
           onChanged: (value) {},
         ),
@@ -247,8 +236,6 @@ class SettingsScreen extends GetView<SettingsController> {
 
   @override
   Widget build(BuildContext context) {
-    // TuningConfigurationsController tuningConfigurationsController = Get.find();
-
     return Scaffold(
       key: controller.scaffoldKey,
       appBar: AppBar(

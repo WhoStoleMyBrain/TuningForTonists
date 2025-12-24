@@ -10,7 +10,6 @@ import 'package:fl_chart/fl_chart.dart';
 
 class MainDataDisplay extends StatelessWidget {
   const MainDataDisplay({super.key});
-  // String title = 'Main Data Display';
 
   Widget bottomTitleWidgets(double value, TitleMeta meta, double chartWidth) {
     if (value % 1 != 0) {

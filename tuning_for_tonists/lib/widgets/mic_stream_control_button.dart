@@ -11,7 +11,6 @@ class MicStreamControlButton extends StatefulWidget {
 }
 
 class _MicStreamControlButtonState extends State<MicStreamControlButton> {
-  // MicrophoneController microphoneController = Get.find();
   PerformanceController performanceController = Get.find();
   @override
   Widget build(BuildContext context) {

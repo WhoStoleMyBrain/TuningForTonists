@@ -39,7 +39,6 @@ class _MainScreenState extends State<MainScreen> {
           GestureDetector(
             behavior: HitTestBehavior.opaque,
             onHorizontalDragEnd: (details) {
-              // print(details.primaryVelocity);
               if (details.primaryVelocity! > 0) {
                 if (homeController.canReduceFrequencyDisplay()) {
                   homeController.frequencyDisplay--;

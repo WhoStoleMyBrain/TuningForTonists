@@ -32,7 +32,6 @@ class AppDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       backgroundColor: AppColors.backgroundColor,
-      // surfaceTintColor: AppColors.white,
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[

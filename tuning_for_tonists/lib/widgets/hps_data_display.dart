@@ -99,7 +99,6 @@ class HPSDataDisplay extends StatelessWidget {
                           dotData: const FlDotData(show: false),
                         ),
                       ],
-                      // minY: 0,
                       minY: waveDataController.hpsData.reduce(min).toDouble(),
                       maxY: waveDataController.hpsData.reduce(max).toDouble(),
                       minX: 0,
@@ -117,7 +116,6 @@ class HPSDataDisplay extends StatelessWidget {
                           strokeWidth: 0.8,
                         ),
                       ),
-
                       borderData: FlBorderData(show: false),
                     ),
                   ),

@@ -53,7 +53,6 @@ class SideScrollingTuningConfigurations extends StatelessWidget {
                       backgroundColor: getElevatedButtonBackgroundColor(e),
                     ),
                     onPressed: () {
-                      // print('setting tuning conf to ${e.configurationName}');
                       tuningController.tuningConfiguration = e;
                     },
                     child: Text(e.configurationName)),

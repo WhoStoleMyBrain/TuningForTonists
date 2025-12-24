@@ -72,13 +72,9 @@ class TestingController extends GetxController {
       {Duration delay = const Duration(milliseconds: 100),
       int bufferLength = 1024}) {
     List<int> buffer = audioBytes.toList();
-    // var buffer = <int>[];
 
     var streamController = StreamController<Uint8List>();
-    // streamController.add(audioBytes);
     Timer.periodic(delay, (timer) {
-      // logger.d(
-      //     "Emitting from timer within stream! ${timer.tick}/${buffer.length ~/ bufferLength}");
       if (buffer.isEmpty || timer.tick >= buffer.length ~/ bufferLength) {
         logger.d("Cancelling stream! ${timer.tick}");
         timer
@@ -89,7 +85,6 @@ class TestingController extends GetxController {
       } else {
         streamController.add(Uint8List.fromList(buffer.sublist(
             bufferLength * timer.tick, bufferLength * (timer.tick + 1))));
-        // audioBytes[bufferLength]); // Buffer the next chunk of audio data
       }
     });
     return streamController.stream;
@@ -122,7 +117,6 @@ class TestingController extends GetxController {
 
   void processAudioStream(Stream<Uint8List> audioStream) {
     audioStream.listen((audioChunk) {
-      // Perform your analysis or manipulation on the audioChunk here
       logger.d('Received audio chunk: ${audioChunk.length} bytes');
     }, onError: (error) {
       logger.d('Error occurred: $error');
@@ -136,14 +130,11 @@ class TestingController extends GetxController {
   }
 
   void test() async {
-    // Load the audio file
     Uint8List audioBytes = await loadAudioFile('assets/audio_file.mp3');
 
-    // Create a stream from the audio file with custom delay and buffer length
     Stream<Uint8List> audioStream = createAudioFileStream(audioBytes,
         delay: const Duration(milliseconds: 50), bufferLength: 512);
 
-    // Process the audio stream
     processAudioStream(audioStream);
   }
 }
