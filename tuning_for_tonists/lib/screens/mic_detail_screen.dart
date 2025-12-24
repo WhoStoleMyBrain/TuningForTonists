@@ -7,6 +7,7 @@ import 'package:tuning_for_tonists/constants/app_colors.dart';
 import 'package:tuning_for_tonists/controllers/fft_controller.dart';
 import 'package:tuning_for_tonists/controllers/mic_initialization_values_controller.dart';
 import 'package:tuning_for_tonists/controllers/mic_technical_data_controller.dart';
+import 'package:tuning_for_tonists/controllers/microphone_controller.dart';
 import 'package:tuning_for_tonists/controllers/wave_data_controller.dart';
 import 'package:tuning_for_tonists/widgets/data_display.dart';
 import 'package:tuning_for_tonists/widgets/mic_stream_control_button.dart';
@@ -29,6 +30,7 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
     MicDetailController micDetailController = Get.find();
     WaveDataController waveDataController = Get.find();
     FftController fftController = Get.find();
+    MicrophoneController microphoneController = Get.find();
     return Scaffold(
       key: micDetailController.scaffoldKey,
       appBar: AppBar(
@@ -283,6 +285,39 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                       ],
                     ),
                   ],
+                  const SizedBox(
+                    height: 32,
+                  ),
+                  const Text('PCM Capture:'),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  ElevatedButton(
+                    onPressed: microphoneController.isCapturing.isTrue
+                        ? null
+                        : () {
+                            microphoneController.startPcmCapture();
+                          },
+                    child: Text(microphoneController.isCapturing.isTrue
+                        ? 'Capturing...'
+                        : 'Capture 3s Raw PCM'),
+                  ),
+                  if (microphoneController.lastCaptureStatus.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        microphoneController.lastCaptureStatus.value,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  if (microphoneController.lastCapturePath.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        'Last file: ${microphoneController.lastCapturePath.value}',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                   const SizedBox(
                     height: 100,
                   ),
