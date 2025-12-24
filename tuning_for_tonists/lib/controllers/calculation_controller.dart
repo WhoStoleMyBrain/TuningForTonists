@@ -29,6 +29,25 @@ class CalculationController extends GetxController {
 
   Array? _hanningWindow;
 
+  double _calculatePeakStrength(List<double> data) {
+    if (data.isEmpty) {
+      return 0.0;
+    }
+    final magnitudes = data.map((value) => value.abs()).toList();
+    final maxValue = magnitudes.reduce(max);
+    final average =
+        magnitudes.reduce((value, element) => value + element) /
+            magnitudes.length;
+    if (average == 0.0) {
+      return 0.0;
+    }
+    return maxValue / average;
+  }
+
+  void _setPeakStrengthFrom(List<double> data) {
+    waveDataController.setPeakStrength(_calculatePeakStrength(data));
+  }
+
   set hanningWindow(int hanningLength) {
     _hanningWindow = hann(hanningLength);
     logger.d("Setting hanning window to length: $hanningLength");
@@ -81,6 +100,7 @@ class CalculationController extends GetxController {
     // }
     // waveDataController.setFrequencyData(filteredFrequencies.sublist(1));
     waveDataController.frequencyData = frequenciesList.sublist(31);
+    _setPeakStrengthFrom(waveDataController.frequencyData);
   }
 
   void calculateHPSManually() {
@@ -94,6 +114,7 @@ class CalculationController extends GetxController {
     }
     waveDataController.setHPSData(
         hps.sublist(0, hps.length < 5 ? hps.length : hps.length ~/ N));
+    _setPeakStrengthFrom(waveDataController.hpsData);
     var maxValue = hps.reduce(max);
     var maxIdx = hps.indexOf(maxValue);
     var freq = (maxIdx + 31) *
@@ -115,6 +136,7 @@ class CalculationController extends GetxController {
         2 *
         micTechnicalDataController.samplesPerSecond;
     waveDataController.addZeroCrossingData(frequency);
+    waveDataController.setPeakStrength(0.0);
     waveDataController.addVisibleSample(frequency);
   }
 
@@ -136,11 +158,13 @@ class CalculationController extends GetxController {
         autocorrelations.sublist(20, autocorrLength).reduce(max), 20);
     double frequency = micTechnicalDataController.samplesPerSecond / maxIdx;
     waveDataController.setAutocorrelationData(autocorrelations);
+    _setPeakStrengthFrom(waveDataController.autocorrelationData);
     waveDataController.addVisibleSample(frequency);
   }
 
   void calculateCepstrum() {
     calculateFrequenciesCepstrum();
+    _setPeakStrengthFrom(waveDataController.frequencyData);
     final maximum = waveDataController.frequencyData
             .indexOf(waveDataController.frequencyData.reduce(max)) +
         20;

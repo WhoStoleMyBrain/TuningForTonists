@@ -63,10 +63,11 @@ This plan captures the current pitch-detection pipeline, likely error sources, a
 **Goal:** Make the pipeline observable and repeatable without changing algorithms yet.
 
 **Tasks**
-- Add a debug overlay / log line that shows:
+- Add a debug overlay / log line that shows: **IMPLEMENTED—NEEDS LOCAL VERIFICATION**
   - actual runtime sample rate, buffer size, bit depth, channel config
   - selected calculation method (Cepstrum/HPS/Autocorrelation/ZeroCrossing)
   - raw detected frequency + confidence/strength metric (peak magnitude / ratio)
+  - Local verification: run on a device to confirm values populate in the debug overlay.
 - Add a “capture a short sample” path that stores a few seconds of **raw PCM** to a local file (if feasible with existing deps).
 - Add an in-app **synthetic tone generator** for validation (pure Dart), so known frequencies can be fed directly into the analysis pipeline.
 
