@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -12,11 +13,31 @@ class TestingController extends GetxController {
   Rx<String> _currentAudioFile = ''.obs;
   List<String> guitarAudioFilePaths = [];
   final MicTechnicalDataController micTechnicalDataController = Get.find();
+  final RxBool useSyntheticTone = false.obs;
+  final RxDouble syntheticFrequency = 440.0.obs;
+  final List<double> syntheticFrequencies = const [
+    110.0,
+    196.0,
+    220.0,
+    329.6,
+    440.0,
+  ];
+  final int syntheticFrameSize = 512;
 
   String get currentAudioFile => _currentAudioFile.value;
 
   set currentAudioFile(String newAudioFile) {
     _currentAudioFile = newAudioFile.obs;
+  }
+
+  void setUseSyntheticTone(bool enabled) {
+    useSyntheticTone.value = enabled;
+    update();
+  }
+
+  void setSyntheticFrequency(double frequency) {
+    syntheticFrequency.value = frequency;
+    update();
   }
 
   Future<Uint8List> loadAudioFile(String path) async {
@@ -71,6 +92,31 @@ class TestingController extends GetxController {
         // audioBytes[bufferLength]); // Buffer the next chunk of audio data
       }
     });
+    return streamController.stream;
+  }
+
+  Stream<List<double>> createSyntheticToneStream(
+      {required double frequency, required int sampleRate}) {
+    final streamController = StreamController<List<double>>();
+    final frameDuration = Duration(
+        microseconds: (1000000 * syntheticFrameSize / sampleRate).round());
+    final step = 2 * pi * frequency / sampleRate;
+    var phase = 0.0;
+    Timer? timer;
+    timer = Timer.periodic(frameDuration, (_) {
+      final samples = List<double>.generate(syntheticFrameSize, (_) {
+        final value = sin(phase);
+        phase += step;
+        if (phase >= 2 * pi) {
+          phase -= 2 * pi;
+        }
+        return value;
+      }, growable: false);
+      streamController.add(samples);
+    });
+    streamController.onCancel = () {
+      timer?.cancel();
+    };
     return streamController.stream;
   }
 

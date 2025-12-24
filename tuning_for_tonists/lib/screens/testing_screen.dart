@@ -31,6 +31,31 @@ class TestingScreen extends GetView<InfoController> {
         return Center(
           child: Column(
             children: [
+              SwitchListTile(
+                title: const Text('Use synthetic tone'),
+                value: testingController.useSyntheticTone.value,
+                onChanged: (enabled) =>
+                    testingController.setUseSyntheticTone(enabled),
+              ),
+              if (testingController.useSyntheticTone.value)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: DropdownButton<double>(
+                    value: testingController.syntheticFrequency.value,
+                    isExpanded: true,
+                    items: testingController.syntheticFrequencies
+                        .map((frequency) => DropdownMenuItem<double>(
+                              value: frequency,
+                              child: Text('${frequency.toStringAsFixed(1)} Hz'),
+                            ))
+                        .toList(),
+                    onChanged: (frequency) {
+                      if (frequency != null) {
+                        testingController.setSyntheticFrequency(frequency);
+                      }
+                    },
+                  ),
+                ),
               ...testingController.guitarAudioFilePaths
                   .map((e) => Text(e))
                   .toList(),

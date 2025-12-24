@@ -31,6 +31,11 @@ abstract class MicrophoneHelper {
         return stream;
       case StreamSource.audioFile:
         TestingController testingController = Get.find();
+        if (testingController.useSyntheticTone.isTrue) {
+          return testingController.createSyntheticToneStream(
+              frequency: testingController.syntheticFrequency.value,
+              sampleRate: micInitializationValuesController.sampleRate);
+        }
         Uint8List audioBytes = await testingController.loadCurrentAudioFile();
         // logger.d("received bytes: ${audioBytes.length}");
         // Create a stream from the audio file with custom delay and buffer length
@@ -99,10 +104,18 @@ abstract class MicrophoneHelper {
     return waveData;
   }
 
-  static List<double> calculateWaveData(Uint8List samples) {
+  static List<double> calculateWaveData(dynamic samples) {
     MicrophoneController microphoneController = Get.find();
     if (microphoneController.streamSource == StreamSource.audioFile) {
-      return List.from(samples);
+      if (samples is List<double>) {
+        return samples;
+      }
+      if (samples is Uint8List) {
+        return List.from(samples);
+      }
+    }
+    if (samples is! Uint8List) {
+      return [];
     }
     List<double> waveData = [];
     if (micInitializationValuesController.audioFormat.value ==
@@ -118,6 +131,15 @@ abstract class MicrophoneHelper {
       }
     }
     return waveData;
+  }
+
+  static void setSyntheticTechnicalData(
+      {required int bytesPerSample,
+      required int samplesPerSecond,
+      required int bufferSize}) {
+    micTechnicalDataController.setMicTechnicalData(
+        bytesPerSample, samplesPerSecond, bufferSize);
+    calculationController.hanningWindow = samplesPerSecond ~/ 2;
   }
 
   static void stopMicrophone() {

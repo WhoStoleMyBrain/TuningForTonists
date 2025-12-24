@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../helpers/microphone_helper.dart';
+import '../controllers/mic_initialization_values_controller.dart';
+import '../controllers/mic_technical_data_controller.dart';
+import '../controllers/testing_controller.dart';
 
 enum Command {
   start,
@@ -153,7 +156,21 @@ class MicrophoneController extends FullLifeCycleController
     isActive = true.obs;
     isRecording = true.obs;
     listener = stream!.listen((data) => calculateDisplayData(data));
-    await MicrophoneHelper.setMicTechnicalData();
+    if (streamSource == StreamSource.audioFile) {
+      TestingController testingController = Get.find();
+      if (testingController.useSyntheticTone.isTrue) {
+        MicInitializationValuesController micInitializationValuesController =
+            Get.find();
+        MicrophoneHelper.setSyntheticTechnicalData(
+            bytesPerSample: 2,
+            samplesPerSecond: micInitializationValuesController.sampleRate,
+            bufferSize: testingController.syntheticFrameSize);
+      } else {
+        await MicrophoneHelper.setMicTechnicalData();
+      }
+    } else {
+      await MicrophoneHelper.setMicTechnicalData();
+    }
     update();
     return true;
   }

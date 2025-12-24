@@ -20,11 +20,18 @@ class _TestDataFeedButtonState extends State<TestDataFeedButton> {
       return GetBuilder<MicrophoneController>(
         builder: (microphoneController) => FloatingActionButton(
           heroTag: null,
-          onPressed: () {
+          onPressed: () async {
             performanceController.resetCalculationDuration();
             microphoneController.streamSource = StreamSource.audioFile;
-            testingController.currentAudioFile =
-                testingController.guitarAudioFilePaths.first;
+            if (testingController.useSyntheticTone.isFalse &&
+                testingController.guitarAudioFilePaths.isEmpty) {
+              await testingController.initAssets();
+            }
+            if (testingController.useSyntheticTone.isFalse &&
+                testingController.guitarAudioFilePaths.isNotEmpty) {
+              testingController.currentAudioFile =
+                  testingController.guitarAudioFilePaths.first;
+            }
             microphoneController.controlMicStream();
           },
           tooltip: (microphoneController.isRecording.isTrue)
