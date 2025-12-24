@@ -12,7 +12,6 @@ class WaveDataController extends GetxController {
 
   Rx<int> _waveDataLength = 4096.obs;
   RxList<double> waveData = List.filled(4096, 0.0).obs;
-  // final RxList<double> waveData = RxList.filled(4096, 0, growable: true);
   final RxList<double> fftData = <double>[0].obs;
   final RxList<double> autocorrelationData = <double>[1].obs;
   final RxList<double> hpsData = <double>[0].obs;
@@ -21,7 +20,6 @@ class WaveDataController extends GetxController {
   Rx<CalculationType> calculationType = CalculationType.Cepstrum.obs;
 
   final MicTechnicalDataController micTechnicalDataController = Get.find();
-  // final CalculationController calculationController = Get.find();
 
   List<double> get doubleWaveData =>
       waveData.map((element) => element.toDouble()).toList();
@@ -31,7 +29,6 @@ class WaveDataController extends GetxController {
   set waveDataLength(int newLength) {
     _waveDataLength = newLength.obs;
     waveData = RxList.filled(_waveDataLength.value, 0, growable: true);
-    // calculationController.hanningWindow = newLength;
     refresh();
   }
 

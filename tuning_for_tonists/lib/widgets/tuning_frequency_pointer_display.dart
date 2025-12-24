@@ -5,11 +5,9 @@ import 'package:get/get.dart';
 import '../controllers/tuning_controller.dart';
 import '../controllers/wave_data_controller.dart';
 
-// ignore: must_be_immutable
 class TuningFrequencyPointerDisplay extends StatelessWidget {
   TuningFrequencyPointerDisplay({super.key});
 
-  // TuningController tuningController = Get.find();
   final WaveDataController waveDataController = Get.find();
 
   @override
@@ -26,7 +24,6 @@ class TuningFrequencyPointerDisplay extends StatelessWidget {
           size: Size(MediaQuery.of(context).size.width,
               MediaQuery.of(context).size.height * 0.3),
           willChange: true,
-          // child: ,
         ),
       );
     });
@@ -66,7 +63,6 @@ class FrequencyDialPainter extends CustomPainter {
       ..strokeWidth = 3.0
       ..color = tuningColor;
 
-    // Draw the full dial
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
       degreesToRadians(-60 - 90),
@@ -75,7 +71,6 @@ class FrequencyDialPainter extends CustomPainter {
       dialPaint,
     );
 
-    // Draw the acceptance band
     double lowerBoundAngle =
         calculateAngle(targetFrequency - frequencyRange) - 90 - 60;
     double upperBoundAngle =
@@ -88,7 +83,6 @@ class FrequencyDialPainter extends CustomPainter {
       acceptanceBandPaint,
     );
 
-    // Draw the pointer
     double currentAngle = calculateAngle(currentFrequency) - 90 - 60;
     if (currentAngle > -30) {
       currentAngle = -30;
@@ -105,10 +99,8 @@ class FrequencyDialPainter extends CustomPainter {
   }
 
   double calculateAngle(double frequency) {
-    // Your logic here to map the frequency to an angle from -60 to +60 degrees
-    // For example:
+    // Map frequency ratio to dial degrees within the visible arc.
     return (frequency / targetFrequency) * 60;
-    // return 0.0;
   }
 
   @override

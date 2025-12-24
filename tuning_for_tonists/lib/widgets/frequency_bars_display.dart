@@ -140,7 +140,6 @@ class FrequencyBarsDisplay extends StatelessWidget {
       print(
           'd: $d; T: ${tuningController.targetFrequency}; dT: $dT, lnAlpha: $lnAlpha, lnVal: $lnVal');
     }
-    // double valueInCents = actualValue;
     if (kDebugMode) {
       print('calculated cents: $x');
     }
@@ -172,7 +171,6 @@ class FrequencyBarsDisplay extends StatelessWidget {
               size: 16,
             ),
           ),
-          //TODO Check if I want to display frequency with digits after the . or not
           Text(
             '${tuningController.targetFrequency.toStringAsFixed(0)} Hz',
             style: const TextStyle(color: AppColors.onBackgroundColor),

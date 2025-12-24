@@ -10,8 +10,6 @@ import 'package:tuning_for_tonists/controllers/mic_technical_data_controller.dar
 import 'package:tuning_for_tonists/controllers/wave_data_controller.dart';
 import 'package:tuning_for_tonists/widgets/data_display.dart';
 import 'package:tuning_for_tonists/widgets/mic_stream_control_button.dart';
-
-// import '../controllers/microphone_controller.dart';
 import '../view_controllers/mic_detail_controller.dart';
 import '../widgets/app_drawer.dart';
 
@@ -31,7 +29,6 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
     MicDetailController micDetailController = Get.find();
     WaveDataController waveDataController = Get.find();
     FftController fftController = Get.find();
-    // MicrophoneController microphoneController = Get.find();
     return Scaffold(
       key: micDetailController.scaffoldKey,
       appBar: AppBar(
@@ -159,7 +156,6 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                         ..apply(color: AppColors.onPrimaryColor),
                       prefixStyle: const TextStyle()
                         ..apply(color: AppColors.onPrimaryColor),
-                      // labelText: 'Sample Rate',
                     ),
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -182,7 +178,6 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                         ..apply(color: AppColors.onPrimaryColor),
                       prefixStyle: const TextStyle()
                         ..apply(color: AppColors.onPrimaryColor),
-                      // labelText: 'Sample Rate',
                     ),
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],

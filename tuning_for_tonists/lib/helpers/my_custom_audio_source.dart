@@ -1,4 +1,3 @@
-// Feed your own stream of bytes into the player
 import 'package:just_audio/just_audio.dart';
 
 class MyCustomAudioSource extends StreamAudioSource {
@@ -18,6 +17,3 @@ class MyCustomAudioSource extends StreamAudioSource {
     );
   }
 }
-
-// await player.setAudioSource(MyCustomSource());
-// player.play();

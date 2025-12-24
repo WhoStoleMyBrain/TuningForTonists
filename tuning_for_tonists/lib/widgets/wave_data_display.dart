@@ -99,7 +99,6 @@ class WaveDataDisplay extends StatelessWidget {
                           dotData: const FlDotData(show: false),
                         ),
                       ],
-                      // minY: 0,
                       minY: waveDataController.waveData.reduce(min).toDouble(),
                       maxY: waveDataController.waveData.reduce(max).toDouble(),
                       minX: 0,

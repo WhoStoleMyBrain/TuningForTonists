@@ -35,9 +35,8 @@ class CalculationController extends GetxController {
     }
     final magnitudes = data.map((value) => value.abs()).toList();
     final maxValue = magnitudes.reduce(max);
-    final average =
-        magnitudes.reduce((value, element) => value + element) /
-            magnitudes.length;
+    final average = magnitudes.reduce((value, element) => value + element) /
+        magnitudes.length;
     if (average == 0.0) {
       return 0.0;
     }
@@ -52,7 +51,6 @@ class CalculationController extends GetxController {
     _hanningWindow = hann(hanningLength);
     logger.d("Setting hanning window to length: $hanningLength");
     refresh();
-    // update();
   }
 
   void setSamplesToCalculate(int newSamplesToCalculate) {
@@ -81,24 +79,10 @@ class CalculationController extends GetxController {
   }
 
   void calculateFrequency2() {
-    // List<double> waveDataListHanninged = [];
-    // for (var waveData in waveDataController.doubleWaveData) {
-    //   waveDataListHanninged.add(micTechnicalDataController.butterworthHighpass
-    //       .filter(
-    //           micTechnicalDataController.butterworthLowpass.filter(waveData)));
-    // }
-    Array waveDat = Array(waveDataController.doubleWaveData);
-    Array hanningedWaveData = getHanningWindow() * waveDat;
+    Array waveDataArray = Array(waveDataController.doubleWaveData);
+    Array hanningedWaveData = getHanningWindow() * waveDataArray;
     final frequenciesList = fftController.applyRealFft(hanningedWaveData);
-    // final frequenciesList = fftController.applyRealFft(waveDataListHanninged);
-    // final frequenciesList =
-    //     fftController.applyRealFft(waveDataController.doubleWaveData);
-    // List<double> filteredFrequencies = [];
-    // for (var freq in frequenciesList) {
-    //   filteredFrequencies.add(micTechnicalDataController.butterworthHighpass
-    //       .filter(micTechnicalDataController.butterworthLowpass.filter(freq)));
-    // }
-    // waveDataController.setFrequencyData(filteredFrequencies.sublist(1));
+    // Skip low-frequency bins that are dominated by noise/DC offsets.
     waveDataController.frequencyData = frequenciesList.sublist(31);
     _setPeakStrengthFrom(waveDataController.frequencyData);
   }
@@ -143,8 +127,9 @@ class CalculationController extends GetxController {
   void calculateAutocorrelation() {
     List<double> autocorrelations = [];
     double autocorrelation = 0;
-    int autocorrLength = min(waveDataController.waveData.length,
-        137); //530 from 44100 / 80 Hz. 137 = 8192/80 Hz
+    // Limit lag window to keep autocorrelation work bounded.
+    int autocorrLength =
+        min(waveDataController.waveData.length, 137); // 8192 / 80 Hz
     for (var i = 0; i < autocorrLength; i++) {
       for (var k = 0; k < waveDataController.waveData.length - 1 - i; k++) {
         autocorrelation +=
@@ -209,11 +194,8 @@ class CalculationController extends GetxController {
 
     tuningController.checkIfNoteTuned();
     samplesCalculated++;
-    if (true) {
-      // todo: only do this if a screen where performance is needed is used
-      performanceController
-          .addCalculationDuration(stopwatch.elapsed.inMilliseconds / 1000.0);
-    }
+    performanceController
+        .addCalculationDuration(stopwatch.elapsed.inMilliseconds / 1000.0);
     if (samplesCalculated.value > totalSamplesToCalculate.value) {
       MicrophoneHelper.stopMicrophone();
       samplesCalculated = 0.obs;

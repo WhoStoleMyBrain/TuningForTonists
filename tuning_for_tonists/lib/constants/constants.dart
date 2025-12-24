@@ -2,9 +2,6 @@ import 'package:tuning_for_tonists/models/note.dart';
 import 'package:tuning_for_tonists/models/tuning_configuration.dart';
 
 class Constants {
-  // static List<TuningConfiguration> defaultTuningConfigurations =
-  //     defaultGuitarTuningConfigurations
-  //       ..addAll(defaultUkuleleTuningConfigurations);
   static List<TuningConfiguration> defaultGuitarTuningConfigurations = [
     TuningConfiguration([
       Note(frequency: 82.41, name: 'E2'),

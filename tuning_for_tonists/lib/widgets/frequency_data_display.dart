@@ -99,7 +99,6 @@ class FrequencyDataDisplay extends StatelessWidget {
                           dotData: const FlDotData(show: false),
                         ),
                       ],
-                      // minY: 0,
                       minY: waveDataController.fftData.reduce(min).toDouble(),
                       maxY: waveDataController.fftData.reduce(max).toDouble(),
                       minX: 0,

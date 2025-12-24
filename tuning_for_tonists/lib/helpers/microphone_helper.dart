@@ -37,8 +37,6 @@ abstract class MicrophoneHelper {
               sampleRate: micInitializationValuesController.sampleRate);
         }
         Uint8List audioBytes = await testingController.loadCurrentAudioFile();
-        // logger.d("received bytes: ${audioBytes.length}");
-        // Create a stream from the audio file with custom delay and buffer length
         MicTechnicalDataController micTechnicalDataController = Get.find();
         Stream<Uint8List> audioStream = testingController.createAudioFileStream(
             audioBytes,
@@ -47,11 +45,6 @@ abstract class MicrophoneHelper {
                     (micInitializationValuesController.sampleRate *
                         micTechnicalDataController.bytesPerSample)),
             bufferLength: micTechnicalDataController.bufferSize);
-
-        // Process the audio stream
-        // testingController.processAudioStream(audioStream);
-        // Stream<Uint8List> stream =
-        //     testingController.createAudioFileStream(audioBytes);
         return audioStream;
     }
   }
@@ -63,8 +56,6 @@ abstract class MicrophoneHelper {
     micTechnicalDataController.setMicTechnicalData(
         bytesPerSample, samplesPerSecond, bufferSize);
     calculationController.hanningWindow = samplesPerSecond ~/ 2;
-    // logger.d("Did in fact set hanning window!");
-    // logger.d(calculationController.getHanningWindow());
   }
 
   static List<double> eightBitWaveDataCalculation(Uint8List samples) {

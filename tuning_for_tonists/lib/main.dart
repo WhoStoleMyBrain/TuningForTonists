@@ -1,5 +1,3 @@
-import 'dart:core';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mic_stream/mic_stream.dart';
@@ -73,11 +71,9 @@ class _MyAppState extends State<MyApp> {
         TuningConfigurationsController()
           ..loadDefaultTuningConfigurations()
           ..loadCustomTuningConfigurations();
-    //TODO: Recheck this call, there has to be a way better way
     Get.lazyPut(
         () => MicInitializationValuesController(8192.obs,
             audioFormat: AudioFormat.ENCODING_PCM_16BIT.obs,
-            // sampleRate: 44100.obs,
             channelConfig: ChannelConfig.CHANNEL_IN_MONO.obs,
             audioSource: AudioSource.DEFAULT.obs),
         fenix: true);
@@ -104,8 +100,6 @@ class _MyAppState extends State<MyApp> {
         fenix: true);
     return GetMaterialApp(
       title: 'Tuning for Tonists',
-      // The theme of your application.
-
       theme: ThemeData(
         primarySwatch: createMaterialColor(AppColors.colorForSwatch),
         dropdownMenuTheme: const DropdownMenuThemeData(
@@ -123,7 +117,6 @@ class _MyAppState extends State<MyApp> {
             shadowColor: AppColors.backgroundColor,
             elevation: 0.0),
         scaffoldBackgroundColor: AppColors.backgroundColor,
-        // canvasColor: Colors.black45,
         textTheme: const TextTheme(
           bodyLarge: TextStyle(),
           bodyMedium: TextStyle(),

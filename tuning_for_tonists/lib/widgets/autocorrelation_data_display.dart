@@ -101,7 +101,6 @@ class AutocorrelationDataDisplay extends StatelessWidget {
                           dotData: const FlDotData(show: false),
                         ),
                       ],
-                      // minY: 0,
                       minY: waveDataController.autocorrelationData
                           .reduce(min)
                           .toDouble(),
@@ -124,7 +123,6 @@ class AutocorrelationDataDisplay extends StatelessWidget {
                           strokeWidth: 0.8,
                         ),
                       ),
-
                       borderData: FlBorderData(show: false),
                     ),
                   ),
