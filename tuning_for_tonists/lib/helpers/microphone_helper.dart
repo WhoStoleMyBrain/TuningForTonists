@@ -69,27 +69,12 @@ abstract class MicrophoneHelper {
   }
 
   static List<double> sixteenBitWaveDataCalculation(Uint8List samples) {
-    MicTechnicalDataController micTechnicalDataController = Get.find();
     List<double> waveData = [];
-    List<int> newSamples = [];
-    if (micTechnicalDataController.bytesPerSample == 2) {
-      newSamples = samples.buffer.asUint8List(4);
-    } else {
-      newSamples = samples.buffer.asUint8List();
-    }
-    double tmpSample = 0;
-    bool first = false;
-    for (int sample in newSamples.sublist(1)) {
-      if (sample > 128) sample -= 255;
-      if (first) {
-        tmpSample = sample * 128;
-      } else {
-        tmpSample += sample;
-        tmpSample /= 32768;
-        waveData.add(tmpSample.toDouble());
-        tmpSample = 0;
-      }
-      first = !first;
+    final byteData =
+        samples.buffer.asByteData(samples.offsetInBytes, samples.lengthInBytes);
+    for (int i = 0; i + 1 < byteData.lengthInBytes; i += 2) {
+      final sample = byteData.getInt16(i, Endian.little);
+      waveData.add(sample / 32768.0);
     }
 
     return waveData;
