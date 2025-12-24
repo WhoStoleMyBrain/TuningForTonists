@@ -8,7 +8,6 @@ import 'package:scidart/scidart.dart';
 import '../helpers/microphone_helper.dart';
 import '../constants/calculation_type.dart';
 import 'fft_controller.dart';
-import 'mic_initialization_values_controller.dart';
 import 'mic_technical_data_controller.dart';
 import 'performance_controller.dart';
 import 'tuning_controller.dart';
@@ -16,8 +15,6 @@ import 'wave_data_controller.dart';
 
 class CalculationController extends GetxController {
   WaveDataController waveDataController = Get.find();
-  MicInitializationValuesController micInitializationValuesController =
-      Get.find();
   FftController fftController = Get.find();
   MicTechnicalDataController micTechnicalDataController = Get.find();
   PerformanceController performanceController = Get.find();
@@ -102,7 +99,7 @@ class CalculationController extends GetxController {
     var maxValue = hps.reduce(max);
     var maxIdx = hps.indexOf(maxValue);
     var freq = (maxIdx + 31) *
-        micInitializationValuesController.sampleRate /
+        micTechnicalDataController.samplesPerSecond /
         waveDataController.waveData.length;
     waveDataController.addVisibleSample(freq);
   }
