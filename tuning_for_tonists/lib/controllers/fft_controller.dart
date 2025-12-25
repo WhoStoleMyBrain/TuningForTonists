@@ -65,12 +65,29 @@ class FftController extends GetxController {
     _fftHalf.value = newFft;
   }
 
+  List<double> _prepareWaveData(List<double> waveData, int targetLength) {
+    if (waveData.length == targetLength) {
+      return waveData;
+    }
+    if (waveData.length > targetLength) {
+      return waveData.sublist(0, targetLength);
+    }
+    final padded = List<double>.filled(targetLength, 0.0);
+    padded.setRange(0, waveData.length, waveData);
+    return padded;
+  }
+
   Float64List applyRealFft(List<double> waveData) {
-    return fft.realFft(waveData).discardConjugates().squareMagnitudes();
+    final preparedWaveData = _prepareWaveData(waveData, fftLength);
+    return fft.realFft(preparedWaveData).discardConjugates().squareMagnitudes();
   }
 
   Float64List applyRealFftHalf(List<double> waveData) {
-    return fftHalf.realFft(waveData).discardConjugates().squareMagnitudes();
+    final preparedWaveData = _prepareWaveData(waveData, fftLength ~/ 2);
+    return fftHalf
+        .realFft(preparedWaveData)
+        .discardConjugates()
+        .squareMagnitudes();
   }
 
   double getMaxFrequency(List<double> frequencyData) {
