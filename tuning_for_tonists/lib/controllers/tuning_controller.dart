@@ -4,6 +4,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
+import 'package:tuning_for_tonists/constants/calculation_type.dart';
 import 'package:tuning_for_tonists/enums/tuning_method.dart';
 import '../controllers/mic_technical_data_controller.dart';
 import '../controllers/wave_data_controller.dart';
@@ -116,7 +117,9 @@ class TuningController extends GetxController {
   List<Note> get allNotes => _tuningConfiguration!.value.notes;
 
   void checkIfNoteTuned() {
-    if (waveDataController.confidence < confidenceThreshold) {
+    final bool shouldGate = waveDataController.calculationType.value !=
+        CalculationType.ZeroCrossing;
+    if (shouldGate && waveDataController.confidence < confidenceThreshold) {
       percentageRight = 0.0;
       percentageWrong = 1.0;
       tuningDistance = 0.0;
