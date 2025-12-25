@@ -15,6 +15,7 @@ class FftController extends GetxController {
   FFT get fftHalf => _fftHalf.value;
 
   final Rx<int> _fftLength = 4096.obs;
+  final RxBool lockFftToWaveData = true.obs;
 
   int get fftLength => _fftLength.value;
   MicTechnicalDataController micTechnicalDataController = Get.find();
@@ -24,9 +25,36 @@ class FftController extends GetxController {
     _fftLength.value = newFftLength;
     _setFft(FFT(fftLength));
     fftHalf = FFT(fftLength ~/ 2);
-    waveDataController.waveDataLength = newFftLength;
-    waveDataController.waveData.value = List.filled(newFftLength, 0);
+    if (lockFftToWaveData.value) {
+      waveDataController.waveDataLength = newFftLength;
+    }
     refresh();
+  }
+
+  void setWaveDataLength(int newLength) {
+    waveDataController.waveDataLength = newLength;
+    if (lockFftToWaveData.value) {
+      _fftLength.value = newLength;
+      _setFft(FFT(newLength));
+      fftHalf = FFT(newLength ~/ 2);
+    }
+    refresh();
+  }
+
+  void setLockFftToWaveData(bool isLocked) {
+    lockFftToWaveData.value = isLocked;
+    if (isLocked) {
+      setWaveDataLength(waveDataController.waveDataLength);
+    }
+    refresh();
+  }
+
+  double get fftResolution {
+    final sampleRate = micTechnicalDataController.samplesPerSecond;
+    if (fftLength == 0 || sampleRate <= 1) {
+      return 0.0;
+    }
+    return sampleRate / fftLength;
   }
 
   void _setFft(FFT newFft) {
@@ -37,12 +65,29 @@ class FftController extends GetxController {
     _fftHalf.value = newFft;
   }
 
+  List<double> _prepareWaveData(List<double> waveData, int targetLength) {
+    if (waveData.length == targetLength) {
+      return waveData;
+    }
+    if (waveData.length > targetLength) {
+      return waveData.sublist(0, targetLength);
+    }
+    final padded = List<double>.filled(targetLength, 0.0);
+    padded.setRange(0, waveData.length, waveData);
+    return padded;
+  }
+
   Float64List applyRealFft(List<double> waveData) {
-    return fft.realFft(waveData).discardConjugates().squareMagnitudes();
+    final preparedWaveData = _prepareWaveData(waveData, fftLength);
+    return fft.realFft(preparedWaveData).discardConjugates().squareMagnitudes();
   }
 
   Float64List applyRealFftHalf(List<double> waveData) {
-    return fftHalf.realFft(waveData).discardConjugates().squareMagnitudes();
+    final preparedWaveData = _prepareWaveData(waveData, fftLength ~/ 2);
+    return fftHalf
+        .realFft(preparedWaveData)
+        .discardConjugates()
+        .squareMagnitudes();
   }
 
   double getMaxFrequency(List<double> frequencyData) {

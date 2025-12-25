@@ -172,7 +172,7 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                   TextField(
                     decoration: InputDecoration(
                       label: const Text(
-                        "Wave Data Length & FFT Length",
+                        "Wave Data Length",
                       ),
                       labelStyle: const TextStyle()
                         ..apply(color: AppColors.onPrimaryColor),
@@ -184,9 +184,40 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     onSubmitted: (value) {
-                      waveDataController.waveDataLength =
-                          int.tryParse(value) ?? 4096;
+                      fftController
+                          .setWaveDataLength(int.tryParse(value) ?? 4096);
+                      setState(
+                        () {},
+                      );
+                    },
+                  ),
+                  TextField(
+                    decoration: InputDecoration(
+                      label: const Text(
+                        "FFT Length",
+                      ),
+                      labelStyle: const TextStyle()
+                        ..apply(color: AppColors.onPrimaryColor),
+                      floatingLabelStyle: const TextStyle()
+                        ..apply(color: AppColors.onPrimaryColor),
+                      prefixStyle: const TextStyle()
+                        ..apply(color: AppColors.onPrimaryColor),
+                    ),
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    onSubmitted: (value) {
                       fftController.fftLength = int.tryParse(value) ?? 0;
+                      setState(
+                        () {},
+                      );
+                    },
+                  ),
+                  CheckboxListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Lock FFT length to wave data length'),
+                    value: fftController.lockFftToWaveData.value,
+                    onChanged: (value) {
+                      fftController.setLockFftToWaveData(value ?? true);
                       setState(
                         () {},
                       );
@@ -253,6 +284,14 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                         const Text('Runtime Bit Depth:'),
                         Text(
                             ' ${micTechnicalDataController.bytesPerSample <= 1 ? "Not Initialized" : micTechnicalDataController.bytesPerSample * 8}')
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('FFT Resolution:'),
+                        Text(
+                            ' ${fftController.fftResolution.toStringAsFixed(2)} Hz/bin')
                       ],
                     ),
                     Row(
