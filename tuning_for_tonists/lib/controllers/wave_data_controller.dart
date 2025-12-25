@@ -17,6 +17,7 @@ class WaveDataController extends GetxController {
   final RxList<double> hpsData = <double>[0].obs;
   final RxList<double> zeroCrossingData = <double>[0].obs;
   final RxDouble _peakStrength = 0.0.obs;
+  final RxList<double> confidenceSamples = <double>[0].obs;
   Rx<CalculationType> calculationType = CalculationType.Cepstrum.obs;
 
   final MicTechnicalDataController micTechnicalDataController = Get.find();
@@ -58,9 +59,15 @@ class WaveDataController extends GetxController {
   List<double> get frequencyData => fftData;
 
   double get peakStrength => _peakStrength.value;
+  double get confidence => _peakStrength.value;
 
   void setPeakStrength(double newPeakStrength) {
     _peakStrength.value = newPeakStrength;
+    refresh();
+  }
+
+  void setConfidence(double newConfidence) {
+    _peakStrength.value = newConfidence;
     refresh();
   }
 
@@ -96,14 +103,18 @@ class WaveDataController extends GetxController {
 
   void addVisibleSamples(List<double> newVisibleSamples) {
     visibleSamples.addAll(newVisibleSamples);
+    confidenceSamples.addAll(List.filled(newVisibleSamples.length, confidence));
 
     setNumberOfVisibleDataPoints();
+    setNumberOfConfidenceDataPoints();
     update();
   }
 
   void addVisibleSample(double newVisibleSample) {
     visibleSamples.add(newVisibleSample);
+    confidenceSamples.add(confidence);
     setNumberOfVisibleDataPoints();
+    setNumberOfConfidenceDataPoints();
     update();
   }
 
@@ -111,6 +122,13 @@ class WaveDataController extends GetxController {
     if (visibleSamples.length > 200) {
       visibleSamples.value = visibleSamples.sublist(
           visibleSamples.length - 200, visibleSamples.length);
+    }
+  }
+
+  void setNumberOfConfidenceDataPoints() {
+    if (confidenceSamples.length > 200) {
+      confidenceSamples.value = confidenceSamples.sublist(
+          confidenceSamples.length - 200, confidenceSamples.length);
     }
   }
 
