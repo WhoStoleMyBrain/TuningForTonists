@@ -23,6 +23,7 @@ class TuningController extends GetxController {
   final Rx<double> _percentageRight = 0.0.obs;
   final Rx<double> _percentageWrong = 0.0.obs;
   final Rx<double> _tuningThreshold = 0.95.obs;
+  final Rx<double> _confidenceThreshold = 2.0.obs;
   final Rx<double> _tuningDistance = 0.0.obs;
   final Rx<Color> _tuningColor = const Color.fromRGBO(255, 0, 0, 1.0).obs;
   Logger logger = Logger(filter: DevelopmentFilter());
@@ -67,6 +68,7 @@ class TuningController extends GetxController {
   double get percentageWrong => _percentageWrong.value;
 
   double get tuningThreshold => _tuningThreshold.value;
+  double get confidenceThreshold => _confidenceThreshold.value;
 
   set tuningColor(Color newColor) {
     _tuningColor.value = newColor;
@@ -114,6 +116,15 @@ class TuningController extends GetxController {
   List<Note> get allNotes => _tuningConfiguration!.value.notes;
 
   void checkIfNoteTuned() {
+    if (waveDataController.confidence < confidenceThreshold) {
+      percentageRight = 0.0;
+      percentageWrong = 1.0;
+      tuningDistance = 0.0;
+      tuningColor = const Color.fromRGBO(255, 0, 0, 1.0);
+      _targetNote.value.tuned = false;
+      update();
+      return;
+    }
     var tuned = checkWaveData();
     _targetNote.value.tuned = tuned;
     update();

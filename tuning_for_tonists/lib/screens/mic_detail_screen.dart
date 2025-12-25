@@ -9,6 +9,7 @@ import 'package:tuning_for_tonists/controllers/mic_initialization_values_control
 import 'package:tuning_for_tonists/controllers/mic_technical_data_controller.dart';
 import 'package:tuning_for_tonists/controllers/microphone_controller.dart';
 import 'package:tuning_for_tonists/controllers/wave_data_controller.dart';
+import 'package:tuning_for_tonists/controllers/tuning_controller.dart';
 import 'package:tuning_for_tonists/widgets/data_display.dart';
 import 'package:tuning_for_tonists/widgets/mic_stream_control_button.dart';
 import '../view_controllers/mic_detail_controller.dart';
@@ -31,6 +32,7 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
     WaveDataController waveDataController = Get.find();
     FftController fftController = Get.find();
     MicrophoneController microphoneController = Get.find();
+    TuningController tuningController = Get.find();
     return Scaffold(
       key: micDetailController.scaffoldKey,
       appBar: AppBar(
@@ -50,7 +52,7 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
         final latestFrequency = waveDataController.visibleSamples.isNotEmpty
             ? waveDataController.visibleSamples.last
             : 0.0;
-        final peakStrength = waveDataController.peakStrength;
+        final confidence = waveDataController.confidence;
         final calculationType = waveDataController.calculationType.value;
         String runtimeValue(int value) =>
             value <= 1 ? 'Not Initialized' : value.toString();
@@ -319,8 +321,16 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Peak Strength:'),
-                        Text(' ${peakStrength.toStringAsFixed(2)}')
+                        const Text('Confidence (PAR):'),
+                        Text(' ${confidence.toStringAsFixed(2)}')
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Confidence Threshold:'),
+                        Text(
+                            ' ${tuningController.confidenceThreshold.toStringAsFixed(2)}')
                       ],
                     ),
                   ],
