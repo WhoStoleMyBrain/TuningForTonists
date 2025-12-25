@@ -96,7 +96,7 @@ This plan captures the current pitch-detection pipeline, likely error sources, a
 - Ensure **all frequency calculations use the actual runtime sample rate** (from `MicStream.sampleRate`) rather than the initialization value. **IMPLEMENTED—NEEDS LOCAL VERIFICATION** (verify on device that detected pitch does not shift when runtime sample rate differs from initialization).
 - Replace the 16-bit PCM conversion logic with a verified **little-endian Int16** decoder (consistent with mic_stream output). **IMPLEMENTED—NEEDS LOCAL VERIFICATION** (verify on device mic capture that waveform/pitch accuracy is correct for PCM16).
 - Make bin-skipping explicit and documented, or remove ad-hoc offsets like `sublist(31)` unless justified. **IMPLEMENTED—NEEDS LOCAL VERIFICATION** (verify bin-to-frequency mapping on device with synthetic tones).
-- Ensure window length and FFT size are consistent with the visible sample rate, and track the effective FFT resolution.
+- Ensure window length and FFT size are consistent with the visible sample rate, and track the effective FFT resolution. **IMPLEMENTED—NEEDS LOCAL VERIFICATION** (verify FFT length lock toggle and resolution display on device).
 - Introduce a simple **confidence metric** (peak-to-average ratio or harmonic ratio) to gate low-confidence readings.
 
 **Likely files to change**
