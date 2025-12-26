@@ -38,6 +38,7 @@ class WaveDataController extends GetxController {
 
   void resetVisibleData() {
     visibleSamples.addAll(RxList.filled(200, 0));
+    resetSmoothedFrequency();
     refresh();
   }
 
@@ -50,6 +51,7 @@ class WaveDataController extends GetxController {
 
   void setCalculationType(CalculationType newCalculationType) {
     calculationType = newCalculationType.obs;
+    resetSmoothedFrequency();
     refresh();
     update();
   }
@@ -85,6 +87,12 @@ class WaveDataController extends GetxController {
   void setSmoothedFrequency(double newFrequency) {
     _smoothedFrequency.value = newFrequency;
     _hasSmoothedFrequency.value = true;
+    refresh();
+  }
+
+  void resetSmoothedFrequency() {
+    _smoothedFrequency.value = 0.0;
+    _hasSmoothedFrequency.value = false;
     refresh();
   }
 
