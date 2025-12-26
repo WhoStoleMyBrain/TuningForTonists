@@ -119,7 +119,7 @@ This plan captures the current pitch-detection pipeline, likely error sources, a
 **Goal:** Reduce jitter and improve robustness without masking correctness.
 
 **Tasks**
-- Add temporal smoothing/hysteresis (e.g., exponential moving average) gated by confidence.
+- Add temporal smoothing/hysteresis (e.g., exponential moving average) gated by confidence. **IMPLEMENTED—NEEDS LOCAL VERIFICATION** (validate jitter and convergence timings on device).
 - Add a basic noise gate: ignore frames below an energy threshold.
 - Add harmonic rejection: prefer fundamentals over harmonics using HPS/cepstrum heuristics.
 - Adjust window length and overlap to balance latency vs. stability (e.g., 2048/4096 with 50% overlap).

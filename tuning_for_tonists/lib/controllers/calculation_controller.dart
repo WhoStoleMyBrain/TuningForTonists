@@ -15,6 +15,7 @@ import 'wave_data_controller.dart';
 
 class CalculationController extends GetxController {
   static const int _kLowFrequencyBinSkip = 31;
+  static const double _kSmoothingAlpha = 0.2;
 
   WaveDataController waveDataController = Get.find();
   FftController fftController = Get.find();
@@ -105,7 +106,7 @@ class CalculationController extends GetxController {
     var freq = (maxIdx + _kLowFrequencyBinSkip) *
         micTechnicalDataController.samplesPerSecond /
         waveDataController.waveData.length;
-    waveDataController.addVisibleSample(freq);
+    _addFrequencySample(freq);
   }
 
   void calculateZeroCrossing() {
@@ -122,7 +123,7 @@ class CalculationController extends GetxController {
         micTechnicalDataController.samplesPerSecond;
     waveDataController.addZeroCrossingData(frequency);
     waveDataController.setConfidence(0.0);
-    waveDataController.addVisibleSample(frequency);
+    _addFrequencySample(frequency);
   }
 
   void calculateAutocorrelation() {
@@ -145,7 +146,7 @@ class CalculationController extends GetxController {
     double frequency = micTechnicalDataController.samplesPerSecond / maxIdx;
     waveDataController.setAutocorrelationData(autocorrelations);
     _setConfidenceFrom(waveDataController.autocorrelationData);
-    waveDataController.addVisibleSample(frequency);
+    _addFrequencySample(frequency);
   }
 
   void calculateCepstrum() {
@@ -156,9 +157,9 @@ class CalculationController extends GetxController {
         20;
     final freq = micTechnicalDataController.samplesPerSecond / maximum;
     if (freq.isInfinite || freq.isNaN) {
-      waveDataController.addVisibleSample(0.0);
+      _addFrequencySample(0.0);
     } else {
-      waveDataController.addVisibleSample(freq);
+      _addFrequencySample(freq);
     }
   }
 
@@ -206,5 +207,25 @@ class CalculationController extends GetxController {
             "Calculated sample: ${samplesCalculated.value}/${totalSamplesToCalculate.value}");
       }
     }
+  }
+
+  void _addFrequencySample(double rawFrequency) {
+    waveDataController.setRawFrequency(rawFrequency);
+    final bool shouldGate = waveDataController.calculationType.value !=
+        CalculationType.ZeroCrossing;
+    final bool allowUpdate = !shouldGate ||
+        waveDataController.confidence >= tuningController.confidenceThreshold;
+    double outputFrequency = rawFrequency;
+    if (allowUpdate) {
+      if (waveDataController.hasSmoothedFrequency) {
+        outputFrequency = waveDataController.smoothedFrequency +
+            _kSmoothingAlpha *
+                (rawFrequency - waveDataController.smoothedFrequency);
+      }
+      waveDataController.setSmoothedFrequency(outputFrequency);
+    } else if (waveDataController.hasSmoothedFrequency) {
+      outputFrequency = waveDataController.smoothedFrequency;
+    }
+    waveDataController.addVisibleSample(outputFrequency);
   }
 }
