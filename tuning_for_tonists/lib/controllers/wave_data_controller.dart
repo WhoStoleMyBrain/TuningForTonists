@@ -17,6 +17,9 @@ class WaveDataController extends GetxController {
   final RxList<double> hpsData = <double>[0].obs;
   final RxList<double> zeroCrossingData = <double>[0].obs;
   final RxDouble _peakStrength = 0.0.obs;
+  final RxDouble _rawFrequency = 0.0.obs;
+  final RxDouble _smoothedFrequency = 0.0.obs;
+  final RxBool _hasSmoothedFrequency = false.obs;
   final RxList<double> confidenceSamples = <double>[0].obs;
   Rx<CalculationType> calculationType = CalculationType.Cepstrum.obs;
 
@@ -60,6 +63,9 @@ class WaveDataController extends GetxController {
 
   double get peakStrength => _peakStrength.value;
   double get confidence => _peakStrength.value;
+  double get rawFrequency => _rawFrequency.value;
+  double get smoothedFrequency => _smoothedFrequency.value;
+  bool get hasSmoothedFrequency => _hasSmoothedFrequency.value;
 
   void setPeakStrength(double newPeakStrength) {
     _peakStrength.value = newPeakStrength;
@@ -68,6 +74,17 @@ class WaveDataController extends GetxController {
 
   void setConfidence(double newConfidence) {
     _peakStrength.value = newConfidence;
+    refresh();
+  }
+
+  void setRawFrequency(double newFrequency) {
+    _rawFrequency.value = newFrequency;
+    refresh();
+  }
+
+  void setSmoothedFrequency(double newFrequency) {
+    _smoothedFrequency.value = newFrequency;
+    _hasSmoothedFrequency.value = true;
     refresh();
   }
 
