@@ -117,6 +117,15 @@ class TuningController extends GetxController {
   List<Note> get allNotes => _tuningConfiguration!.value.notes;
 
   void checkIfNoteTuned() {
+    if (!waveDataController.isEnergyGateOpen) {
+      percentageRight = 0.0;
+      percentageWrong = 1.0;
+      tuningDistance = 0.0;
+      tuningColor = const Color.fromRGBO(255, 0, 0, 1.0);
+      _targetNote.value.tuned = false;
+      update();
+      return;
+    }
     final bool shouldGate = waveDataController.calculationType.value !=
         CalculationType.ZeroCrossing;
     if (shouldGate && waveDataController.confidence < confidenceThreshold) {

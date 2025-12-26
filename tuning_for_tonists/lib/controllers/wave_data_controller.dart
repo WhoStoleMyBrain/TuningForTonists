@@ -20,6 +20,9 @@ class WaveDataController extends GetxController {
   final RxDouble _rawFrequency = 0.0.obs;
   final RxDouble _smoothedFrequency = 0.0.obs;
   final RxBool _hasSmoothedFrequency = false.obs;
+  final RxDouble _frameEnergy = 0.0.obs;
+  final RxDouble _energyThreshold = 0.02.obs;
+  final RxBool _isEnergyGateOpen = true.obs;
   final RxList<double> confidenceSamples = <double>[0].obs;
   Rx<CalculationType> calculationType = CalculationType.Cepstrum.obs;
 
@@ -68,6 +71,9 @@ class WaveDataController extends GetxController {
   double get rawFrequency => _rawFrequency.value;
   double get smoothedFrequency => _smoothedFrequency.value;
   bool get hasSmoothedFrequency => _hasSmoothedFrequency.value;
+  double get frameEnergy => _frameEnergy.value;
+  double get energyThreshold => _energyThreshold.value;
+  bool get isEnergyGateOpen => _isEnergyGateOpen.value;
 
   void setPeakStrength(double newPeakStrength) {
     _peakStrength.value = newPeakStrength;
@@ -93,6 +99,18 @@ class WaveDataController extends GetxController {
   void resetSmoothedFrequency() {
     _smoothedFrequency.value = 0.0;
     _hasSmoothedFrequency.value = false;
+    refresh();
+  }
+
+  void setFrameEnergy(double newEnergy) {
+    _frameEnergy.value = newEnergy;
+    _isEnergyGateOpen.value = newEnergy >= _energyThreshold.value;
+    refresh();
+  }
+
+  void setEnergyThreshold(double newThreshold) {
+    _energyThreshold.value = newThreshold;
+    _isEnergyGateOpen.value = _frameEnergy.value >= _energyThreshold.value;
     refresh();
   }
 
