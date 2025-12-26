@@ -43,6 +43,15 @@ class CalculationController extends GetxController {
     return maxValue / average;
   }
 
+  double _calculateFrameEnergy(List<double> data) {
+    if (data.isEmpty) {
+      return 0.0;
+    }
+    final double sumSquares =
+        data.fold(0.0, (sum, value) => sum + (value * value));
+    return sqrt(sumSquares / data.length);
+  }
+
   void _setConfidenceFrom(List<double> data) {
     waveDataController.setConfidence(_calculatePeakStrength(data));
   }
@@ -177,7 +186,29 @@ class CalculationController extends GetxController {
 
   void calculateDisplayData(dynamic samples) {
     Stopwatch stopwatch = Stopwatch()..start();
-    waveDataController.addWaveData(MicrophoneHelper.calculateWaveData(samples));
+    final newWaveData = MicrophoneHelper.calculateWaveData(samples);
+    waveDataController.addWaveData(newWaveData);
+    waveDataController.setFrameEnergy(_calculateFrameEnergy(newWaveData));
+    if (!waveDataController.isEnergyGateOpen) {
+      waveDataController.setConfidence(0.0);
+      waveDataController.setRawFrequency(0.0);
+      waveDataController.resetSmoothedFrequency();
+      waveDataController.addVisibleSample(0.0);
+      tuningController.checkIfNoteTuned();
+      samplesCalculated++;
+      performanceController
+          .addCalculationDuration(stopwatch.elapsed.inMilliseconds / 1000.0);
+      if (samplesCalculated.value > totalSamplesToCalculate.value) {
+        MicrophoneHelper.stopMicrophone();
+        samplesCalculated = 0.obs;
+      } else {
+        if (samplesCalculated % 100 == 0) {
+          print(
+              "Calculated sample: ${samplesCalculated.value}/${totalSamplesToCalculate.value}");
+        }
+      }
+      return;
+    }
     switch (waveDataController.calculationType.value) {
       case CalculationType.Autocorrelation:
         calculateAutocorrelation();

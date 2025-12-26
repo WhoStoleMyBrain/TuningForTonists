@@ -333,6 +333,22 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                             ' ${tuningController.confidenceThreshold.toStringAsFixed(2)}')
                       ],
                     ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Frame Energy (RMS):'),
+                        Text(
+                            ' ${waveDataController.frameEnergy.toStringAsFixed(4)}')
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Energy Gate:'),
+                        Text(
+                            ' ${waveDataController.isEnergyGateOpen ? "Open" : "Closed"} (threshold ${waveDataController.energyThreshold.toStringAsFixed(4)})')
+                      ],
+                    ),
                   ],
                   const SizedBox(
                     height: 32,
