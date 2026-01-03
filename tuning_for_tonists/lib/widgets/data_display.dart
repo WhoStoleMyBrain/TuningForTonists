@@ -42,12 +42,7 @@ class DataDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(
-        left: 12,
-        bottom: 12,
-        right: 20,
-        top: 20,
-      ),
+      padding: const EdgeInsets.only(left: 12, bottom: 12, right: 20, top: 20),
       child: AspectRatio(
         aspectRatio: 1,
         child: LayoutBuilder(
@@ -62,7 +57,8 @@ class DataDisplay extends StatelessWidget {
                       getTooltipItems: (touchedSpots) {
                         return touchedSpots.map((LineBarSpot touchedSpot) {
                           final textStyle = TextStyle(
-                            color: touchedSpot.bar.gradient?.colors[0] ??
+                            color:
+                                touchedSpot.bar.gradient?.colors[0] ??
                                 touchedSpot.bar.color,
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
@@ -81,19 +77,21 @@ class DataDisplay extends StatelessWidget {
                     LineChartBarData(
                       color: AppColors.contentColorPink,
                       spots: waveDataController.dataToSpots(
-                          waveDataController.visibleSamples, false, true),
+                        waveDataController.visibleSamples,
+                        false,
+                        true,
+                      ),
                       isCurved: true,
                       isStrokeCapRound: true,
                       barWidth: 2,
-                      belowBarData: BarAreaData(
-                        show: false,
-                      ),
+                      belowBarData: BarAreaData(show: false),
                       dotData: const FlDotData(show: false),
                     ),
                   ],
                   minY: 0,
-                  maxY:
-                      waveDataController.visibleSamples.reduce(max).toDouble(),
+                  maxY: waveDataController.visibleSamples
+                      .reduce(max)
+                      .toDouble(),
                   minX: 0,
                   maxX: waveDataController.visibleSamples.length.toDouble(),
                   titlesData: FlTitlesData(
@@ -113,7 +111,10 @@ class DataDisplay extends StatelessWidget {
                       sideTitles: SideTitles(
                         showTitles: true,
                         getTitlesWidget: (value, meta) => bottomTitleWidgets(
-                            value, meta, constraints.maxWidth),
+                          value,
+                          meta,
+                          constraints.maxWidth,
+                        ),
                         reservedSize: 36,
                         interval: waveDataController.visibleSamples.length / 10,
                       ),

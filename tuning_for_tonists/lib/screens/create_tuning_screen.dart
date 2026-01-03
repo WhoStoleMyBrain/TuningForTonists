@@ -32,9 +32,7 @@ class _CreateTuningScreenState extends State<CreateTuningScreen> {
     _textEditingController = TextEditingController(
       text: newTuningConfiguration.configurationName,
     );
-    _noteNameController = TextEditingController(
-      text: newNote.name,
-    );
+    _noteNameController = TextEditingController(text: newNote.name);
     _noteFrequencyController = TextEditingController(
       text: newNote.frequency.toString(),
     );
@@ -68,29 +66,33 @@ class _CreateTuningScreenState extends State<CreateTuningScreen> {
 
   List<Widget> getCurrentNotesDisplay() {
     return newTuningConfiguration.notes
-        .map((e) => Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  Text(
-                      'String ${newTuningConfiguration.notes.indexOf(e).toString()}:'),
-                  Text('Name: ${e.name}'),
-                  Expanded(child: Text('Frequency: ${e.frequency} Hz')),
-                  Transform.rotate(
-                    angle: 45 * pi / 180,
-                    child: IconButton(
-                      onPressed: () {
-                        newTuningConfiguration.notes
-                            .removeWhere((element) => element == e);
-                        setState(() {});
-                      },
-                      icon: const Icon(Icons.add_circle_outline),
-                      color: Colors.red,
-                    ),
-                  )
-                ],
-              ),
-            ))
+        .map(
+          (e) => Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Text(
+                  'String ${newTuningConfiguration.notes.indexOf(e).toString()}:',
+                ),
+                Text('Name: ${e.name}'),
+                Expanded(child: Text('Frequency: ${e.frequency} Hz')),
+                Transform.rotate(
+                  angle: 45 * pi / 180,
+                  child: IconButton(
+                    onPressed: () {
+                      newTuningConfiguration.notes.removeWhere(
+                        (element) => element == e,
+                      );
+                      setState(() {});
+                    },
+                    icon: const Icon(Icons.add_circle_outline),
+                    color: Colors.red,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        )
         .toList();
   }
 
@@ -130,16 +132,19 @@ class _CreateTuningScreenState extends State<CreateTuningScreen> {
               TextFormField(
                 style: const TextStyle()
                   ..apply(
-                      color: AppColors.white,
-                      backgroundColor: AppColors.white,
-                      decorationColor: AppColors.white),
+                    color: AppColors.white,
+                    backgroundColor: AppColors.white,
+                    decorationColor: AppColors.white,
+                  ),
                 controller: _noteFrequencyController,
                 decoration: InputDecoration(
-                    hintText: 'Frequency',
-                    hintStyle: const TextStyle()
-                      ..apply(
-                          color: AppColors.white,
-                          backgroundColor: Colors.white)),
+                  hintText: 'Frequency',
+                  hintStyle: const TextStyle()
+                    ..apply(
+                      color: AppColors.white,
+                      backgroundColor: Colors.white,
+                    ),
+                ),
                 keyboardType: TextInputType.number,
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
@@ -153,7 +158,7 @@ class _CreateTuningScreenState extends State<CreateTuningScreen> {
                 decoration: const InputDecoration(hintText: 'Name'),
                 keyboardType: TextInputType.text,
                 inputFormatters: [
-                  FilteringTextInputFormatter.singleLineFormatter
+                  FilteringTextInputFormatter.singleLineFormatter,
                 ],
                 onChanged: (value) {
                   newNote.name = value;
@@ -180,10 +185,13 @@ class _CreateTuningScreenState extends State<CreateTuningScreen> {
         List<TuningConfiguration> newConfigurations = [];
         List<TuningConfiguration> oldConfigurations =
             List<TuningConfiguration>.from(
-                jsonData.map((e) => TuningConfiguration.fromJson(e)));
+              jsonData.map((e) => TuningConfiguration.fromJson(e)),
+            );
         int indexOfExistingConfiguration = oldConfigurations.indexWhere(
-            (element) => (element.configurationName ==
-                newTuningConfiguration.configurationName));
+          (element) =>
+              (element.configurationName ==
+              newTuningConfiguration.configurationName),
+        );
         if (indexOfExistingConfiguration == -1) {
           newConfigurations = oldConfigurations..add(newTuningConfiguration);
         } else {
@@ -195,7 +203,7 @@ class _CreateTuningScreenState extends State<CreateTuningScreen> {
         prefs.setString(PreferenceNames.customTunings, encodedString);
 
         tuningConfigurationsController.customTuningConfigurations = {
-          'Custom Configurations': newConfigurations
+          'Custom Configurations': newConfigurations,
         };
       },
       child: const Text('Save configuration'),
@@ -210,10 +218,7 @@ class _CreateTuningScreenState extends State<CreateTuningScreen> {
           onTap: () {
             Get.back();
           },
-          child: const Icon(
-            Icons.arrow_back,
-            color: AppColors.onPrimaryColor,
-          ),
+          child: const Icon(Icons.arrow_back, color: AppColors.onPrimaryColor),
         ),
       ),
       body: SingleChildScrollView(
@@ -222,10 +227,7 @@ class _CreateTuningScreenState extends State<CreateTuningScreen> {
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  getButtonAddString(),
-                  getSaveConfigurationButton(),
-                ],
+                children: [getButtonAddString(), getSaveConfigurationButton()],
               ),
               getTextInputWidget(),
               ...getCurrentNotesDisplay(),

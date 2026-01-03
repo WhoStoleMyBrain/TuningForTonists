@@ -1,5 +1,1 @@
-enum Command {
-  start,
-  stop,
-  change,
-}
+enum Command { start, stop, change }

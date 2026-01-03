@@ -12,21 +12,26 @@ class TuningFrequencyPointerDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<TuningController>(builder: (tuningController) {
-      return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: CustomPaint(
-          painter: FrequencyDialPainter(
+    return GetBuilder<TuningController>(
+      builder: (tuningController) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CustomPaint(
+            painter: FrequencyDialPainter(
               currentFrequency: waveDataController.visibleSamples.last,
               targetFrequency: tuningController.targetFrequency,
               frequencyRange: tuningController.frequencyRange,
-              tuningColor: tuningController.tuningColor),
-          size: Size(MediaQuery.of(context).size.width,
-              MediaQuery.of(context).size.height * 0.3),
-          willChange: true,
-        ),
-      );
-    });
+              tuningColor: tuningController.tuningColor,
+            ),
+            size: Size(
+              MediaQuery.of(context).size.width,
+              MediaQuery.of(context).size.height * 0.3,
+            ),
+            willChange: true,
+          ),
+        );
+      },
+    );
   }
 }
 

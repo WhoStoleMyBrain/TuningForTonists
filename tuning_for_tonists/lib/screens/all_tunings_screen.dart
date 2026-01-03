@@ -17,79 +17,74 @@ class _AllTuningsScreenState extends State<AllTuningsScreen> {
   TuningController tuningController = Get.find();
 
   Widget getDivider() {
-    return const Divider(
-      height: 3,
-      color: Colors.black,
-    );
+    return const Divider(height: 3, color: Colors.black);
   }
 
   TextStyle getTextStyle() {
     return const TextStyle(
-        fontSize: 18,
-        color: AppColors.onPrimaryColor,
-        backgroundColor: Colors.transparent);
+      fontSize: 18,
+      color: AppColors.onPrimaryColor,
+      backgroundColor: Colors.transparent,
+    );
   }
 
   TextStyle getTextStyleHeader() {
     return const TextStyle(
-        fontSize: 18,
-        color: AppColors.onPrimaryColor,
-        backgroundColor: Colors.transparent);
+      fontSize: 18,
+      color: AppColors.onPrimaryColor,
+      backgroundColor: Colors.transparent,
+    );
   }
 
   TextStyle getSelectedTextStyle() {
-    return const TextStyle(
-      fontSize: 18,
-      backgroundColor: Colors.green,
-    );
+    return const TextStyle(fontSize: 18, backgroundColor: Colors.green);
   }
 
   Widget getSizedBox(double height) {
-    return SizedBox(
-      height: height,
-    );
+    return SizedBox(height: height);
   }
 
   List<Widget> displayTuningConfigurations() {
     List<Widget> returnWidgets = [];
     for (var element
         in tuningConfigurationsController.getTuningConfigurations().entries) {
-      returnWidgets.add(Container(
-        color: AppColors.onBackgroundColor,
-        width: MediaQuery.of(context).size.width,
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Text(
-              element.key,
-              style: getTextStyleHeader(),
+      returnWidgets.add(
+        Container(
+          color: AppColors.onBackgroundColor,
+          width: MediaQuery.of(context).size.width,
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Text(element.key, style: getTextStyleHeader()),
             ),
           ),
         ),
-      ));
+      );
       returnWidgets.add(getDivider());
       returnWidgets.add(getSizedBox(16));
       for (var e in element.value) {
-        returnWidgets.add(GestureDetector(
-          onTap: () {
-            tuningController.tuningConfiguration = e;
-            setState(() {});
-          },
-          child: Container(
-            color: tuningController.tuningConfiguration == e
-                ? Colors.green
-                : Colors.transparent,
-            width: MediaQuery.of(context).size.width * 0.75,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4.0),
-              child: Text(
-                e.configurationName,
-                textAlign: TextAlign.center,
-                style: getTextStyle(),
+        returnWidgets.add(
+          GestureDetector(
+            onTap: () {
+              tuningController.tuningConfiguration = e;
+              setState(() {});
+            },
+            child: Container(
+              color: tuningController.tuningConfiguration == e
+                  ? Colors.green
+                  : Colors.transparent,
+              width: MediaQuery.of(context).size.width * 0.75,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                child: Text(
+                  e.configurationName,
+                  textAlign: TextAlign.center,
+                  style: getTextStyle(),
+                ),
               ),
             ),
           ),
-        ));
+        );
         returnWidgets.add(getSizedBox(24));
       }
     }
@@ -106,10 +101,7 @@ class _AllTuningsScreenState extends State<AllTuningsScreen> {
       appBar: AppBar(
         leading: GestureDetector(
           onTap: () => Get.back(),
-          child: Icon(
-            Icons.arrow_back,
-            color: AppColors.headerColor,
-          ),
+          child: Icon(Icons.arrow_back, color: AppColors.headerColor),
         ),
         title: Text(
           'All available tunings',
@@ -119,11 +111,7 @@ class _AllTuningsScreenState extends State<AllTuningsScreen> {
       body: SingleChildScrollView(
         child: Center(
           child: Obx(
-            () => Column(
-              children: [
-                ...displayTuningConfigurations(),
-              ],
-            ),
+            () => Column(children: [...displayTuningConfigurations()]),
           ),
         ),
       ),

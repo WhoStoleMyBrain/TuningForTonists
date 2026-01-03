@@ -43,14 +43,18 @@ class SettingsScreen extends GetView<SettingsController> {
       tunerPrecision,
       tuningMethod,
       tunerSensibility,
-      recodingLevelPreset
+      recodingLevelPreset,
     ]);
-    allWidgets.add(const Divider(
-      color: AppColors.onBackgroundColor,
-      thickness: 3,
-    ));
-    allWidgets.addAll(
-        [spectrumDisplay, fftSize, frequencyScale, amplitudeRange, display]);
+    allWidgets.add(
+      const Divider(color: AppColors.onBackgroundColor, thickness: 3),
+    );
+    allWidgets.addAll([
+      spectrumDisplay,
+      fftSize,
+      frequencyScale,
+      amplitudeRange,
+      display,
+    ]);
     return allWidgets;
   }
 
@@ -61,7 +65,7 @@ class SettingsScreen extends GetView<SettingsController> {
         const Text('Display'),
         DropdownButton(
           items: const [
-            DropdownMenuItem(value: 'default', child: Text('Default'))
+            DropdownMenuItem(value: 'default', child: Text('Default')),
           ],
           onChanged: (value) {},
         ),
@@ -76,7 +80,7 @@ class SettingsScreen extends GetView<SettingsController> {
         const Text('Amplitude Range'),
         DropdownButton(
           items: const [
-            DropdownMenuItem(value: 'default', child: Text('Default'))
+            DropdownMenuItem(value: 'default', child: Text('Default')),
           ],
           onChanged: (value) {},
         ),
@@ -91,7 +95,7 @@ class SettingsScreen extends GetView<SettingsController> {
         const Text('Frequency scale'),
         DropdownButton(
           items: const [
-            DropdownMenuItem(value: 'default', child: Text('Default'))
+            DropdownMenuItem(value: 'default', child: Text('Default')),
           ],
           onChanged: (value) {},
         ),
@@ -107,11 +111,12 @@ class SettingsScreen extends GetView<SettingsController> {
         SizedBox(
           width: 200,
           child: TextField(
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              onSubmitted: (value) {
-                fftController.fftLength = int.parse(value);
-              }),
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            onSubmitted: (value) {
+              fftController.fftLength = int.parse(value);
+            },
+          ),
         ),
       ],
     );
@@ -124,7 +129,7 @@ class SettingsScreen extends GetView<SettingsController> {
         const Text('Spectrum Display'),
         DropdownButton(
           items: const [
-            DropdownMenuItem(value: 'default', child: Text('Default'))
+            DropdownMenuItem(value: 'default', child: Text('Default')),
           ],
           onChanged: (value) {},
         ),
@@ -139,7 +144,7 @@ class SettingsScreen extends GetView<SettingsController> {
         const Text('Recording level preset'),
         DropdownButton(
           items: const [
-            DropdownMenuItem(value: 'default', child: Text('Default'))
+            DropdownMenuItem(value: 'default', child: Text('Default')),
           ],
           onChanged: (value) {},
         ),
@@ -154,7 +159,7 @@ class SettingsScreen extends GetView<SettingsController> {
         const Text('Tuner sensibility'),
         DropdownButton(
           items: const [
-            DropdownMenuItem(value: 'standard', child: Text('Standard'))
+            DropdownMenuItem(value: 'standard', child: Text('Standard')),
           ],
           onChanged: (value) {},
         ),
@@ -169,7 +174,7 @@ class SettingsScreen extends GetView<SettingsController> {
         const Text('Tuning Method'),
         DropdownButton(
           items: const [
-            DropdownMenuItem(value: 'noice', child: Text('Noise reduction'))
+            DropdownMenuItem(value: 'noice', child: Text('Noise reduction')),
           ],
           onChanged: (value) {},
         ),
@@ -184,7 +189,7 @@ class SettingsScreen extends GetView<SettingsController> {
         const Text('Tuner precision'),
         DropdownButton(
           items: const [
-            DropdownMenuItem(value: '2cent', child: Text('2 cent'))
+            DropdownMenuItem(value: '2cent', child: Text('2 cent')),
           ],
           onChanged: (value) {},
         ),
@@ -199,7 +204,7 @@ class SettingsScreen extends GetView<SettingsController> {
         const Text('Notes Naming'),
         DropdownButton(
           items: const [
-            DropdownMenuItem(value: 'english', child: Text('English'))
+            DropdownMenuItem(value: 'english', child: Text('English')),
           ],
           onChanged: (value) {},
         ),
@@ -239,35 +244,31 @@ class SettingsScreen extends GetView<SettingsController> {
     return Scaffold(
       key: controller.scaffoldKey,
       appBar: AppBar(
-          title: Text(
-            'Settings',
-            style: const TextStyle()..apply(color: AppColors.onPrimaryColor),
-          ),
-          leading: IconButton(
-            icon: const Icon(
-              Icons.menu_sharp,
-              color: AppColors.onPrimaryColor,
-            ),
-            onPressed: () => controller.openDrawer(),
-          )),
+        title: Text(
+          'Settings',
+          style: const TextStyle()..apply(color: AppColors.onPrimaryColor),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.menu_sharp, color: AppColors.onPrimaryColor),
+          onPressed: () => controller.openDrawer(),
+        ),
+      ),
       body: SingleChildScrollView(
         child: Center(
           child: Column(
             children: [
-              const SizedBox(
-                height: 48,
-              ),
+              const SizedBox(height: 48),
               ElevatedButton(
-                  onPressed: () => navigateToTuningsPage(),
-                  child: const Text('Set currently used tuning')),
+                onPressed: () => navigateToTuningsPage(),
+                child: const Text('Set currently used tuning'),
+              ),
               GetBuilder<WaveDataController>(
                 builder: (waveDataController) => DropdownButton(
                   value: waveDataController.calculationType.value,
                   items: CalculationType.values
-                      .map((e) => DropdownMenuItem(
-                            value: e,
-                            child: Text(e.name),
-                          ))
+                      .map(
+                        (e) => DropdownMenuItem(value: e, child: Text(e.name)),
+                      )
                       .toList(),
                   onChanged: (value) {
                     if (value != null) {
@@ -280,10 +281,9 @@ class SettingsScreen extends GetView<SettingsController> {
                 builder: (tuningController) => DropdownButton(
                   value: tuningController.tuningMethod,
                   items: TuningMethod.values
-                      .map((e) => DropdownMenuItem(
-                            value: e,
-                            child: Text(e.name),
-                          ))
+                      .map(
+                        (e) => DropdownMenuItem(value: e, child: Text(e.name)),
+                      )
                       .toList(),
                   onChanged: (value) {
                     if (value != null) {

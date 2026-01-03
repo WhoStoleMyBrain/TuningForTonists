@@ -11,10 +11,7 @@ class TimeSensitiveTuningFrequencyDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const SizedBox(
-      child: Padding(
-        padding: EdgeInsets.all(8.0),
-        child: FrequencyTimePlot(),
-      ),
+      child: Padding(padding: EdgeInsets.all(8.0), child: FrequencyTimePlot()),
     );
   }
 }

@@ -21,10 +21,7 @@ class _KnowledgebaseScreenState extends State<KnowledgebaseScreen> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => knowledgebaseController.openDrawer(),
-          icon: const Icon(
-            Icons.menu_sharp,
-            color: AppColors.onPrimaryColor,
-          ),
+          icon: const Icon(Icons.menu_sharp, color: AppColors.onPrimaryColor),
         ),
         title: const Text('Knowledgebase'),
       ),

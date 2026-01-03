@@ -1,5 +1,1 @@
-enum RotationAxis {
-  X,
-  Y,
-  Z,
-}
+enum RotationAxis { X, Y, Z }

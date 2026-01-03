@@ -15,7 +15,8 @@ class GuitarDisplay extends StatelessWidget {
 
   Widget getSizedBoxForClickableAreas(Size guitarSize) {
     return SizedBox.fromSize(
-        size: GuitarSizeHelper.getSizedBoxSize(guitarSize));
+      size: GuitarSizeHelper.getSizedBoxSize(guitarSize),
+    );
   }
 
   Widget getGuitarDisplay(Size guitarSize) {
@@ -53,36 +54,48 @@ class GuitarDisplay extends StatelessWidget {
       height: GuitarSizeHelper.stringButtonHeight(note),
       width: GuitarSizeHelper.stringButtonWidth(note),
       child: TextButton(
-          style: GuitarSizeHelper.stringButtonStyle(note),
-          onPressed: () {
-            tuningController.targetNote = note;
-          },
-          child: Text(note.name)),
+        style: GuitarSizeHelper.stringButtonStyle(note),
+        onPressed: () {
+          tuningController.targetNote = note;
+        },
+        child: Text(note.name),
+      ),
     );
   }
 
   Widget getPositionedStringButton(int index, Size guitarSize, Note note) {
     return Positioned(
-        left: GuitarSizeHelper.getLeftPositionStringButton(
-            oneSided, index, guitarSize, note),
-        top: GuitarSizeHelper.getTopPositionStringButton(
-            oneSided, index, guitarSize, note),
-        child: getStringButton(note));
+      left: GuitarSizeHelper.getLeftPositionStringButton(
+        oneSided,
+        index,
+        guitarSize,
+        note,
+      ),
+      top: GuitarSizeHelper.getTopPositionStringButton(
+        oneSided,
+        index,
+        guitarSize,
+        note,
+      ),
+      child: getStringButton(note),
+    );
   }
 
   List<Widget> getTwoSidedStringButtons(Size guitarSize) {
     List<Widget> allButtons = [];
     for (var i = 0; i < tuningController.allNotes.length; i++) {
-      allButtons.add(getPositionedStringButton(
-          i, guitarSize, tuningController.allNotes[i]));
+      allButtons.add(
+        getPositionedStringButton(i, guitarSize, tuningController.allNotes[i]),
+      );
     }
     return allButtons;
   }
 
   Widget getOnesidedStringButtons(Size guitarSize) {
     return Column(
-      children:
-          getNotes(GuitarSide.all).map((e) => getStringButton(e)).toList(),
+      children: getNotes(
+        GuitarSide.all,
+      ).map((e) => getStringButton(e)).toList(),
     );
   }
 

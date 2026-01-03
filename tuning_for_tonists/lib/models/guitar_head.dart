@@ -4,10 +4,11 @@ class GuitarHead {
   double headLength;
   double headPointLength;
   double headWidth;
-  GuitarHead(
-      {required this.neckLength,
-      required this.neckWidth,
-      required this.headLength,
-      required this.headPointLength,
-      required this.headWidth});
+  GuitarHead({
+    required this.neckLength,
+    required this.neckWidth,
+    required this.headLength,
+    required this.headPointLength,
+    required this.headWidth,
+  });
 }

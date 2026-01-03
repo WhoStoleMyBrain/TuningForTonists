@@ -6,12 +6,7 @@ import 'package:get/get.dart';
 import 'package:tuning_for_tonists/constants/app_colors.dart';
 import 'package:tuning_for_tonists/controllers/tuning_controller.dart';
 
-enum BarSizes {
-  big,
-  medium,
-  small,
-  frequency,
-}
+enum BarSizes { big, medium, small, frequency }
 
 class FrequencyBarsDisplay extends StatelessWidget {
   FrequencyBarsDisplay({super.key});
@@ -19,47 +14,54 @@ class FrequencyBarsDisplay extends StatelessWidget {
   final TuningController tuningController = Get.find();
 
   List<Widget> getBars(BoxConstraints size) {
-    return List.generate(5 * 5, (i) => i + 1)
-        .map((e) => getBar(e, size))
-        .toList();
+    return List.generate(
+      5 * 5,
+      (i) => i + 1,
+    ).map((e) => getBar(e, size)).toList();
   }
 
   Widget getBarWidget(BarSizes myCase, BoxConstraints constraints) {
     switch (myCase) {
       case BarSizes.big:
         return Padding(
-          padding:
-              EdgeInsets.all((constraints.maxWidth * (1 / 25) * 0.95 - 5) / 2),
+          padding: EdgeInsets.all(
+            (constraints.maxWidth * (1 / 25) * 0.95 - 5) / 2,
+          ),
           child: Container(
             width: 5,
             height: double.infinity,
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(100),
-                color: AppColors.onBackgroundColor),
+              borderRadius: BorderRadius.circular(100),
+              color: AppColors.onBackgroundColor,
+            ),
           ),
         );
       case BarSizes.medium:
         return Padding(
-          padding:
-              EdgeInsets.all((constraints.maxWidth * (1 / 25) * 0.95 - 4) / 2),
+          padding: EdgeInsets.all(
+            (constraints.maxWidth * (1 / 25) * 0.95 - 4) / 2,
+          ),
           child: Container(
             width: 4,
             height: constraints.maxHeight * 0.65,
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(100),
-                color: AppColors.onBackgroundColor),
+              borderRadius: BorderRadius.circular(100),
+              color: AppColors.onBackgroundColor,
+            ),
           ),
         );
       case BarSizes.small:
         return Padding(
-          padding:
-              EdgeInsets.all((constraints.maxWidth * (1 / 25) * 0.95 - 3) / 2),
+          padding: EdgeInsets.all(
+            (constraints.maxWidth * (1 / 25) * 0.95 - 3) / 2,
+          ),
           child: Container(
             width: 3,
             height: constraints.maxHeight * 0.3,
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(100),
-                color: AppColors.onBackgroundColor),
+              borderRadius: BorderRadius.circular(100),
+              color: AppColors.onBackgroundColor,
+            ),
           ),
         );
       case BarSizes.frequency:
@@ -67,19 +69,22 @@ class FrequencyBarsDisplay extends StatelessWidget {
           width: 4,
           height: constraints.maxHeight * 0.65,
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(100),
-              color: tuningController.tuningColor),
+            borderRadius: BorderRadius.circular(100),
+            color: tuningController.tuningColor,
+          ),
         );
       default:
         return Padding(
-          padding:
-              EdgeInsets.all((constraints.maxWidth * (1 / 25) * 0.95 - 3) / 2),
+          padding: EdgeInsets.all(
+            (constraints.maxWidth * (1 / 25) * 0.95 - 3) / 2,
+          ),
           child: Container(
             width: 3,
             height: constraints.maxHeight * 0.3,
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(100),
-                color: AppColors.onBackgroundColor),
+              borderRadius: BorderRadius.circular(100),
+              color: AppColors.onBackgroundColor,
+            ),
           ),
         );
     }
@@ -101,17 +106,20 @@ class FrequencyBarsDisplay extends StatelessWidget {
       child: SizedBox(
         height: size.height * 0.2,
         width: double.infinity,
-        child: LayoutBuilder(builder: (context, BoxConstraints constraints) {
-          return Stack(clipBehavior: Clip.none, children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+        child: LayoutBuilder(
+          builder: (context, BoxConstraints constraints) {
+            return Stack(
+              clipBehavior: Clip.none,
               children: [
-                ...getBars(constraints),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [...getBars(constraints)],
+                ),
+                drawCurrentFrequency(constraints),
               ],
-            ),
-            drawCurrentFrequency(constraints),
-          ]);
-        }),
+            );
+          },
+        ),
       ),
     );
   }
@@ -119,7 +127,8 @@ class FrequencyBarsDisplay extends StatelessWidget {
   Widget drawCurrentFrequency(BoxConstraints constraints) {
     return Positioned(
       left: getCurrentFrequencyPosition(constraints),
-      top: constraints.maxHeight * 0.3 / 2 +
+      top:
+          constraints.maxHeight * 0.3 / 2 +
           (constraints.maxWidth * (1 / 25) * 0.95 - 4) / 2 -
           1,
       child: getBarWidget(BarSizes.frequency, constraints),
@@ -138,7 +147,8 @@ class FrequencyBarsDisplay extends StatelessWidget {
     var x = lnVal / lnAlpha;
     if (kDebugMode) {
       print(
-          'd: $d; T: ${tuningController.targetFrequency}; dT: $dT, lnAlpha: $lnAlpha, lnVal: $lnVal');
+        'd: $d; T: ${tuningController.targetFrequency}; dT: $dT, lnAlpha: $lnAlpha, lnVal: $lnVal',
+      );
     }
     if (kDebugMode) {
       print('calculated cents: $x');

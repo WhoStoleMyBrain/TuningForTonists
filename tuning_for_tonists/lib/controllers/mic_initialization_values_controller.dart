@@ -6,10 +6,12 @@ class MicInitializationValuesController extends GetxController {
   Rx<int> _sampleRate;
   Rx<ChannelConfig> channelConfig;
   Rx<AudioSource> audioSource;
-  MicInitializationValuesController(this._sampleRate,
-      {required this.audioFormat,
-      required this.channelConfig,
-      required this.audioSource});
+  MicInitializationValuesController(
+    this._sampleRate, {
+    required this.audioFormat,
+    required this.channelConfig,
+    required this.audioSource,
+  });
   void setAudioFormat(AudioFormat newAudioFormat) {
     audioFormat = newAudioFormat.obs;
     refresh();

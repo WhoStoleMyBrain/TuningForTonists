@@ -10,8 +10,10 @@ class StringDisplay extends StatelessWidget {
     return GetBuilder<TuningController>(
       builder: (tuningController) => Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(children: [
-          ...tuningController.allNotes.map((element) => GestureDetector(
+        child: Column(
+          children: [
+            ...tuningController.allNotes.map(
+              (element) => GestureDetector(
                 onTap: () {
                   tuningController.targetNote = element;
                 },
@@ -23,7 +25,8 @@ class StringDisplay extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
-                              '${tuningController.allNotes.indexOf(element)}:'),
+                            '${tuningController.allNotes.indexOf(element)}:',
+                          ),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -35,13 +38,18 @@ class StringDisplay extends StatelessWidget {
                         ),
                       ],
                     ),
-                    Text('Tuned',
-                        style: TextStyle(
-                            color: element.tuned ? Colors.green : Colors.red)),
+                    Text(
+                      'Tuned',
+                      style: TextStyle(
+                        color: element.tuned ? Colors.green : Colors.red,
+                      ),
+                    ),
                   ],
                 ),
-              ))
-        ]),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

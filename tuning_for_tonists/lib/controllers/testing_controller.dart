@@ -57,9 +57,11 @@ class TestingController extends GetxController {
     final assetManifest = await AssetManifest.loadFromAssetBundle(rootBundle);
     final guitarAssetPaths = assetManifest
         .listAssets()
-        .where((string) =>
-            string.startsWith("assets/samples/$guitarBasePath") &&
-            string.endsWith(".mp3"))
+        .where(
+          (string) =>
+              string.startsWith("assets/samples/$guitarBasePath") &&
+              string.endsWith(".mp3"),
+        )
         .toList();
     guitarAudioFilePaths = guitarAssetPaths;
   }
@@ -68,9 +70,11 @@ class TestingController extends GetxController {
     await _initGuitarAssets();
   }
 
-  Stream<Uint8List> createAudioFileStream(Uint8List audioBytes,
-      {Duration delay = const Duration(milliseconds: 100),
-      int bufferLength = 1024}) {
+  Stream<Uint8List> createAudioFileStream(
+    Uint8List audioBytes, {
+    Duration delay = const Duration(milliseconds: 100),
+    int bufferLength = 1024,
+  }) {
     List<int> buffer = audioBytes.toList();
 
     var streamController = StreamController<Uint8List>();
@@ -79,22 +83,32 @@ class TestingController extends GetxController {
         logger.d("Cancelling stream! ${timer.tick}");
         timer
             .cancel(); // Cancel the timer once the entire audio has been buffered
-        streamController.add(Uint8List.fromList(buffer
-            .sublist(bufferLength * timer.tick))); // Emit the buffered data
+        streamController.add(
+          Uint8List.fromList(buffer.sublist(bufferLength * timer.tick)),
+        ); // Emit the buffered data
         streamController.close(); // Close the controller after emitting
       } else {
-        streamController.add(Uint8List.fromList(buffer.sublist(
-            bufferLength * timer.tick, bufferLength * (timer.tick + 1))));
+        streamController.add(
+          Uint8List.fromList(
+            buffer.sublist(
+              bufferLength * timer.tick,
+              bufferLength * (timer.tick + 1),
+            ),
+          ),
+        );
       }
     });
     return streamController.stream;
   }
 
-  Stream<List<double>> createSyntheticToneStream(
-      {required double frequency, required int sampleRate}) {
+  Stream<List<double>> createSyntheticToneStream({
+    required double frequency,
+    required int sampleRate,
+  }) {
     final streamController = StreamController<List<double>>();
     final frameDuration = Duration(
-        microseconds: (1000000 * syntheticFrameSize / sampleRate).round());
+      microseconds: (1000000 * syntheticFrameSize / sampleRate).round(),
+    );
     final step = 2 * pi * frequency / sampleRate;
     var phase = 0.0;
     Timer? timer;
@@ -116,24 +130,31 @@ class TestingController extends GetxController {
   }
 
   void processAudioStream(Stream<Uint8List> audioStream) {
-    audioStream.listen((audioChunk) {
-      logger.d('Received audio chunk: ${audioChunk.length} bytes');
-    }, onError: (error) {
-      logger.d('Error occurred: $error');
-      MicrophoneController microphoneController = Get.find();
-      microphoneController.controlMicStream(command: Command.stop);
-    }, onDone: () {
-      logger.d('Audio stream completed.');
-      MicrophoneController microphoneController = Get.find();
-      microphoneController.controlMicStream(command: Command.stop);
-    });
+    audioStream.listen(
+      (audioChunk) {
+        logger.d('Received audio chunk: ${audioChunk.length} bytes');
+      },
+      onError: (error) {
+        logger.d('Error occurred: $error');
+        MicrophoneController microphoneController = Get.find();
+        microphoneController.controlMicStream(command: Command.stop);
+      },
+      onDone: () {
+        logger.d('Audio stream completed.');
+        MicrophoneController microphoneController = Get.find();
+        microphoneController.controlMicStream(command: Command.stop);
+      },
+    );
   }
 
   void test() async {
     Uint8List audioBytes = await loadAudioFile('assets/audio_file.mp3');
 
-    Stream<Uint8List> audioStream = createAudioFileStream(audioBytes,
-        delay: const Duration(milliseconds: 50), bufferLength: 512);
+    Stream<Uint8List> audioStream = createAudioFileStream(
+      audioBytes,
+      delay: const Duration(milliseconds: 50),
+      bufferLength: 512,
+    );
 
     processAudioStream(audioStream);
   }

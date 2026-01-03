@@ -35,7 +35,8 @@ class CalculationController extends GetxController {
     }
     final magnitudes = data.map((value) => value.abs()).toList();
     final maxValue = magnitudes.reduce(max);
-    final average = magnitudes.reduce((value, element) => value + element) /
+    final average =
+        magnitudes.reduce((value, element) => value + element) /
         magnitudes.length;
     if (average == 0.0) {
       return 0.0;
@@ -47,8 +48,10 @@ class CalculationController extends GetxController {
     if (data.isEmpty) {
       return 0.0;
     }
-    final double sumSquares =
-        data.fold(0.0, (sum, value) => sum + (value * value));
+    final double sumSquares = data.fold(
+      0.0,
+      (sum, value) => sum + (value * value),
+    );
     return sqrt(sumSquares / data.length);
   }
 
@@ -68,8 +71,9 @@ class CalculationController extends GetxController {
   }
 
   void calculateFrequency() {
-    final frequenciesList =
-        fftController.applyRealFft(waveDataController.doubleWaveData);
+    final frequenciesList = fftController.applyRealFft(
+      waveDataController.doubleWaveData,
+    );
     waveDataController.frequencyData = frequenciesList.sublist(1);
   }
 
@@ -77,7 +81,8 @@ class CalculationController extends GetxController {
     if (_hanningWindow != null) {
       if (waveDataController.waveDataLength != _hanningWindow!.length) {
         logger.d(
-            "hanning window length did not equal wavedata length. Needed to create one instance.");
+          "hanning window length did not equal wavedata length. Needed to create one instance.",
+        );
         _hanningWindow = hann(waveDataController.waveDataLength);
       }
       return _hanningWindow!;
@@ -93,8 +98,9 @@ class CalculationController extends GetxController {
     final frequenciesList = fftController.applyRealFft(hanningedWaveData);
     // Skip low-frequency bins that are dominated by noise/DC offsets.
     // _kLowFrequencyBinSkip corresponds to ~(_kLowFrequencyBinSkip * sampleRate / waveDataLength).
-    waveDataController.frequencyData =
-        frequenciesList.sublist(_kLowFrequencyBinSkip);
+    waveDataController.frequencyData = frequenciesList.sublist(
+      _kLowFrequencyBinSkip,
+    );
     _setConfidenceFrom(waveDataController.frequencyData);
   }
 
@@ -108,11 +114,13 @@ class CalculationController extends GetxController {
       }
     }
     waveDataController.setHPSData(
-        hps.sublist(0, hps.length < 5 ? hps.length : hps.length ~/ N));
+      hps.sublist(0, hps.length < 5 ? hps.length : hps.length ~/ N),
+    );
     _setConfidenceFrom(waveDataController.hpsData);
     var maxValue = hps.reduce(max);
     var maxIdx = hps.indexOf(maxValue);
-    var freq = (maxIdx + _kLowFrequencyBinSkip) *
+    var freq =
+        (maxIdx + _kLowFrequencyBinSkip) *
         micTechnicalDataController.samplesPerSecond /
         waveDataController.waveData.length;
     _addFrequencySample(freq);
@@ -126,7 +134,8 @@ class CalculationController extends GetxController {
         zeroCrossingCount++;
       }
     }
-    var frequency = zeroCrossingCount /
+    var frequency =
+        zeroCrossingCount /
         waveDataController.waveData.length /
         2 *
         micTechnicalDataController.samplesPerSecond;
@@ -139,19 +148,24 @@ class CalculationController extends GetxController {
     List<double> autocorrelations = [];
     double autocorrelation = 0;
     // Limit lag window to keep autocorrelation work bounded.
-    int autocorrLength =
-        min(waveDataController.waveData.length, 137); // 8192 / 80 Hz
+    int autocorrLength = min(
+      waveDataController.waveData.length,
+      137,
+    ); // 8192 / 80 Hz
     for (var i = 0; i < autocorrLength; i++) {
       for (var k = 0; k < waveDataController.waveData.length - 1 - i; k++) {
         autocorrelation +=
             waveDataController.waveData[k] * waveDataController.waveData[i + k];
       }
-      autocorrelations
-          .add(autocorrelation / (waveDataController.waveData.length - i));
+      autocorrelations.add(
+        autocorrelation / (waveDataController.waveData.length - i),
+      );
       autocorrelation = 0;
     }
     int maxIdx = autocorrelations.indexOf(
-        autocorrelations.sublist(20, autocorrLength).reduce(max), 20);
+      autocorrelations.sublist(20, autocorrLength).reduce(max),
+      20,
+    );
     double frequency = micTechnicalDataController.samplesPerSecond / maxIdx;
     waveDataController.setAutocorrelationData(autocorrelations);
     _setConfidenceFrom(waveDataController.autocorrelationData);
@@ -161,8 +175,10 @@ class CalculationController extends GetxController {
   void calculateCepstrum() {
     calculateFrequenciesCepstrum();
     _setConfidenceFrom(waveDataController.frequencyData);
-    final maximum = waveDataController.frequencyData
-            .indexOf(waveDataController.frequencyData.reduce(max)) +
+    final maximum =
+        waveDataController.frequencyData.indexOf(
+          waveDataController.frequencyData.reduce(max),
+        ) +
         20;
     final freq = micTechnicalDataController.samplesPerSecond / maximum;
     if (freq.isInfinite || freq.isNaN) {
@@ -175,12 +191,15 @@ class CalculationController extends GetxController {
   void calculateFrequenciesCepstrum() {
     Array waveDat = Array(waveDataController.doubleWaveData);
     Array hanningedWaveData = getHanningWindow() * waveDat;
-    Float64List frequenciesList1 =
-        fftController.applyRealFft(hanningedWaveData).sublist(1);
-    frequenciesList1 =
-        Float64List.fromList(frequenciesList1.map((e) => log(e)).toList());
-    Float64List frequenciesList2 =
-        fftController.applyRealFftHalf(frequenciesList1).sublist(1);
+    Float64List frequenciesList1 = fftController
+        .applyRealFft(hanningedWaveData)
+        .sublist(1);
+    frequenciesList1 = Float64List.fromList(
+      frequenciesList1.map((e) => log(e)).toList(),
+    );
+    Float64List frequenciesList2 = fftController
+        .applyRealFftHalf(frequenciesList1)
+        .sublist(1);
     waveDataController.frequencyData = frequenciesList2.sublist(20);
   }
 
@@ -196,15 +215,17 @@ class CalculationController extends GetxController {
       waveDataController.addVisibleSample(0.0);
       tuningController.checkIfNoteTuned();
       samplesCalculated++;
-      performanceController
-          .addCalculationDuration(stopwatch.elapsed.inMilliseconds / 1000.0);
+      performanceController.addCalculationDuration(
+        stopwatch.elapsed.inMilliseconds / 1000.0,
+      );
       if (samplesCalculated.value > totalSamplesToCalculate.value) {
         MicrophoneHelper.stopMicrophone();
         samplesCalculated = 0.obs;
       } else {
         if (samplesCalculated % 100 == 0) {
           print(
-              "Calculated sample: ${samplesCalculated.value}/${totalSamplesToCalculate.value}");
+            "Calculated sample: ${samplesCalculated.value}/${totalSamplesToCalculate.value}",
+          );
         }
       }
       return;
@@ -227,29 +248,34 @@ class CalculationController extends GetxController {
 
     tuningController.checkIfNoteTuned();
     samplesCalculated++;
-    performanceController
-        .addCalculationDuration(stopwatch.elapsed.inMilliseconds / 1000.0);
+    performanceController.addCalculationDuration(
+      stopwatch.elapsed.inMilliseconds / 1000.0,
+    );
     if (samplesCalculated.value > totalSamplesToCalculate.value) {
       MicrophoneHelper.stopMicrophone();
       samplesCalculated = 0.obs;
     } else {
       if (samplesCalculated % 100 == 0) {
         print(
-            "Calculated sample: ${samplesCalculated.value}/${totalSamplesToCalculate.value}");
+          "Calculated sample: ${samplesCalculated.value}/${totalSamplesToCalculate.value}",
+        );
       }
     }
   }
 
   void _addFrequencySample(double rawFrequency) {
     waveDataController.setRawFrequency(rawFrequency);
-    final bool shouldGate = waveDataController.calculationType.value !=
+    final bool shouldGate =
+        waveDataController.calculationType.value !=
         CalculationType.ZeroCrossing;
-    final bool allowUpdate = !shouldGate ||
+    final bool allowUpdate =
+        !shouldGate ||
         waveDataController.confidence >= tuningController.confidenceThreshold;
     double outputFrequency = rawFrequency;
     if (allowUpdate) {
       if (waveDataController.hasSmoothedFrequency) {
-        outputFrequency = waveDataController.smoothedFrequency +
+        outputFrequency =
+            waveDataController.smoothedFrequency +
             _kSmoothingAlpha *
                 (rawFrequency - waveDataController.smoothedFrequency);
       }

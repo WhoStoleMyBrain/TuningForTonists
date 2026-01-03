@@ -126,7 +126,8 @@ class TuningController extends GetxController {
       update();
       return;
     }
-    final bool shouldGate = waveDataController.calculationType.value !=
+    final bool shouldGate =
+        waveDataController.calculationType.value !=
         CalculationType.ZeroCrossing;
     if (shouldGate && waveDataController.confidence < confidenceThreshold) {
       percentageRight = 0.0;
@@ -159,41 +160,49 @@ class TuningController extends GetxController {
   }
 
   void _calculateCentDistance(List<double> lastSeconds) {
-    tuningDistance = (lastSeconds.fold(
-            0.0,
-            (previousValue, element) =>
-                previousValue + logCent(element / targetFrequency)) /
+    tuningDistance =
+        (lastSeconds.fold(
+          0.0,
+          (previousValue, element) =>
+              previousValue + logCent(element / targetFrequency),
+        ) /
         lastSeconds.length);
   }
 
   double logCent(num x) => log(x) / _oneCentLog;
 
   void _calculateFrequencyDistance(List<double> lastSeconds) {
-    tuningDistance = (lastSeconds
-            .reduce((value, element) => value + (element - targetFrequency)) /
+    tuningDistance =
+        (lastSeconds.reduce(
+          (value, element) => value + (element - targetFrequency),
+        ) /
         lastSeconds.length);
   }
 
   List<double> _getLastSeconds() {
     List<double> lastSeconds = [];
-    int visibleSamplesPerSecond = micTechnicalDataController.samplesPerSecond ~/
+    int visibleSamplesPerSecond =
+        micTechnicalDataController.samplesPerSecond ~/
         micTechnicalDataController.bufferSize;
     lastSeconds = waveDataController.visibleSamples.sublist(
-        waveDataController.visibleSamples.length - visibleSamplesPerSecond,
-        waveDataController.visibleSamples.length);
+      waveDataController.visibleSamples.length - visibleSamplesPerSecond,
+      waveDataController.visibleSamples.length,
+    );
     return lastSeconds;
   }
 
   void _calculateRightAndWrongPercentage(List<bool> sampleInFrequencyBand) {
-    percentageRight = sampleInFrequencyBand.where((element) => element).length /
+    percentageRight =
+        sampleInFrequencyBand.where((element) => element).length /
         sampleInFrequencyBand.length;
     percentageWrong = 1.0 - percentageRight;
   }
 
   bool _calculateTuningDistance(
-      bool Function(double element) conditionCallback,
-      Function(List<double> lastSeconds) distanceCalculationCallback,
-      Function() setTuningColor) {
+    bool Function(double element) conditionCallback,
+    Function(List<double> lastSeconds) distanceCalculationCallback,
+    Function() setTuningColor,
+  ) {
     List<double> lastSeconds;
     try {
       lastSeconds = _getLastSeconds();
@@ -202,8 +211,9 @@ class TuningController extends GetxController {
       waveDataController.resetVisibleData();
       return false;
     }
-    List<bool> sampleInFrequencyBand =
-        lastSeconds.map((e) => conditionCallback(e)).toList();
+    List<bool> sampleInFrequencyBand = lastSeconds
+        .map((e) => conditionCallback(e))
+        .toList();
     _calculateRightAndWrongPercentage(sampleInFrequencyBand);
     distanceCalculationCallback(lastSeconds);
     setTuningColor();
@@ -214,20 +224,28 @@ class TuningController extends GetxController {
     switch (_tuningMethod.value) {
       case TuningMethod.cent:
         return _calculateTuningDistance(
-            _inCentRange, _calculateCentDistance, setTuningColorCent);
+          _inCentRange,
+          _calculateCentDistance,
+          setTuningColorCent,
+        );
       case TuningMethod.frequency:
-        return _calculateTuningDistance(_inFrequencyRange,
-            _calculateFrequencyDistance, setTuningColorFrequency);
+        return _calculateTuningDistance(
+          _inFrequencyRange,
+          _calculateFrequencyDistance,
+          setTuningColorFrequency,
+        );
       default:
         logger.d(
-            "Tuning method did not match any of the enum values: ${_tuningMethod.value}");
+          "Tuning method did not match any of the enum values: ${_tuningMethod.value}",
+        );
         return false;
     }
   }
 
   void setTuningColorCent() {
-    double averageDistance =
-        tuningDistance.abs() > centRange ? centRange : tuningDistance.abs();
+    double averageDistance = tuningDistance.abs() > centRange
+        ? centRange
+        : tuningDistance.abs();
     int factor = (255 * (averageDistance / centRange)).toInt();
     tuningColor = Color.fromRGBO(0 + factor, 255 - factor, 0, 1.0);
     refresh();
@@ -245,8 +263,8 @@ class TuningController extends GetxController {
   Color getTuningColorFromFrequency(double inputFrequency) {
     double averageDistance =
         (inputFrequency - targetFrequency).abs() > frequencyRange
-            ? frequencyRange
-            : (inputFrequency - targetFrequency).abs();
+        ? frequencyRange
+        : (inputFrequency - targetFrequency).abs();
     int factor = (255 * (averageDistance / frequencyRange).abs()).toInt();
     Color newColor = Color.fromRGBO(0 + factor, 255 - factor, 0, 1.0);
     return newColor;
@@ -255,8 +273,8 @@ class TuningController extends GetxController {
   Color getTuningColorFromCent(double inputFrequency) {
     double averageDistance =
         (logCent(inputFrequency / targetFrequency)).abs() > centRange
-            ? centRange
-            : (logCent(inputFrequency / targetFrequency)).abs();
+        ? centRange
+        : (logCent(inputFrequency / targetFrequency)).abs();
     int factor = (255 * (averageDistance / centRange).abs()).toInt();
     Color newColor = Color.fromRGBO(0 + factor, 255 - factor, 0, 1.0);
     return newColor;
@@ -268,30 +286,38 @@ class TuningController extends GetxController {
         return waveDataController.visibleSamples
             .asMap()
             .entries
-            .map<ScatterSpot>((entry) => ScatterSpot(
-                  entry.value,
-                  entry.key.toDouble(),
-                  show: true,
-                  dotPainter: FlDotCirclePainter(
-                      color: getTuningColorFromCent(entry.value), radius: 3),
-                ))
+            .map<ScatterSpot>(
+              (entry) => ScatterSpot(
+                entry.value,
+                entry.key.toDouble(),
+                show: true,
+                dotPainter: FlDotCirclePainter(
+                  color: getTuningColorFromCent(entry.value),
+                  radius: 3,
+                ),
+              ),
+            )
             .toList();
       case TuningMethod.frequency:
         return waveDataController.visibleSamples
             .asMap()
             .entries
-            .map<ScatterSpot>((entry) => ScatterSpot(
-                  entry.value,
-                  entry.key.toDouble(),
-                  show: true,
-                  dotPainter: FlDotCirclePainter(
-                      color: getTuningColorFromFrequency(entry.value),
-                      radius: 3),
-                ))
+            .map<ScatterSpot>(
+              (entry) => ScatterSpot(
+                entry.value,
+                entry.key.toDouble(),
+                show: true,
+                dotPainter: FlDotCirclePainter(
+                  color: getTuningColorFromFrequency(entry.value),
+                  radius: 3,
+                ),
+              ),
+            )
             .toList();
       default:
         logger.d(
-            "Tuning method did not match any values of the enum: ${_tuningMethod.value}");
+          "Tuning method did not match any values of the enum: ${_tuningMethod.value}",
+        );
         return [];
     }
   }

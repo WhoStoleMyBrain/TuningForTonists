@@ -20,8 +20,10 @@ class TuningConfiguration {
 
   factory TuningConfiguration.fromJson(Map<String, dynamic> json) {
     Iterable jsonNotes = json["notes"];
-    return TuningConfiguration(jsonNotes.map((e) => Note.fromJson(e)).toList(),
-        json["configurationName"]);
+    return TuningConfiguration(
+      jsonNotes.map((e) => Note.fromJson(e)).toList(),
+      json["configurationName"],
+    );
   }
 
   Map<String, dynamic> toJson() {
