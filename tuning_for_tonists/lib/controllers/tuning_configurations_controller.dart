@@ -32,7 +32,8 @@ class TuningConfigurationsController extends GetxController {
     data ??= '[]';
     Iterable jsonData = jsonDecode(data) as List;
     var tmp = List<TuningConfiguration>.from(
-        jsonData.map((e) => TuningConfiguration.fromJson(e)));
+      jsonData.map((e) => TuningConfiguration.fromJson(e)),
+    );
     customTuningConfigurations = {'Custom Configurations': tmp};
     refresh();
   }

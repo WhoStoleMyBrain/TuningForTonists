@@ -7,8 +7,9 @@ import '../controllers/mic_technical_data_controller.dart';
 import '../controllers/tuning_controller.dart';
 
 class WaveDataController extends GetxController {
-  final RxList<double> visibleSamples =
-      <double>[0].obs; // strongest frequency in fft Data interval
+  final RxList<double> visibleSamples = <double>[
+    0,
+  ].obs; // strongest frequency in fft Data interval
 
   Rx<int> _waveDataLength = 4096.obs;
   RxList<double> waveData = List.filled(4096, 0.0).obs;
@@ -132,15 +133,17 @@ class WaveDataController extends GetxController {
 
   void setNumberOfZeroCrossingData() {
     if (zeroCrossingData.length > 200) {
-      zeroCrossingData.value =
-          zeroCrossingData.sublist(zeroCrossingData.length - 200);
+      zeroCrossingData.value = zeroCrossingData.sublist(
+        zeroCrossingData.length - 200,
+      );
     }
   }
 
   void setNumberOfWaveData() {
     if (waveData.length > _waveDataLength.value) {
-      waveData.value =
-          waveData.sublist(waveData.length - _waveDataLength.value);
+      waveData.value = waveData.sublist(
+        waveData.length - _waveDataLength.value,
+      );
     }
   }
 
@@ -164,14 +167,18 @@ class WaveDataController extends GetxController {
   void setNumberOfVisibleDataPoints() {
     if (visibleSamples.length > 200) {
       visibleSamples.value = visibleSamples.sublist(
-          visibleSamples.length - 200, visibleSamples.length);
+        visibleSamples.length - 200,
+        visibleSamples.length,
+      );
     }
   }
 
   void setNumberOfConfidenceDataPoints() {
     if (confidenceSamples.length > 200) {
       confidenceSamples.value = confidenceSamples.sublist(
-          confidenceSamples.length - 200, confidenceSamples.length);
+        confidenceSamples.length - 200,
+        confidenceSamples.length,
+      );
     }
   }
 
@@ -183,38 +190,42 @@ class WaveDataController extends GetxController {
     TuningController tuningController = Get.find();
     List<FlSpot> result = [];
     if (capped) {
-      data.asMap().forEach(
-        (key, value) {
-          if (value >
-              tuningController.targetFrequency +
-                  tuningController.frequencyRange) {
-            result.add(FlSpot(
-                key.toDouble(),
-                valueToDisplay(
-                    tuningController.targetFrequency +
-                        tuningController.frequencyRange,
-                    log)));
-          } else if (value <
-              tuningController.targetFrequency -
-                  tuningController.frequencyRange) {
-            result.add(FlSpot(
-                key.toDouble(),
-                valueToDisplay(
-                    tuningController.targetFrequency -
-                        tuningController.frequencyRange,
-                    log)));
-          } else {
-            result.add(FlSpot(key.toDouble(), valueToDisplay(value, log)));
-          }
-        },
-      );
+      data.asMap().forEach((key, value) {
+        if (value >
+            tuningController.targetFrequency +
+                tuningController.frequencyRange) {
+          result.add(
+            FlSpot(
+              key.toDouble(),
+              valueToDisplay(
+                tuningController.targetFrequency +
+                    tuningController.frequencyRange,
+                log,
+              ),
+            ),
+          );
+        } else if (value <
+            tuningController.targetFrequency -
+                tuningController.frequencyRange) {
+          result.add(
+            FlSpot(
+              key.toDouble(),
+              valueToDisplay(
+                tuningController.targetFrequency -
+                    tuningController.frequencyRange,
+                log,
+              ),
+            ),
+          );
+        } else {
+          result.add(FlSpot(key.toDouble(), valueToDisplay(value, log)));
+        }
+      });
       return result;
     } else {
-      data.asMap().forEach(
-        (key, value) {
-          result.add(FlSpot(key.toDouble(), value.toDouble()));
-        },
-      );
+      data.asMap().forEach((key, value) {
+        result.add(FlSpot(key.toDouble(), value.toDouble()));
+      });
       return result;
     }
   }

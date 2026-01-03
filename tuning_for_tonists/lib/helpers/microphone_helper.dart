@@ -12,39 +12,44 @@ abstract class MicrophoneHelper {
   static final MicTechnicalDataController micTechnicalDataController =
       Get.find();
   static final MicInitializationValuesController
-      micInitializationValuesController = Get.find();
+  micInitializationValuesController = Get.find();
   static final CalculationController calculationController = Get.find();
 
   static Logger logger = Logger(filter: DevelopmentFilter());
 
-  static Future<Stream<Uint8List>?> getMicStream(
-      {StreamSource source = StreamSource.microphone}) async {
+  static Future<Stream<Uint8List>?> getMicStream({
+    StreamSource source = StreamSource.microphone,
+  }) async {
     switch (source) {
       case StreamSource.microphone:
         MicStream.shouldRequestPermission(true);
         Stream<Uint8List> stream = MicStream.microphone(
-            audioSource: micInitializationValuesController.audioSource.value,
-            sampleRate: micInitializationValuesController.sampleRate,
-            channelConfig:
-                micInitializationValuesController.channelConfig.value,
-            audioFormat: micInitializationValuesController.audioFormat.value);
+          audioSource: micInitializationValuesController.audioSource.value,
+          sampleRate: micInitializationValuesController.sampleRate,
+          channelConfig: micInitializationValuesController.channelConfig.value,
+          audioFormat: micInitializationValuesController.audioFormat.value,
+        );
         return stream;
       case StreamSource.audioFile:
         TestingController testingController = Get.find();
         if (testingController.useSyntheticTone.isTrue) {
           return testingController.createSyntheticToneStream(
-              frequency: testingController.syntheticFrequency.value,
-              sampleRate: micInitializationValuesController.sampleRate);
+            frequency: testingController.syntheticFrequency.value,
+            sampleRate: micInitializationValuesController.sampleRate,
+          );
         }
         Uint8List audioBytes = await testingController.loadCurrentAudioFile();
         MicTechnicalDataController micTechnicalDataController = Get.find();
         Stream<Uint8List> audioStream = testingController.createAudioFileStream(
-            audioBytes,
-            delay: Duration(
-                microseconds: 1000000 ~/
-                    (micInitializationValuesController.sampleRate *
-                        micTechnicalDataController.bytesPerSample)),
-            bufferLength: micTechnicalDataController.bufferSize);
+          audioBytes,
+          delay: Duration(
+            microseconds:
+                1000000 ~/
+                (micInitializationValuesController.sampleRate *
+                    micTechnicalDataController.bytesPerSample),
+          ),
+          bufferLength: micTechnicalDataController.bufferSize,
+        );
         return audioStream;
     }
   }
@@ -54,7 +59,10 @@ abstract class MicrophoneHelper {
     var samplesPerSecond = (await MicStream.sampleRate);
     var bufferSize = (await MicStream.bufferSize);
     micTechnicalDataController.setMicTechnicalData(
-        bytesPerSample, samplesPerSecond, bufferSize);
+      bytesPerSample,
+      samplesPerSecond,
+      bufferSize,
+    );
     calculationController.hanningWindow = samplesPerSecond ~/ 2;
   }
 
@@ -70,8 +78,10 @@ abstract class MicrophoneHelper {
 
   static List<double> sixteenBitWaveDataCalculation(Uint8List samples) {
     List<double> waveData = [];
-    final byteData =
-        samples.buffer.asByteData(samples.offsetInBytes, samples.lengthInBytes);
+    final byteData = samples.buffer.asByteData(
+      samples.offsetInBytes,
+      samples.lengthInBytes,
+    );
     for (int i = 0; i + 1 < byteData.lengthInBytes; i += 2) {
       final sample = byteData.getInt16(i, Endian.little);
       waveData.add(sample / 32768.0);
@@ -103,18 +113,23 @@ abstract class MicrophoneHelper {
     } else {
       if (kDebugMode) {
         print(
-            'Major error in wave data calculation. The defined audio format ${micInitializationValuesController.audioFormat.value} is not implemented!!');
+          'Major error in wave data calculation. The defined audio format ${micInitializationValuesController.audioFormat.value} is not implemented!!',
+        );
       }
     }
     return waveData;
   }
 
-  static void setSyntheticTechnicalData(
-      {required int bytesPerSample,
-      required int samplesPerSecond,
-      required int bufferSize}) {
+  static void setSyntheticTechnicalData({
+    required int bytesPerSample,
+    required int samplesPerSecond,
+    required int bufferSize,
+  }) {
     micTechnicalDataController.setMicTechnicalData(
-        bytesPerSample, samplesPerSecond, bufferSize);
+      bytesPerSample,
+      samplesPerSecond,
+      bufferSize,
+    );
     calculationController.hanningWindow = samplesPerSecond ~/ 2;
   }
 

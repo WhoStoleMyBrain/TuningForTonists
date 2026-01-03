@@ -5,8 +5,24 @@ import '../enums/rotation_axis.dart';
 
 abstract class PredefinedMatrices {
   static Float64List getScalingMatrix(double factorX, double factorY) {
-    return Float64List.fromList(
-        [factorX, 0, 0, 0, 0, factorY, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
+    return Float64List.fromList([
+      factorX,
+      0,
+      0,
+      0,
+      0,
+      factorY,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+    ]);
   }
 
   static Float64List getRotationMatrix(RotationAxis axis, double radians) {
@@ -26,7 +42,7 @@ abstract class PredefinedMatrices {
       0,
       0,
       0,
-      1
+      1,
     ]);
   }
 }

@@ -35,9 +35,7 @@ class AppDrawer extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
-          const DrawerHeader(
-            child: Text('Tuning for Tonists \nNavigation'),
-          ),
+          const DrawerHeader(child: Text('Tuning for Tonists \nNavigation')),
           getListTile('Home', Routes.home),
           getListTile('Mic Details', Routes.micDetail),
           getListTile('Settings', Routes.settings),

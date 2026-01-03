@@ -37,10 +37,7 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
       key: micDetailController.scaffoldKey,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(
-            Icons.menu_sharp,
-            color: AppColors.onPrimaryColor,
-          ),
+          icon: const Icon(Icons.menu_sharp, color: AppColors.onPrimaryColor),
           onPressed: () => micDetailController.openDrawer(),
         ),
         title: Text(
@@ -65,26 +62,24 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const Text('Initialization values:'),
-                  const SizedBox(
-                    height: 8,
-                  ),
+                  const SizedBox(height: 8),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Audio Format:'),
                       Text(
-                          key: UniqueKey(),
-                          ' ${micInitializationValuesController.audioFormat.value}'),
+                        key: UniqueKey(),
+                        ' ${micInitializationValuesController.audioFormat.value}',
+                      ),
                     ],
                   ),
                   DropdownButton(
                     hint: const Text('Encoding'),
                     onChanged: (value) {
                       micInitializationValuesController.setAudioFormat(
-                          value ?? AudioFormat.ENCODING_PCM_8BIT);
-                      setState(
-                        () {},
+                        value ?? AudioFormat.ENCODING_PCM_8BIT,
                       );
+                      setState(() {});
                     },
                     value: micInitializationValuesController.audioFormat.value,
                     items: AudioFormat.values
@@ -98,17 +93,17 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                     children: [
                       const Text('Audio Source:'),
                       Text(
-                          ' ${micInitializationValuesController.audioSource.value}')
+                        ' ${micInitializationValuesController.audioSource.value}',
+                      ),
                     ],
                   ),
                   DropdownButton(
                     hint: const Text('Audio Source'),
                     onChanged: (value) {
-                      micInitializationValuesController
-                          .setAudioSource(value ?? AudioSource.DEFAULT);
-                      setState(
-                        () {},
+                      micInitializationValuesController.setAudioSource(
+                        value ?? AudioSource.DEFAULT,
                       );
+                      setState(() {});
                     },
                     value: micInitializationValuesController.audioSource.value,
                     items: AudioSource.values
@@ -122,17 +117,17 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                     children: [
                       const Text('Channel Config:'),
                       Text(
-                          ' ${micInitializationValuesController.channelConfig.value}')
+                        ' ${micInitializationValuesController.channelConfig.value}',
+                      ),
                     ],
                   ),
                   DropdownButton(
                     hint: const Text('Channel Config'),
                     onChanged: (value) {
                       micInitializationValuesController.setChannelConfig(
-                          value ?? ChannelConfig.CHANNEL_IN_MONO);
-                      setState(
-                        () {},
+                        value ?? ChannelConfig.CHANNEL_IN_MONO,
                       );
+                      setState(() {});
                     },
                     value:
                         micInitializationValuesController.channelConfig.value,
@@ -146,14 +141,12 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Sample Rate:'),
-                      Text(' ${micInitializationValuesController.sampleRate}')
+                      Text(' ${micInitializationValuesController.sampleRate}'),
                     ],
                   ),
                   TextField(
                     decoration: InputDecoration(
-                      label: const Text(
-                        "Sample Rate 2",
-                      ),
+                      label: const Text("Sample Rate 2"),
                       labelStyle: const TextStyle()
                         ..apply(color: AppColors.onPrimaryColor),
                       floatingLabelStyle: const TextStyle()
@@ -166,16 +159,12 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                     onSubmitted: (value) {
                       micInitializationValuesController.sampleRate =
                           int.tryParse(value) ?? 0;
-                      setState(
-                        () {},
-                      );
+                      setState(() {});
                     },
                   ),
                   TextField(
                     decoration: InputDecoration(
-                      label: const Text(
-                        "Wave Data Length",
-                      ),
+                      label: const Text("Wave Data Length"),
                       labelStyle: const TextStyle()
                         ..apply(color: AppColors.onPrimaryColor),
                       floatingLabelStyle: const TextStyle()
@@ -186,18 +175,15 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     onSubmitted: (value) {
-                      fftController
-                          .setWaveDataLength(int.tryParse(value) ?? 4096);
-                      setState(
-                        () {},
+                      fftController.setWaveDataLength(
+                        int.tryParse(value) ?? 4096,
                       );
+                      setState(() {});
                     },
                   ),
                   TextField(
                     decoration: InputDecoration(
-                      label: const Text(
-                        "FFT Length",
-                      ),
+                      label: const Text("FFT Length"),
                       labelStyle: const TextStyle()
                         ..apply(color: AppColors.onPrimaryColor),
                       floatingLabelStyle: const TextStyle()
@@ -209,9 +195,7 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     onSubmitted: (value) {
                       fftController.fftLength = int.tryParse(value) ?? 0;
-                      setState(
-                        () {},
-                      );
+                      setState(() {});
                     },
                   ),
                   CheckboxListTile(
@@ -220,24 +204,19 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                     value: fftController.lockFftToWaveData.value,
                     onChanged: (value) {
                       fftController.setLockFftToWaveData(value ?? true);
-                      setState(
-                        () {},
-                      );
+                      setState(() {});
                     },
                   ),
-                  const SizedBox(
-                    height: 32,
-                  ),
+                  const SizedBox(height: 32),
                   const Text('Mic Config Data:'),
-                  const SizedBox(
-                    height: 8,
-                  ),
+                  const SizedBox(height: 8),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Buffer Size:'),
                       Text(
-                          ' ${micTechnicalDataController.bufferSize == 0 ? "Not Initialized" : micTechnicalDataController.bufferSize}')
+                        ' ${micTechnicalDataController.bufferSize == 0 ? "Not Initialized" : micTechnicalDataController.bufferSize}',
+                      ),
                     ],
                   ),
                   Row(
@@ -245,7 +224,8 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                     children: [
                       const Text('BytesPerSample:'),
                       Text(
-                          ' ${micTechnicalDataController.bytesPerSample == 0 ? "Not Initialized" : micTechnicalDataController.bytesPerSample}')
+                        ' ${micTechnicalDataController.bytesPerSample == 0 ? "Not Initialized" : micTechnicalDataController.bytesPerSample}',
+                      ),
                     ],
                   ),
                   Row(
@@ -253,23 +233,21 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                     children: [
                       const Text('SamplesPerSecond:'),
                       Text(
-                          '${micTechnicalDataController.samplesPerSecond == 0 ? "Not Initialized" : micTechnicalDataController.samplesPerSecond}')
+                        '${micTechnicalDataController.samplesPerSecond == 0 ? "Not Initialized" : micTechnicalDataController.samplesPerSecond}',
+                      ),
                     ],
                   ),
                   if (kDebugMode) ...[
-                    const SizedBox(
-                      height: 32,
-                    ),
+                    const SizedBox(height: 32),
                     const Text('Debug (runtime):'),
-                    const SizedBox(
-                      height: 8,
-                    ),
+                    const SizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text('Runtime Sample Rate:'),
                         Text(
-                            ' ${runtimeValue(micTechnicalDataController.samplesPerSecond)}')
+                          ' ${runtimeValue(micTechnicalDataController.samplesPerSecond)}',
+                        ),
                       ],
                     ),
                     Row(
@@ -277,7 +255,8 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                       children: [
                         const Text('Runtime Buffer Size:'),
                         Text(
-                            ' ${runtimeValue(micTechnicalDataController.bufferSize)}')
+                          ' ${runtimeValue(micTechnicalDataController.bufferSize)}',
+                        ),
                       ],
                     ),
                     Row(
@@ -285,7 +264,8 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                       children: [
                         const Text('Runtime Bit Depth:'),
                         Text(
-                            ' ${micTechnicalDataController.bytesPerSample <= 1 ? "Not Initialized" : micTechnicalDataController.bytesPerSample * 8}')
+                          ' ${micTechnicalDataController.bytesPerSample <= 1 ? "Not Initialized" : micTechnicalDataController.bytesPerSample * 8}',
+                        ),
                       ],
                     ),
                     Row(
@@ -293,7 +273,8 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                       children: [
                         const Text('FFT Resolution:'),
                         Text(
-                            ' ${fftController.fftResolution.toStringAsFixed(2)} Hz/bin')
+                          ' ${fftController.fftResolution.toStringAsFixed(2)} Hz/bin',
+                        ),
                       ],
                     ),
                     Row(
@@ -301,28 +282,29 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                       children: [
                         const Text('Channel Config:'),
                         Text(
-                            ' ${micInitializationValuesController.channelConfig.value}')
+                          ' ${micInitializationValuesController.channelConfig.value}',
+                        ),
                       ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text('Calculation Method:'),
-                        Text(' $calculationType')
+                        Text(' $calculationType'),
                       ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text('Detected Frequency:'),
-                        Text(' ${latestFrequency.toStringAsFixed(2)} Hz')
+                        Text(' ${latestFrequency.toStringAsFixed(2)} Hz'),
                       ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text('Confidence (PAR):'),
-                        Text(' ${confidence.toStringAsFixed(2)}')
+                        Text(' ${confidence.toStringAsFixed(2)}'),
                       ],
                     ),
                     Row(
@@ -330,7 +312,8 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                       children: [
                         const Text('Confidence Threshold:'),
                         Text(
-                            ' ${tuningController.confidenceThreshold.toStringAsFixed(2)}')
+                          ' ${tuningController.confidenceThreshold.toStringAsFixed(2)}',
+                        ),
                       ],
                     ),
                     Row(
@@ -338,7 +321,8 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                       children: [
                         const Text('Frame Energy (RMS):'),
                         Text(
-                            ' ${waveDataController.frameEnergy.toStringAsFixed(4)}')
+                          ' ${waveDataController.frameEnergy.toStringAsFixed(4)}',
+                        ),
                       ],
                     ),
                     Row(
@@ -346,26 +330,25 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                       children: [
                         const Text('Energy Gate:'),
                         Text(
-                            ' ${waveDataController.isEnergyGateOpen ? "Open" : "Closed"} (threshold ${waveDataController.energyThreshold.toStringAsFixed(4)})')
+                          ' ${waveDataController.isEnergyGateOpen ? "Open" : "Closed"} (threshold ${waveDataController.energyThreshold.toStringAsFixed(4)})',
+                        ),
                       ],
                     ),
                   ],
-                  const SizedBox(
-                    height: 32,
-                  ),
+                  const SizedBox(height: 32),
                   const Text('PCM Capture:'),
-                  const SizedBox(
-                    height: 8,
-                  ),
+                  const SizedBox(height: 8),
                   ElevatedButton(
                     onPressed: microphoneController.isCapturing.isTrue
                         ? null
                         : () {
                             microphoneController.startPcmCapture();
                           },
-                    child: Text(microphoneController.isCapturing.isTrue
-                        ? 'Capturing...'
-                        : 'Capture 3s Raw PCM'),
+                    child: Text(
+                      microphoneController.isCapturing.isTrue
+                          ? 'Capturing...'
+                          : 'Capture 3s Raw PCM',
+                    ),
                   ),
                   if (microphoneController.lastCaptureStatus.isNotEmpty)
                     Padding(
@@ -383,9 +366,7 @@ class _MicDetailScreenState extends State<MicDetailScreen> {
                         textAlign: TextAlign.center,
                       ),
                     ),
-                  const SizedBox(
-                    height: 100,
-                  ),
+                  const SizedBox(height: 100),
                   const MicStreamControlButton(),
                   const DataDisplay(),
                 ],

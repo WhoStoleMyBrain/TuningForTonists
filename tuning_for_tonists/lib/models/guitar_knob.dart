@@ -3,9 +3,10 @@ class GuitarKnob {
   double neckLength;
   double headThickness;
   double headLength;
-  GuitarKnob(
-      {required this.neckThickness,
-      required this.neckLength,
-      required this.headThickness,
-      required this.headLength});
+  GuitarKnob({
+    required this.neckThickness,
+    required this.neckLength,
+    required this.headThickness,
+    required this.headLength,
+  });
 }

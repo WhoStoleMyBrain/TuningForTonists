@@ -33,21 +33,30 @@ class GuitarPainter extends CustomPainter {
     var scaleDownMatrix = PredefinedMatrices.getScalingMatrix(0.5, 0.5);
 
     for (var i = 0; i < allNotes.length; i++) {
-      Path knobPath = GuitarDrawerHelper.drawGuitarKnobPath(guitarKnob)
-          .transform(scaleDownMatrix);
+      Path knobPath = GuitarDrawerHelper.drawGuitarKnobPath(
+        guitarKnob,
+      ).transform(scaleDownMatrix);
       Path guitarStringPath = GuitarDrawerHelper.drawGuitarString(
-          GuitarSizeHelper.getDefaultGuitarString());
+        GuitarSizeHelper.getDefaultGuitarString(),
+      );
       knobPath = GuitarDrawerHelper.moveAndScaleKnobPath(
-          knobPath, guitarKnob, i, size, GuitarSizeHelper.yOffset);
+        knobPath,
+        guitarKnob,
+        i,
+        size,
+        GuitarSizeHelper.yOffset,
+      );
       guitarStringPath = GuitarDrawerHelper.moveAndScaleStringPath(
-          guitarStringPath,
-          guitarHead,
-          guitarString,
-          i,
-          size,
-          GuitarSizeHelper.yOffset);
-      knobPath = knobPath.shift(Offset(
-          0, 80.0 * i.remainder(GuitarSizeHelper.getNotesLengthHalved())));
+        guitarStringPath,
+        guitarHead,
+        guitarString,
+        i,
+        size,
+        GuitarSizeHelper.yOffset,
+      );
+      knobPath = knobPath.shift(
+        Offset(0, 80.0 * i.remainder(GuitarSizeHelper.getNotesLengthHalved())),
+      );
       canvas.drawPath(knobPath, knobPaint);
       canvas.drawPath(guitarStringPath, guitarHeadPaint);
     }

@@ -13,18 +13,14 @@ class InfoScreen extends GetView<InfoController> {
     return Scaffold(
       key: controller.scaffoldKey,
       appBar: AppBar(
-          title: const Text('Info'),
-          leading: IconButton(
-            icon: const Icon(
-              Icons.menu_sharp,
-              color: AppColors.onPrimaryColor,
-            ),
-            onPressed: () => controller.openDrawer(),
-          )),
-      body: const Center(
-        child: Column(
-          children: [Text.rich(TextSpan(text: 'Info Screen'))],
+        title: const Text('Info'),
+        leading: IconButton(
+          icon: const Icon(Icons.menu_sharp, color: AppColors.onPrimaryColor),
+          onPressed: () => controller.openDrawer(),
         ),
+      ),
+      body: const Center(
+        child: Column(children: [Text.rich(TextSpan(text: 'Info Screen'))]),
       ),
       drawer: const AppDrawer(),
     );

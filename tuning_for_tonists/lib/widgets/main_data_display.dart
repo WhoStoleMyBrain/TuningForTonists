@@ -45,10 +45,7 @@ class MainDataDisplay extends StatelessWidget {
     return Column(
       children: [
         const Center(
-          child: Text(
-            'Main Data Display',
-            style: TextStyle(fontSize: 24),
-          ),
+          child: Text('Main Data Display', style: TextStyle(fontSize: 24)),
         ),
         Padding(
           padding: const EdgeInsets.only(
@@ -62,77 +59,77 @@ class MainDataDisplay extends StatelessWidget {
             child: LayoutBuilder(
               builder: (context, constraints) {
                 return GetBuilder<TuningController>(
-                    builder: (tuningController) {
-                  return GetBuilder<WaveDataController>(
-                    builder: (waveDataController) => LineChart(
-                      duration: const Duration(milliseconds: 0),
-                      LineChartData(
-                        lineTouchData: LineTouchData(
-                          touchTooltipData: LineTouchTooltipData(
-                            maxContentWidth: 100,
-                            getTooltipColor: (_) => Colors.black,
-                            getTooltipItems: (touchedSpots) {
-                              return touchedSpots
-                                  .map((LineBarSpot touchedSpot) {
-                                final textStyle = TextStyle(
-                                  color: touchedSpot.bar.gradient?.colors[0] ??
-                                      touchedSpot.bar.color,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                );
-                                return LineTooltipItem(
-                                  '${touchedSpot.x}, ${touchedSpot.y.toStringAsFixed(2)}',
-                                  textStyle,
-                                );
-                              }).toList();
-                            },
+                  builder: (tuningController) {
+                    return GetBuilder<WaveDataController>(
+                      builder: (waveDataController) => LineChart(
+                        duration: const Duration(milliseconds: 0),
+                        LineChartData(
+                          lineTouchData: LineTouchData(
+                            touchTooltipData: LineTouchTooltipData(
+                              maxContentWidth: 100,
+                              getTooltipColor: (_) => Colors.black,
+                              getTooltipItems: (touchedSpots) {
+                                return touchedSpots.map((
+                                  LineBarSpot touchedSpot,
+                                ) {
+                                  final textStyle = TextStyle(
+                                    color:
+                                        touchedSpot.bar.gradient?.colors[0] ??
+                                        touchedSpot.bar.color,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  );
+                                  return LineTooltipItem(
+                                    '${touchedSpot.x}, ${touchedSpot.y.toStringAsFixed(2)}',
+                                    textStyle,
+                                  );
+                                }).toList();
+                              },
+                            ),
+                            handleBuiltInTouches: true,
+                            getTouchLineStart: (data, index) => 0,
                           ),
-                          handleBuiltInTouches: true,
-                          getTouchLineStart: (data, index) => 0,
-                        ),
-                        lineBarsData: [
-                          LineChartBarData(
-                            color: AppColors.contentColorPink,
-                            spots: waveDataController.dataToSpots(
+                          lineBarsData: [
+                            LineChartBarData(
+                              color: AppColors.contentColorPink,
+                              spots: waveDataController.dataToSpots(
                                 waveDataController.visibleSamples,
                                 false,
-                                false),
-                            isCurved: true,
-                            isStrokeCapRound: true,
-                            barWidth: 2,
-                            belowBarData: BarAreaData(
-                              show: false,
+                                false,
+                              ),
+                              isCurved: true,
+                              isStrokeCapRound: true,
+                              barWidth: 2,
+                              belowBarData: BarAreaData(show: false),
+                              dotData: const FlDotData(show: false),
                             ),
-                            dotData: const FlDotData(show: false),
+                          ],
+                          minY: waveDataController.visibleSamples.reduce(min),
+                          maxY: waveDataController.visibleSamples.reduce(max),
+                          minX: 0,
+                          maxX: waveDataController.visibleSamples.length
+                              .toDouble(),
+                          titlesData: const FlTitlesData(show: false),
+                          gridData: FlGridData(
+                            show: true,
+                            drawHorizontalLine: true,
+                            drawVerticalLine: false,
+                            getDrawingHorizontalLine: (_) => FlLine(
+                              color: AppColors.contentColorBlue.withOpacity(1),
+                              dashArray: [8, 0],
+                              strokeWidth: 0.8,
+                            ),
                           ),
-                        ],
-                        minY: waveDataController.visibleSamples.reduce(min),
-                        maxY: waveDataController.visibleSamples.reduce(max),
-                        minX: 0,
-                        maxX:
-                            waveDataController.visibleSamples.length.toDouble(),
-                        titlesData: const FlTitlesData(
-                          show: false,
+                          borderData: FlBorderData(show: false),
                         ),
-                        gridData: FlGridData(
-                          show: true,
-                          drawHorizontalLine: true,
-                          drawVerticalLine: false,
-                          getDrawingHorizontalLine: (_) => FlLine(
-                            color: AppColors.contentColorBlue.withOpacity(1),
-                            dashArray: [8, 0],
-                            strokeWidth: 0.8,
-                          ),
-                        ),
-                        borderData: FlBorderData(show: false),
                       ),
-                    ),
-                  );
-                });
+                    );
+                  },
+                );
               },
             ),
           ),
-        )
+        ),
       ],
     );
   }

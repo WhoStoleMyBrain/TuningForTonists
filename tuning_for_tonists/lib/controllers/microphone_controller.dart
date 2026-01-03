@@ -13,16 +13,9 @@ import '../controllers/mic_initialization_values_controller.dart';
 import '../controllers/mic_technical_data_controller.dart';
 import '../controllers/testing_controller.dart';
 
-enum Command {
-  start,
-  stop,
-  change,
-}
+enum Command { start, stop, change }
 
-enum StreamSource {
-  microphone,
-  audioFile,
-}
+enum StreamSource { microphone, audioFile }
 
 class MicrophoneController extends FullLifeCycleController
     with FullLifeCycleMixin {
@@ -96,7 +89,8 @@ class MicrophoneController extends FullLifeCycleController
     }
     isActive = true.obs;
     controlMicStream(
-        command: memRecordingState.value ? Command.start : Command.stop);
+      command: memRecordingState.value ? Command.start : Command.stop,
+    );
     update();
   }
 
@@ -104,7 +98,8 @@ class MicrophoneController extends FullLifeCycleController
   Future<bool> didPushRouteInformation(RouteInformation routeInformation) {
     if (kDebugMode) {
       print(
-          'HomeController - the routeInformation $routeInformation was pushed');
+        'HomeController - the routeInformation $routeInformation was pushed',
+      );
     }
     return super.didPushRouteInformation(routeInformation);
   }
@@ -169,9 +164,10 @@ class MicrophoneController extends FullLifeCycleController
         MicInitializationValuesController micInitializationValuesController =
             Get.find();
         MicrophoneHelper.setSyntheticTechnicalData(
-            bytesPerSample: 2,
-            samplesPerSecond: micInitializationValuesController.sampleRate,
-            bufferSize: testingController.syntheticFrameSize);
+          bytesPerSample: 2,
+          samplesPerSecond: micInitializationValuesController.sampleRate,
+          bufferSize: testingController.syntheticFrameSize,
+        );
       } else {
         await MicrophoneHelper.setMicTechnicalData();
       }
@@ -211,7 +207,8 @@ class MicrophoneController extends FullLifeCycleController
           'Microphone technical data not initialized yet.';
       return;
     }
-    _captureTargetBytes = micTechnicalDataController.samplesPerSecond *
+    _captureTargetBytes =
+        micTechnicalDataController.samplesPerSecond *
         micTechnicalDataController.bytesPerSample *
         durationSeconds;
     _captureBuffer = BytesBuilder(copy: false);
@@ -234,7 +231,8 @@ class MicrophoneController extends FullLifeCycleController
     isCapturing.value = false;
     final directory = await getApplicationDocumentsDirectory();
     MicTechnicalDataController micTechnicalDataController = Get.find();
-    final fileName = 'capture_${micTechnicalDataController.samplesPerSecond}hz_'
+    final fileName =
+        'capture_${micTechnicalDataController.samplesPerSecond}hz_'
         '${micTechnicalDataController.bytesPerSample * 8}bit_mono_'
         '${DateTime.now().millisecondsSinceEpoch}.pcm';
     final filePath = path.join(directory.path, fileName);

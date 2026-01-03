@@ -72,11 +72,14 @@ class _MyAppState extends State<MyApp> {
           ..loadDefaultTuningConfigurations()
           ..loadCustomTuningConfigurations();
     Get.lazyPut(
-        () => MicInitializationValuesController(8192.obs,
-            audioFormat: AudioFormat.ENCODING_PCM_16BIT.obs,
-            channelConfig: ChannelConfig.CHANNEL_IN_MONO.obs,
-            audioSource: AudioSource.DEFAULT.obs),
-        fenix: true);
+      () => MicInitializationValuesController(
+        8192.obs,
+        audioFormat: AudioFormat.ENCODING_PCM_16BIT.obs,
+        channelConfig: ChannelConfig.CHANNEL_IN_MONO.obs,
+        audioSource: AudioSource.DEFAULT.obs,
+      ),
+      fenix: true,
+    );
     Get.lazyPut(() => MicTechnicalDataController(), fenix: true);
     TestingController testingController = TestingController();
     testingController.initAssets();
@@ -84,9 +87,14 @@ class _MyAppState extends State<MyApp> {
     Get.lazyPut(() => WaveDataController(), fenix: true);
     TuningController tuningController = TuningController()
       ..tuningConfiguration = tuningConfigurationsController
-          .defaultTuningConfigurations!.values.first.first
+          .defaultTuningConfigurations!
+          .values
+          .first
+          .first
       ..activeInstrumentGroup = tuningConfigurationsController
-          .defaultTuningConfigurations!.keys.first;
+          .defaultTuningConfigurations!
+          .keys
+          .first;
 
     Get.lazyPut(() => tuningConfigurationsController, fenix: true);
     Get.lazyPut(() => tuningController, fenix: true);
@@ -95,17 +103,20 @@ class _MyAppState extends State<MyApp> {
     CalculationController calculationController = CalculationController();
     Get.lazyPut(() => CalculationController(), fenix: true);
     Get.lazyPut(
-        () => MicrophoneController(
-            calculateDisplayData: calculationController.calculateDisplayData),
-        fenix: true);
+      () => MicrophoneController(
+        calculateDisplayData: calculationController.calculateDisplayData,
+      ),
+      fenix: true,
+    );
     return GetMaterialApp(
       title: 'Tuning for Tonists',
       theme: ThemeData(
         primarySwatch: createMaterialColor(AppColors.colorForSwatch),
         dropdownMenuTheme: const DropdownMenuThemeData(
           textStyle: TextStyle(
-              color: AppColors.onPrimaryColor,
-              backgroundColor: AppColors.backgroundColor),
+            color: AppColors.onPrimaryColor,
+            backgroundColor: AppColors.backgroundColor,
+          ),
         ),
         colorScheme: ColorScheme.fromSwatch(
           primarySwatch: createMaterialColor(AppColors.colorForSwatch),
@@ -113,88 +124,93 @@ class _MyAppState extends State<MyApp> {
         ),
         canvasColor: AppColors.backgroundColor,
         appBarTheme: const AppBarTheme(
-            backgroundColor: AppColors.backgroundColor,
-            shadowColor: AppColors.backgroundColor,
-            elevation: 0.0),
-        scaffoldBackgroundColor: AppColors.backgroundColor,
-        textTheme: const TextTheme(
-          bodyLarge: TextStyle(),
-          bodyMedium: TextStyle(),
-          bodySmall: TextStyle(),
-          labelLarge: TextStyle(),
-          labelMedium: TextStyle(),
-          labelSmall: TextStyle(),
-          displayLarge: TextStyle(),
-          displayMedium: TextStyle(),
-          displaySmall: TextStyle(),
-          headlineLarge: TextStyle(),
-          headlineMedium: TextStyle(),
-          headlineSmall: TextStyle(),
-          titleLarge: TextStyle(),
-          titleMedium: TextStyle(),
-          titleSmall: TextStyle(),
-        ).apply(
-          displayColor: AppColors.onPrimaryColor,
-          bodyColor: AppColors.onPrimaryColor,
-          decorationColor: AppColors.onPrimaryColor,
+          backgroundColor: AppColors.backgroundColor,
+          shadowColor: AppColors.backgroundColor,
+          elevation: 0.0,
         ),
+        scaffoldBackgroundColor: AppColors.backgroundColor,
+        textTheme:
+            const TextTheme(
+              bodyLarge: TextStyle(),
+              bodyMedium: TextStyle(),
+              bodySmall: TextStyle(),
+              labelLarge: TextStyle(),
+              labelMedium: TextStyle(),
+              labelSmall: TextStyle(),
+              displayLarge: TextStyle(),
+              displayMedium: TextStyle(),
+              displaySmall: TextStyle(),
+              headlineLarge: TextStyle(),
+              headlineMedium: TextStyle(),
+              headlineSmall: TextStyle(),
+              titleLarge: TextStyle(),
+              titleMedium: TextStyle(),
+              titleSmall: TextStyle(),
+            ).apply(
+              displayColor: AppColors.onPrimaryColor,
+              bodyColor: AppColors.onPrimaryColor,
+              decorationColor: AppColors.onPrimaryColor,
+            ),
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(
-              foregroundColor: AppColors.onPrimaryColor,
-              backgroundColor: AppColors.primaryColor),
+            foregroundColor: AppColors.onPrimaryColor,
+            backgroundColor: AppColors.primaryColor,
+          ),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-              foregroundColor: AppColors.onPrimaryColor,
-              backgroundColor: AppColors.primaryColor),
+            foregroundColor: AppColors.onPrimaryColor,
+            backgroundColor: AppColors.primaryColor,
+          ),
         ),
         buttonTheme: ButtonThemeData(
           buttonColor: AppColors.primaryColor,
           colorScheme: ColorScheme.fromSwatch(
-              primarySwatch: createMaterialColor(AppColors.colorForSwatch),
-              backgroundColor: AppColors.primaryColor),
+            primarySwatch: createMaterialColor(AppColors.colorForSwatch),
+            backgroundColor: AppColors.primaryColor,
+          ),
         ),
       ),
       navigatorKey: Get.key,
       initialRoute: Routes.loadingPage,
       getPages: [
+        GetPage(name: Routes.loadingPage, page: () => const LoadingPage()),
         GetPage(
-          name: Routes.loadingPage,
-          page: () => const LoadingPage(),
+          name: Routes.home,
+          page: () => const MainScreen(),
+          binding: HomeBinding(),
         ),
         GetPage(
-            name: Routes.home,
-            page: () => const MainScreen(),
-            binding: HomeBinding()),
+          name: Routes.settings,
+          page: () => SettingsScreen(),
+          binding: SettingsBinding(),
+        ),
         GetPage(
-            name: Routes.settings,
-            page: () => SettingsScreen(),
-            binding: SettingsBinding()),
+          name: Routes.info,
+          page: () => const InfoScreen(),
+          binding: InfoBinding(),
+        ),
         GetPage(
-            name: Routes.info,
-            page: () => const InfoScreen(),
-            binding: InfoBinding()),
+          name: Routes.micDetail,
+          page: () => const MicDetailScreen(),
+          binding: MicDetailBinding(),
+        ),
         GetPage(
-            name: Routes.micDetail,
-            page: () => const MicDetailScreen(),
-            binding: MicDetailBinding()),
-        GetPage(
-            name: Routes.advancedMicData,
-            page: () => const AdvancedMicDataScreen(),
-            binding: AdvancedMicDataBinding()),
+          name: Routes.advancedMicData,
+          page: () => const AdvancedMicDataScreen(),
+          binding: AdvancedMicDataBinding(),
+        ),
         GetPage(name: Routes.allTunings, page: () => const AllTuningsScreen()),
         GetPage(
-            name: Routes.createCustomTuning,
-            page: () => const CreateTuningScreen()),
+          name: Routes.createCustomTuning,
+          page: () => const CreateTuningScreen(),
+        ),
         GetPage(
           name: Routes.knowledgebase,
           page: () => const KnowledgebaseScreen(),
           binding: KnowledgebaseBinding(),
         ),
-        GetPage(
-          name: Routes.testing,
-          page: () => TestingScreen(),
-        )
+        GetPage(name: Routes.testing, page: () => TestingScreen()),
       ],
     );
   }

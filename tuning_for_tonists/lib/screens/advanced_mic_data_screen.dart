@@ -40,14 +40,12 @@ class AdvancedMicDataScreen extends GetView<AdvancedMicDataController> {
     return Scaffold(
       key: controller.scaffoldKey,
       appBar: AppBar(
-          title: const Text('Advanced Microphone info'),
-          leading: IconButton(
-            icon: const Icon(
-              Icons.menu_sharp,
-              color: AppColors.onPrimaryColor,
-            ),
-            onPressed: () => controller.openDrawer(),
-          )),
+        title: const Text('Advanced Microphone info'),
+        leading: IconButton(
+          icon: const Icon(Icons.menu_sharp, color: AppColors.onPrimaryColor),
+          onPressed: () => controller.openDrawer(),
+        ),
+      ),
       body: getMicDisplay(),
       drawer: const AppDrawer(),
       floatingActionButton: const Row(

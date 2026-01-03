@@ -35,28 +35,31 @@ class SideScrollingTuningConfigurations extends StatelessWidget {
 
     row = Row(
       children: tunings!
-          .map((e) => Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      elevation: 0,
-                      padding: const EdgeInsets.only(
-                        bottom: 0,
-                        top: 0,
-                        left: 8,
-                        right: 8,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16.0),
-                      ),
-                      foregroundColor: getElevatedButtonForegroundColor(e),
-                      backgroundColor: getElevatedButtonBackgroundColor(e),
-                    ),
-                    onPressed: () {
-                      tuningController.tuningConfiguration = e;
-                    },
-                    child: Text(e.configurationName)),
-              ))
+          .map(
+            (e) => Padding(
+              padding: const EdgeInsets.all(2.0),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  elevation: 0,
+                  padding: const EdgeInsets.only(
+                    bottom: 0,
+                    top: 0,
+                    left: 8,
+                    right: 8,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                  ),
+                  foregroundColor: getElevatedButtonForegroundColor(e),
+                  backgroundColor: getElevatedButtonBackgroundColor(e),
+                ),
+                onPressed: () {
+                  tuningController.tuningConfiguration = e;
+                },
+                child: Text(e.configurationName),
+              ),
+            ),
+          )
           .toList(),
     );
 

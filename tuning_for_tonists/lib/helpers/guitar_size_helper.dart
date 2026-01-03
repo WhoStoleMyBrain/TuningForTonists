@@ -36,28 +36,32 @@ abstract class GuitarSizeHelper {
 
   static ButtonStyle stringButtonStyle(Note note) {
     return TextButton.styleFrom(
-        side: BorderSide(
-            width: tuningController.targetNote == note ? 8 : 1.5,
-            color: AppColors.primaryColor),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(100),
-        ),
-        elevation: 0,
-        backgroundColor: tuningController.targetNote == note
-            ? AppColors.onPrimaryColor
-            : AppColors.backgroundColor,
-        foregroundColor: tuningController.targetNote == note
-            ? AppColors.black
-            : AppColors.onPrimaryColor);
+      side: BorderSide(
+        width: tuningController.targetNote == note ? 8 : 1.5,
+        color: AppColors.primaryColor,
+      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+      elevation: 0,
+      backgroundColor: tuningController.targetNote == note
+          ? AppColors.onPrimaryColor
+          : AppColors.backgroundColor,
+      foregroundColor: tuningController.targetNote == note
+          ? AppColors.black
+          : AppColors.onPrimaryColor,
+    );
   }
 
   static double getLeftPositionStringButton(
-      bool oneSided, int index, Size guitarSize, Note note) {
+    bool oneSided,
+    int index,
+    Size guitarSize,
+    Note note,
+  ) {
     return (oneSided
             ? 25
             : index < getNotesLengthHalved()
-                ? guitarSize.width * 0.25
-                : guitarSize.width * 1.5) +
+            ? guitarSize.width * 0.25
+            : guitarSize.width * 1.5) +
         (tuningController.targetNote == note ? -6 : 0);
   }
 
@@ -77,43 +81,51 @@ abstract class GuitarSizeHelper {
   }
 
   static double getTopPositionStringButton(
-      bool oneSided, int index, Size guitarSize, Note note) {
+    bool oneSided,
+    int index,
+    Size guitarSize,
+    Note note,
+  ) {
     return (oneSided
             ? 25
             : index < getNotesLengthHalved()
-                ? guitarSize.height *
-                    (0.1 +
-                        0.7 *
-                            (getNotesLengthHalved() == 1
-                                ? 0
-                                : 1 - index / getNotesLengthHalvedMinusOne()))
-                : guitarSize.height *
-                    (0.1 +
-                        index.remainder(getNotesLengthHalved()) *
-                            0.7 /
-                            getNotesLengthHalvedMinusOne())) +
+            ? guitarSize.height *
+                  (0.1 +
+                      0.7 *
+                          (getNotesLengthHalved() == 1
+                              ? 0
+                              : 1 - index / getNotesLengthHalvedMinusOne()))
+            : guitarSize.height *
+                  (0.1 +
+                      index.remainder(getNotesLengthHalved()) *
+                          0.7 /
+                          getNotesLengthHalvedMinusOne())) +
         (tuningController.targetNote == note ? -6 : 0);
   }
 
   static GuitarKnob getDefaultGuitarKnob() {
     return GuitarKnob(
-        neckThickness: neckThickness,
-        neckLength: neckLength,
-        headThickness: headThickness,
-        headLength: headLength);
+      neckThickness: neckThickness,
+      neckLength: neckLength,
+      headThickness: headThickness,
+      headLength: headLength,
+    );
   }
 
   static GuitarString getDefaultGuitarString() {
     return GuitarString(
-        circleRadius: stringCircleRadius, stringLength: stringLength);
+      circleRadius: stringCircleRadius,
+      stringLength: stringLength,
+    );
   }
 
   static GuitarHead getDefaultGuitarHead() {
     return GuitarHead(
-        neckLength: guitarNeckLength,
-        neckWidth: guitarNeckWidth,
-        headLength: guitarHeadLength,
-        headPointLength: guitarHeadPointLength,
-        headWidth: guitarHeadWidth);
+      neckLength: guitarNeckLength,
+      neckWidth: guitarNeckWidth,
+      headLength: guitarHeadLength,
+      headPointLength: guitarHeadPointLength,
+      headWidth: guitarHeadWidth,
+    );
   }
 }

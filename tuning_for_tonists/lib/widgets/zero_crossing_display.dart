@@ -70,7 +70,8 @@ class ZeroCrossingDisplay extends StatelessWidget {
                           getTooltipItems: (touchedSpots) {
                             return touchedSpots.map((LineBarSpot touchedSpot) {
                               final textStyle = TextStyle(
-                                color: touchedSpot.bar.gradient?.colors[0] ??
+                                color:
+                                    touchedSpot.bar.gradient?.colors[0] ??
                                     touchedSpot.bar.color,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
@@ -89,13 +90,14 @@ class ZeroCrossingDisplay extends StatelessWidget {
                         LineChartBarData(
                           color: AppColors.contentColorPink,
                           spots: waveDataController.dataToSpots(
-                              waveDataController.zeroCrossingData, false, true),
+                            waveDataController.zeroCrossingData,
+                            false,
+                            true,
+                          ),
                           isCurved: true,
                           isStrokeCapRound: true,
                           barWidth: 2,
-                          belowBarData: BarAreaData(
-                            show: false,
-                          ),
+                          belowBarData: BarAreaData(show: false),
                           dotData: const FlDotData(show: false),
                         ),
                       ],
@@ -106,11 +108,9 @@ class ZeroCrossingDisplay extends StatelessWidget {
                           .reduce(max)
                           .toDouble(),
                       minX: 0,
-                      maxX:
-                          waveDataController.zeroCrossingData.length.toDouble(),
-                      titlesData: const FlTitlesData(
-                        show: false,
-                      ),
+                      maxX: waveDataController.zeroCrossingData.length
+                          .toDouble(),
+                      titlesData: const FlTitlesData(show: false),
                       gridData: FlGridData(
                         show: true,
                         drawHorizontalLine: true,

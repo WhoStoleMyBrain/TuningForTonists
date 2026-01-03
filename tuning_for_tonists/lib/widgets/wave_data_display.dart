@@ -44,10 +44,7 @@ class WaveDataDisplay extends StatelessWidget {
     return Column(
       children: [
         const Center(
-          child: Text(
-            'Wave Data Display',
-            style: TextStyle(fontSize: 24),
-          ),
+          child: Text('Wave Data Display', style: TextStyle(fontSize: 24)),
         ),
         Padding(
           padding: const EdgeInsets.only(
@@ -70,7 +67,8 @@ class WaveDataDisplay extends StatelessWidget {
                           getTooltipItems: (touchedSpots) {
                             return touchedSpots.map((LineBarSpot touchedSpot) {
                               final textStyle = TextStyle(
-                                color: touchedSpot.bar.gradient?.colors[0] ??
+                                color:
+                                    touchedSpot.bar.gradient?.colors[0] ??
                                     touchedSpot.bar.color,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
@@ -89,13 +87,14 @@ class WaveDataDisplay extends StatelessWidget {
                         LineChartBarData(
                           color: AppColors.contentColorPink,
                           spots: waveDataController.dataToSpots(
-                              waveDataController.waveData, false, false),
+                            waveDataController.waveData,
+                            false,
+                            false,
+                          ),
                           isCurved: true,
                           isStrokeCapRound: true,
                           barWidth: 2,
-                          belowBarData: BarAreaData(
-                            show: false,
-                          ),
+                          belowBarData: BarAreaData(show: false),
                           dotData: const FlDotData(show: false),
                         ),
                       ],
@@ -103,9 +102,7 @@ class WaveDataDisplay extends StatelessWidget {
                       maxY: waveDataController.waveData.reduce(max).toDouble(),
                       minX: 0,
                       maxX: waveDataController.waveData.length.toDouble(),
-                      titlesData: const FlTitlesData(
-                        show: false,
-                      ),
+                      titlesData: const FlTitlesData(show: false),
                       gridData: FlGridData(
                         show: true,
                         drawHorizontalLine: true,

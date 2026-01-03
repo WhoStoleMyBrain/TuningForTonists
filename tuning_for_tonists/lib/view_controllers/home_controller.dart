@@ -12,12 +12,14 @@ class HomeController extends GetxController {
     if (newValue > 3 || newValue < 1) {
       if (kDebugMode) {
         print(
-            'tried to set frequency display to a value higher than 2 or lower than 1, which is not supported');
+          'tried to set frequency display to a value higher than 2 or lower than 1, which is not supported',
+        );
       }
     } else {
       if (kDebugMode) {
         print(
-            'set frequencydisplay to new value: $newValue from old value: $_frequencyDisplay');
+          'set frequencydisplay to new value: $newValue from old value: $_frequencyDisplay',
+        );
       }
       _frequencyDisplay = newValue;
       refresh();

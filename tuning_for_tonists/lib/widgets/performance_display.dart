@@ -11,45 +11,49 @@ class PerformanceDisplay extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: GetBuilder<PerformanceController>(
-        builder: (performanceController) =>
-            GetBuilder<MicTechnicalDataController>(
+        builder: (performanceController) => GetBuilder<MicTechnicalDataController>(
           builder: (micTechnicalDataController) => Column(
             children: [
               Row(
                 children: [
                   const Text("Frequency: "),
-                  Text(micTechnicalDataController.samplesPerSecond.toString())
+                  Text(micTechnicalDataController.samplesPerSecond.toString()),
                 ],
               ),
               Row(
                 children: [
                   const Text("Buffer Size: "),
-                  Text(micTechnicalDataController.bufferSize.toString())
+                  Text(micTechnicalDataController.bufferSize.toString()),
                 ],
               ),
               Row(
                 children: [
                   const Text("Time per calculation: "),
                   Text(
-                      "${micTechnicalDataController.bufferSize / micTechnicalDataController.samplesPerSecond}")
+                    "${micTechnicalDataController.bufferSize / micTechnicalDataController.samplesPerSecond}",
+                  ),
                 ],
               ),
               Row(
                 children: [
                   const Text("Calculation Percentage: "),
-                  Text((performanceController.getAverageCalculationDuration() /
-                          (micTechnicalDataController.bufferSize /
-                              micTechnicalDataController.samplesPerSecond) *
-                          100)
-                      .toStringAsFixed(2))
+                  Text(
+                    (performanceController.getAverageCalculationDuration() /
+                            (micTechnicalDataController.bufferSize /
+                                micTechnicalDataController.samplesPerSecond) *
+                            100)
+                        .toStringAsFixed(2),
+                  ),
                 ],
               ),
               Row(
                 children: [
                   const Text("CalculationTime: "),
-                  Text(performanceController
-                      .getAverageCalculationDuration()
-                      .toString())
+                  Text(
+                    performanceController
+                        .getAverageCalculationDuration()
+                        .toString(),
+                  ),
                 ],
               ),
             ],

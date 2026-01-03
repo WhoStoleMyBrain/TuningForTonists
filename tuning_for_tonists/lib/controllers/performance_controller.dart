@@ -25,7 +25,8 @@ class PerformanceController extends GetxController {
   void setNumberOfCalculationDurationData() {
     if (calculationDuration.length > calculationDurationLength.value) {
       calculationDuration.value = calculationDuration.sublist(
-          calculationDuration.length - calculationDurationLength.value);
+        calculationDuration.length - calculationDurationLength.value,
+      );
     }
   }
 
@@ -33,8 +34,9 @@ class PerformanceController extends GetxController {
     if (calculationDuration.isEmpty) {
       return 0;
     }
-    return calculationDuration
-            .reduce((previousValue, element) => previousValue + element) /
+    return calculationDuration.reduce(
+          (previousValue, element) => previousValue + element,
+        ) /
         calculationDuration.length.toDouble();
   }
 }

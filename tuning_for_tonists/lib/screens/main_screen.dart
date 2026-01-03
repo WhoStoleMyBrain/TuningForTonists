@@ -52,11 +52,15 @@ class _MainScreenState extends State<MainScreen> {
               }
             },
             child: SizedBox(
-                child: Column(
-              children: [const PerformanceDisplay(), ...getFrequencyDisplay()],
-            )),
+              child: Column(
+                children: [
+                  const PerformanceDisplay(),
+                  ...getFrequencyDisplay(),
+                ],
+              ),
+            ),
           ),
-          GuitarDisplay()
+          GuitarDisplay(),
         ],
       ),
     );
@@ -66,27 +70,21 @@ class _MainScreenState extends State<MainScreen> {
     if (homeController.frequencyDisplay == 1) {
       return [
         SideScrollingTuningConfigurations(),
-        const SizedBox(
-          height: 24,
-        ),
+        const SizedBox(height: 24),
         TargetNoteDisplay(),
         FrequencyBarsDisplay(),
       ];
     } else if (homeController.frequencyDisplay == 2) {
       return [
         SideScrollingTuningConfigurations(),
-        const SizedBox(
-          height: 24,
-        ),
+        const SizedBox(height: 24),
         TargetNoteDisplay(),
         TuningFrequencyPointerDisplay(),
       ];
     } else if (homeController.frequencyDisplay == 3) {
       return [
         SideScrollingTuningConfigurations(),
-        const SizedBox(
-          height: 24,
-        ),
+        const SizedBox(height: 24),
         TargetNoteDisplay(),
         TimeSensitiveTuningFrequencyDisplay(),
       ];
@@ -124,49 +122,53 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<TuningController>(builder: (tuningController) {
-      return Scaffold(
-        key: homeController.scaffoldKey,
-        appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(
-              Icons.menu_sharp,
-              color: AppColors.onPrimaryColor,
+    return GetBuilder<TuningController>(
+      builder: (tuningController) {
+        return Scaffold(
+          key: homeController.scaffoldKey,
+          appBar: AppBar(
+            leading: IconButton(
+              icon: const Icon(
+                Icons.menu_sharp,
+                color: AppColors.onPrimaryColor,
+              ),
+              onPressed: () => homeController.openDrawer(),
             ),
-            onPressed: () => homeController.openDrawer(),
-          ),
-          title: getMenuDropdownButton(),
-          actions: [
-            IconButton(
+            title: getMenuDropdownButton(),
+            actions: [
+              IconButton(
                 onPressed: () {
                   if (homeController.canReduceFrequencyDisplay()) {
                     homeController.frequencyDisplay--;
                     setState(() {});
                   }
                 },
-                icon: const Icon(Icons.arrow_left)),
-            IconButton(
+                icon: const Icon(Icons.arrow_left),
+              ),
+              IconButton(
                 onPressed: () {
                   if (homeController.canIncreaseFrequencyDisplay()) {
                     homeController.frequencyDisplay++;
                     setState(() {});
                   }
                 },
-                icon: const Icon(Icons.arrow_right))
-          ],
-        ),
-        body: getMicDisplay(),
-        drawer: const AppDrawer(),
-        floatingActionButton: const Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            TestDataFeedButton(),
-            SizedBox(width: 16),
-            MicStreamControlButton(),
-            SizedBox(width: 16),
-          ],
-        ),
-      );
-    });
+                icon: const Icon(Icons.arrow_right),
+              ),
+            ],
+          ),
+          body: getMicDisplay(),
+          drawer: const AppDrawer(),
+          floatingActionButton: const Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              TestDataFeedButton(),
+              SizedBox(width: 16),
+              MicStreamControlButton(),
+              SizedBox(width: 16),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

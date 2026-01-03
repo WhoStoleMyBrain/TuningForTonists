@@ -19,12 +19,18 @@ abstract class GuitarDrawerHelper {
     path.lineTo(guitarKnob.neckLength, guitarKnob.headThickness);
     path.lineTo(guitarKnob.neckLength, 0);
     path.lineTo(guitarKnob.neckLength + guitarKnob.headLength, 0);
-    path.lineTo(guitarKnob.neckLength + guitarKnob.headLength,
-        guitarKnob.neckThickness + 2 * guitarKnob.headThickness);
-    path.lineTo(guitarKnob.neckLength,
-        guitarKnob.neckThickness + 2 * guitarKnob.headThickness);
-    path.lineTo(guitarKnob.neckLength,
-        guitarKnob.neckThickness + guitarKnob.headThickness);
+    path.lineTo(
+      guitarKnob.neckLength + guitarKnob.headLength,
+      guitarKnob.neckThickness + 2 * guitarKnob.headThickness,
+    );
+    path.lineTo(
+      guitarKnob.neckLength,
+      guitarKnob.neckThickness + 2 * guitarKnob.headThickness,
+    );
+    path.lineTo(
+      guitarKnob.neckLength,
+      guitarKnob.neckThickness + guitarKnob.headThickness,
+    );
     path.lineTo(0, guitarKnob.neckThickness + guitarKnob.headThickness);
     return path;
   }
@@ -32,8 +38,12 @@ abstract class GuitarDrawerHelper {
   static Path drawGuitarString(GuitarString guitarString) {
     Path path = Path();
 
-    path.addOval(Rect.fromCircle(
-        center: const Offset(0, 0), radius: guitarString.circleRadius));
+    path.addOval(
+      Rect.fromCircle(
+        center: const Offset(0, 0),
+        radius: guitarString.circleRadius,
+      ),
+    );
     path.lineTo(guitarString.circleRadius, guitarString.stringLength);
     return path;
   }
@@ -45,66 +55,100 @@ abstract class GuitarDrawerHelper {
     path.lineTo(guitarHead.neckLength, 0);
     path.lineTo(guitarHead.neckLength + guitarHead.headLength, 0);
     path.lineTo(
-        guitarHead.neckLength +
-            guitarHead.headLength +
-            guitarHead.headPointLength,
-        (guitarHead.headWidth + guitarHead.neckWidth) / 2);
-    path.lineTo(guitarHead.neckLength + guitarHead.headLength,
-        guitarHead.headWidth + guitarHead.neckWidth);
+      guitarHead.neckLength +
+          guitarHead.headLength +
+          guitarHead.headPointLength,
+      (guitarHead.headWidth + guitarHead.neckWidth) / 2,
+    );
     path.lineTo(
-        guitarHead.neckLength, guitarHead.headWidth + guitarHead.neckWidth);
+      guitarHead.neckLength + guitarHead.headLength,
+      guitarHead.headWidth + guitarHead.neckWidth,
+    );
+    path.lineTo(
+      guitarHead.neckLength,
+      guitarHead.headWidth + guitarHead.neckWidth,
+    );
     path.lineTo(guitarHead.neckLength, guitarHead.neckWidth);
     path.lineTo(0, guitarHead.neckWidth);
     return path;
   }
 
   static Path moveAndScaleKnobPath(
-      Path path, GuitarKnob guitarKnob, int index, Size size, double yOffset) {
-    var rotationFlipMatrix =
-        PredefinedMatrices.getRotationMatrix(RotationAxis.Z, 180 * pi / 180);
+    Path path,
+    GuitarKnob guitarKnob,
+    int index,
+    Size size,
+    double yOffset,
+  ) {
+    var rotationFlipMatrix = PredefinedMatrices.getRotationMatrix(
+      RotationAxis.Z,
+      180 * pi / 180,
+    );
     if (index >= GuitarSizeHelper.getNotesLengthHalved()) {
       path = path.shift(Offset(size.width / 4 * 3 + 5, yOffset));
     } else {
-      path = path.transform(rotationFlipMatrix).shift(Offset(
-          size.width / 4 * 1 - 5,
-          (guitarKnob.neckThickness + 2 * guitarKnob.headThickness) / 2 +
-              yOffset));
+      path = path
+          .transform(rotationFlipMatrix)
+          .shift(
+            Offset(
+              size.width / 4 * 1 - 5,
+              (guitarKnob.neckThickness + 2 * guitarKnob.headThickness) / 2 +
+                  yOffset,
+            ),
+          );
     }
     return path;
   }
 
-  static Path moveAndScaleStringPath(Path path, GuitarHead guitarHead,
-      GuitarString guitarString, int index, Size size, double yOffset) {
+  static Path moveAndScaleStringPath(
+    Path path,
+    GuitarHead guitarHead,
+    GuitarString guitarString,
+    int index,
+    Size size,
+    double yOffset,
+  ) {
     if (index >= GuitarSizeHelper.getNotesLengthHalved()) {
       path = path.transform(PredefinedMatrices.getScalingMatrix(-1, 1));
-      path = path.shift(Offset(
+      path = path.shift(
+        Offset(
           size.width / 4 * 3 -
               (guitarHead.neckWidth + guitarHead.headWidth) * 0.25,
-          yOffset));
-      path = path.shift(Offset(
+          yOffset,
+        ),
+      );
+      path = path.shift(
+        Offset(
           index.remainder(GuitarSizeHelper.getNotesLengthHalved()) *
               guitarString.circleRadius *
               0.5,
           80.0 * index.remainder(GuitarSizeHelper.getNotesLengthHalved()) +
-              guitarString.circleRadius * 1.5));
+              guitarString.circleRadius * 1.5,
+        ),
+      );
     } else {
-      path = path.shift(Offset(
+      path = path.shift(
+        Offset(
           size.width / 4 * 1 +
               (guitarHead.neckWidth + guitarHead.headWidth) * 0.25,
-          yOffset));
-      path = path.shift(Offset(
+          yOffset,
+        ),
+      );
+      path = path.shift(
+        Offset(
           -index * guitarString.circleRadius * 0.5,
           80.0 * index.remainder(GuitarSizeHelper.getNotesLengthHalved()) +
-              guitarString.circleRadius * 1.5));
+              guitarString.circleRadius * 1.5,
+        ),
+      );
     }
     return path;
   }
 
-  static Path moveAndScaleGuitarHead(
-    Path path,
-  ) {
+  static Path moveAndScaleGuitarHead(Path path) {
     path = path.transform(
-        PredefinedMatrices.getRotationMatrix(RotationAxis.Z, -90 * pi / 180));
+      PredefinedMatrices.getRotationMatrix(RotationAxis.Z, -90 * pi / 180),
+    );
     path = path.shift(const Offset(45, 305));
     return path;
   }
