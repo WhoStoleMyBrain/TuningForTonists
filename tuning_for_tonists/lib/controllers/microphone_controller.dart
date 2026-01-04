@@ -186,7 +186,9 @@ class MicrophoneController extends FullLifeCycleController
     isRecording = false.obs;
     update();
     refresh();
-    print('canceled stream and set everything to false');
+    if (kDebugMode) {
+      debugPrint('canceled stream and set everything to false');
+    }
     return true;
   }
 
@@ -207,8 +209,7 @@ class MicrophoneController extends FullLifeCycleController
           'Microphone technical data not initialized yet.';
       return;
     }
-    _captureTargetBytes =
-        micTechnicalDataController.samplesPerSecond *
+    _captureTargetBytes = micTechnicalDataController.samplesPerSecond *
         micTechnicalDataController.bytesPerSample *
         durationSeconds;
     _captureBuffer = BytesBuilder(copy: false);
@@ -231,8 +232,7 @@ class MicrophoneController extends FullLifeCycleController
     isCapturing.value = false;
     final directory = await getApplicationDocumentsDirectory();
     MicTechnicalDataController micTechnicalDataController = Get.find();
-    final fileName =
-        'capture_${micTechnicalDataController.samplesPerSecond}hz_'
+    final fileName = 'capture_${micTechnicalDataController.samplesPerSecond}hz_'
         '${micTechnicalDataController.bytesPerSample * 8}bit_mono_'
         '${DateTime.now().millisecondsSinceEpoch}.pcm';
     final filePath = path.join(directory.path, fileName);

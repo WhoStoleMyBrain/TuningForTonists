@@ -70,8 +70,7 @@ class AutocorrelationDataDisplay extends StatelessWidget {
                           getTooltipItems: (touchedSpots) {
                             return touchedSpots.map((LineBarSpot touchedSpot) {
                               final textStyle = TextStyle(
-                                color:
-                                    touchedSpot.bar.gradient?.colors[0] ??
+                                color: touchedSpot.bar.gradient?.colors[0] ??
                                     touchedSpot.bar.color,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
@@ -115,8 +114,8 @@ class AutocorrelationDataDisplay extends StatelessWidget {
                         show: true,
                         drawHorizontalLine: true,
                         drawVerticalLine: false,
-                        getDrawingHorizontalLine: (_) => FlLine(
-                          color: AppColors.contentColorBlue.withOpacity(1),
+                        getDrawingHorizontalLine: (_) => const FlLine(
+                          color: AppColors.contentColorBlue,
                           dashArray: [8, 0],
                           strokeWidth: 0.8,
                         ),

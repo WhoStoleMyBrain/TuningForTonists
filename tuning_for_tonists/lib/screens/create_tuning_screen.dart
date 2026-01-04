@@ -185,11 +185,10 @@ class _CreateTuningScreenState extends State<CreateTuningScreen> {
         List<TuningConfiguration> newConfigurations = [];
         List<TuningConfiguration> oldConfigurations =
             List<TuningConfiguration>.from(
-              jsonData.map((e) => TuningConfiguration.fromJson(e)),
-            );
+          jsonData.map((e) => TuningConfiguration.fromJson(e)),
+        );
         int indexOfExistingConfiguration = oldConfigurations.indexWhere(
-          (element) =>
-              (element.configurationName ==
+          (element) => (element.configurationName ==
               newTuningConfiguration.configurationName),
         );
         if (indexOfExistingConfiguration == -1) {

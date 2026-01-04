@@ -1,5 +1,4 @@
-import 'dart:typed_data';
-
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:scidart/numdart.dart';
@@ -35,8 +34,7 @@ class CalculationController extends GetxController {
     }
     final magnitudes = data.map((value) => value.abs()).toList();
     final maxValue = magnitudes.reduce(max);
-    final average =
-        magnitudes.reduce((value, element) => value + element) /
+    final average = magnitudes.reduce((value, element) => value + element) /
         magnitudes.length;
     if (average == 0.0) {
       return 0.0;
@@ -119,8 +117,7 @@ class CalculationController extends GetxController {
     _setConfidenceFrom(waveDataController.hpsData);
     var maxValue = hps.reduce(max);
     var maxIdx = hps.indexOf(maxValue);
-    var freq =
-        (maxIdx + _kLowFrequencyBinSkip) *
+    var freq = (maxIdx + _kLowFrequencyBinSkip) *
         micTechnicalDataController.samplesPerSecond /
         waveDataController.waveData.length;
     _addFrequencySample(freq);
@@ -134,8 +131,7 @@ class CalculationController extends GetxController {
         zeroCrossingCount++;
       }
     }
-    var frequency =
-        zeroCrossingCount /
+    var frequency = zeroCrossingCount /
         waveDataController.waveData.length /
         2 *
         micTechnicalDataController.samplesPerSecond;
@@ -175,8 +171,7 @@ class CalculationController extends GetxController {
   void calculateCepstrum() {
     calculateFrequenciesCepstrum();
     _setConfidenceFrom(waveDataController.frequencyData);
-    final maximum =
-        waveDataController.frequencyData.indexOf(
+    final maximum = waveDataController.frequencyData.indexOf(
           waveDataController.frequencyData.reduce(max),
         ) +
         20;
@@ -191,15 +186,13 @@ class CalculationController extends GetxController {
   void calculateFrequenciesCepstrum() {
     Array waveDat = Array(waveDataController.doubleWaveData);
     Array hanningedWaveData = getHanningWindow() * waveDat;
-    Float64List frequenciesList1 = fftController
-        .applyRealFft(hanningedWaveData)
-        .sublist(1);
+    Float64List frequenciesList1 =
+        fftController.applyRealFft(hanningedWaveData).sublist(1);
     frequenciesList1 = Float64List.fromList(
       frequenciesList1.map((e) => log(e)).toList(),
     );
-    Float64List frequenciesList2 = fftController
-        .applyRealFftHalf(frequenciesList1)
-        .sublist(1);
+    Float64List frequenciesList2 =
+        fftController.applyRealFftHalf(frequenciesList1).sublist(1);
     waveDataController.frequencyData = frequenciesList2.sublist(20);
   }
 
@@ -222,8 +215,8 @@ class CalculationController extends GetxController {
         MicrophoneHelper.stopMicrophone();
         samplesCalculated = 0.obs;
       } else {
-        if (samplesCalculated % 100 == 0) {
-          print(
+        if (samplesCalculated % 100 == 0 && kDebugMode) {
+          debugPrint(
             "Calculated sample: ${samplesCalculated.value}/${totalSamplesToCalculate.value}",
           );
         }
@@ -231,17 +224,17 @@ class CalculationController extends GetxController {
       return;
     }
     switch (waveDataController.calculationType.value) {
-      case CalculationType.Autocorrelation:
+      case CalculationType.autocorrelation:
         calculateAutocorrelation();
         break;
-      case CalculationType.HPS:
+      case CalculationType.hps:
         calculateFrequency2();
         calculateHPSManually();
         break;
-      case CalculationType.ZeroCrossing:
+      case CalculationType.zeroCrossing:
         calculateZeroCrossing();
         break;
-      case CalculationType.Cepstrum:
+      case CalculationType.cepstrum:
         calculateCepstrum();
         break;
     }
@@ -255,8 +248,8 @@ class CalculationController extends GetxController {
       MicrophoneHelper.stopMicrophone();
       samplesCalculated = 0.obs;
     } else {
-      if (samplesCalculated % 100 == 0) {
-        print(
+      if (samplesCalculated % 100 == 0 && kDebugMode) {
+        debugPrint(
           "Calculated sample: ${samplesCalculated.value}/${totalSamplesToCalculate.value}",
         );
       }
@@ -265,17 +258,14 @@ class CalculationController extends GetxController {
 
   void _addFrequencySample(double rawFrequency) {
     waveDataController.setRawFrequency(rawFrequency);
-    final bool shouldGate =
-        waveDataController.calculationType.value !=
-        CalculationType.ZeroCrossing;
-    final bool allowUpdate =
-        !shouldGate ||
+    final bool shouldGate = waveDataController.calculationType.value !=
+        CalculationType.zeroCrossing;
+    final bool allowUpdate = !shouldGate ||
         waveDataController.confidence >= tuningController.confidenceThreshold;
     double outputFrequency = rawFrequency;
     if (allowUpdate) {
       if (waveDataController.hasSmoothedFrequency) {
-        outputFrequency =
-            waveDataController.smoothedFrequency +
+        outputFrequency = waveDataController.smoothedFrequency +
             _kSmoothingAlpha *
                 (rawFrequency - waveDataController.smoothedFrequency);
       }

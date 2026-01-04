@@ -12,12 +12,12 @@ abstract class MicrophoneHelper {
   static final MicTechnicalDataController micTechnicalDataController =
       Get.find();
   static final MicInitializationValuesController
-  micInitializationValuesController = Get.find();
+      micInitializationValuesController = Get.find();
   static final CalculationController calculationController = Get.find();
 
   static Logger logger = Logger(filter: DevelopmentFilter());
 
-  static Future<Stream<Uint8List>?> getMicStream({
+  static Future<Stream<dynamic>?> getMicStream({
     StreamSource source = StreamSource.microphone,
   }) async {
     switch (source) {
@@ -43,8 +43,7 @@ abstract class MicrophoneHelper {
         Stream<Uint8List> audioStream = testingController.createAudioFileStream(
           audioBytes,
           delay: Duration(
-            microseconds:
-                1000000 ~/
+            microseconds: 1000000 ~/
                 (micInitializationValuesController.sampleRate *
                     micTechnicalDataController.bytesPerSample),
           ),

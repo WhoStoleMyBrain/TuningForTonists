@@ -25,7 +25,7 @@ class WaveDataController extends GetxController {
   final RxDouble _energyThreshold = 0.02.obs;
   final RxBool _isEnergyGateOpen = true.obs;
   final RxList<double> confidenceSamples = <double>[0].obs;
-  Rx<CalculationType> calculationType = CalculationType.Cepstrum.obs;
+  Rx<CalculationType> calculationType = CalculationType.cepstrum.obs;
 
   final MicTechnicalDataController micTechnicalDataController = Get.find();
 

@@ -73,20 +73,6 @@ class FrequencyBarsDisplay extends StatelessWidget {
             color: tuningController.tuningColor,
           ),
         );
-      default:
-        return Padding(
-          padding: EdgeInsets.all(
-            (constraints.maxWidth * (1 / 25) * 0.95 - 3) / 2,
-          ),
-          child: Container(
-            width: 3,
-            height: constraints.maxHeight * 0.3,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(100),
-              color: AppColors.onBackgroundColor,
-            ),
-          ),
-        );
     }
   }
 
@@ -127,8 +113,7 @@ class FrequencyBarsDisplay extends StatelessWidget {
   Widget drawCurrentFrequency(BoxConstraints constraints) {
     return Positioned(
       left: getCurrentFrequencyPosition(constraints),
-      top:
-          constraints.maxHeight * 0.3 / 2 +
+      top: constraints.maxHeight * 0.3 / 2 +
           (constraints.maxWidth * (1 / 25) * 0.95 - 4) / 2 -
           1,
       child: getBarWidget(BarSizes.frequency, constraints),

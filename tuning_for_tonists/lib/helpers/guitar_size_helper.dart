@@ -60,8 +60,8 @@ abstract class GuitarSizeHelper {
     return (oneSided
             ? 25
             : index < getNotesLengthHalved()
-            ? guitarSize.width * 0.25
-            : guitarSize.width * 1.5) +
+                ? guitarSize.width * 0.25
+                : guitarSize.width * 1.5) +
         (tuningController.targetNote == note ? -6 : 0);
   }
 
@@ -89,17 +89,17 @@ abstract class GuitarSizeHelper {
     return (oneSided
             ? 25
             : index < getNotesLengthHalved()
-            ? guitarSize.height *
-                  (0.1 +
-                      0.7 *
-                          (getNotesLengthHalved() == 1
-                              ? 0
-                              : 1 - index / getNotesLengthHalvedMinusOne()))
-            : guitarSize.height *
-                  (0.1 +
-                      index.remainder(getNotesLengthHalved()) *
-                          0.7 /
-                          getNotesLengthHalvedMinusOne())) +
+                ? guitarSize.height *
+                    (0.1 +
+                        0.7 *
+                            (getNotesLengthHalved() == 1
+                                ? 0
+                                : 1 - index / getNotesLengthHalvedMinusOne()))
+                : guitarSize.height *
+                    (0.1 +
+                        index.remainder(getNotesLengthHalved()) *
+                            0.7 /
+                            getNotesLengthHalvedMinusOne())) +
         (tuningController.targetNote == note ? -6 : 0);
   }
 

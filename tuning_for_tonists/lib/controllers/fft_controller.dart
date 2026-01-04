@@ -92,8 +92,7 @@ class FftController extends GetxController {
 
   double getMaxFrequency(List<double> frequencyData) {
     var maxFreq = frequencyData.reduce(max);
-    final freqValue =
-        (frequencyData.indexOf(maxFreq) + 1) *
+    final freqValue = (frequencyData.indexOf(maxFreq) + 1) *
         (micTechnicalDataController.samplesPerSecond) /
         fftLength;
     return freqValue;
