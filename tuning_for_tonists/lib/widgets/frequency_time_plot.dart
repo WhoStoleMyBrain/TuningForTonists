@@ -37,8 +37,8 @@ class FrequencyTimePlot extends StatelessWidget {
                         show: true,
                         drawHorizontalLine: false,
                         drawVerticalLine: false,
-                        getDrawingHorizontalLine: (_) => FlLine(
-                          color: AppColors.contentColorBlue.withOpacity(1),
+                        getDrawingHorizontalLine: (_) => const FlLine(
+                          color: AppColors.contentColorBlue,
                           dashArray: [8, 0],
                           strokeWidth: 0.8,
                         ),

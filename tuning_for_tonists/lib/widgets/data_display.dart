@@ -57,8 +57,7 @@ class DataDisplay extends StatelessWidget {
                       getTooltipItems: (touchedSpots) {
                         return touchedSpots.map((LineBarSpot touchedSpot) {
                           final textStyle = TextStyle(
-                            color:
-                                touchedSpot.bar.gradient?.colors[0] ??
+                            color: touchedSpot.bar.gradient?.colors[0] ??
                                 touchedSpot.bar.color,
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
@@ -89,9 +88,8 @@ class DataDisplay extends StatelessWidget {
                     ),
                   ],
                   minY: 0,
-                  maxY: waveDataController.visibleSamples
-                      .reduce(max)
-                      .toDouble(),
+                  maxY:
+                      waveDataController.visibleSamples.reduce(max).toDouble(),
                   minX: 0,
                   maxX: waveDataController.visibleSamples.length.toDouble(),
                   titlesData: FlTitlesData(
@@ -133,13 +131,13 @@ class DataDisplay extends StatelessWidget {
                     checkToShowHorizontalLine: (value) {
                       return value.toInt() == 0;
                     },
-                    getDrawingHorizontalLine: (_) => FlLine(
-                      color: AppColors.contentColorBlue.withOpacity(1),
+                    getDrawingHorizontalLine: (_) => const FlLine(
+                      color: AppColors.contentColorBlue,
                       dashArray: [8, 2],
                       strokeWidth: 0.8,
                     ),
-                    getDrawingVerticalLine: (_) => FlLine(
-                      color: AppColors.contentColorYellow.withOpacity(1),
+                    getDrawingVerticalLine: (_) => const FlLine(
+                      color: AppColors.contentColorYellow,
                       dashArray: [8, 2],
                       strokeWidth: 0.8,
                     ),

@@ -87,9 +87,7 @@ abstract class GuitarDrawerHelper {
     if (index >= GuitarSizeHelper.getNotesLengthHalved()) {
       path = path.shift(Offset(size.width / 4 * 3 + 5, yOffset));
     } else {
-      path = path
-          .transform(rotationFlipMatrix)
-          .shift(
+      path = path.transform(rotationFlipMatrix).shift(
             Offset(
               size.width / 4 * 1 - 5,
               (guitarKnob.neckThickness + 2 * guitarKnob.headThickness) / 2 +

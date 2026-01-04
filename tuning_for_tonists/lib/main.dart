@@ -36,7 +36,11 @@ import 'bindings/advanced_mic_data_binding.dart';
 MaterialColor createMaterialColor(Color color) {
   List strengths = <double>[.05];
   Map<int, Color> swatch = {};
-  final int r = color.red, g = color.green, b = color.blue;
+  int toChannel(double channel) =>
+      (channel * 255.0).round().clamp(0, 255).toInt();
+  final int r = toChannel(color.r);
+  final int g = toChannel(color.g);
+  final int b = toChannel(color.b);
 
   for (int i = 1; i < 10; i++) {
     strengths.add(0.1 * i);
@@ -50,7 +54,7 @@ MaterialColor createMaterialColor(Color color) {
       1,
     );
   }
-  return MaterialColor(color.value, swatch);
+  return MaterialColor(color.toARGB32(), swatch);
 }
 
 void main() => runApp(const MyApp());
@@ -87,14 +91,9 @@ class _MyAppState extends State<MyApp> {
     Get.lazyPut(() => WaveDataController(), fenix: true);
     TuningController tuningController = TuningController()
       ..tuningConfiguration = tuningConfigurationsController
-          .defaultTuningConfigurations!
-          .values
-          .first
-          .first
+          .defaultTuningConfigurations!.values.first.first
       ..activeInstrumentGroup = tuningConfigurationsController
-          .defaultTuningConfigurations!
-          .keys
-          .first;
+          .defaultTuningConfigurations!.keys.first;
 
     Get.lazyPut(() => tuningConfigurationsController, fenix: true);
     Get.lazyPut(() => tuningController, fenix: true);
@@ -129,28 +128,27 @@ class _MyAppState extends State<MyApp> {
           elevation: 0.0,
         ),
         scaffoldBackgroundColor: AppColors.backgroundColor,
-        textTheme:
-            const TextTheme(
-              bodyLarge: TextStyle(),
-              bodyMedium: TextStyle(),
-              bodySmall: TextStyle(),
-              labelLarge: TextStyle(),
-              labelMedium: TextStyle(),
-              labelSmall: TextStyle(),
-              displayLarge: TextStyle(),
-              displayMedium: TextStyle(),
-              displaySmall: TextStyle(),
-              headlineLarge: TextStyle(),
-              headlineMedium: TextStyle(),
-              headlineSmall: TextStyle(),
-              titleLarge: TextStyle(),
-              titleMedium: TextStyle(),
-              titleSmall: TextStyle(),
-            ).apply(
-              displayColor: AppColors.onPrimaryColor,
-              bodyColor: AppColors.onPrimaryColor,
-              decorationColor: AppColors.onPrimaryColor,
-            ),
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(),
+          bodyMedium: TextStyle(),
+          bodySmall: TextStyle(),
+          labelLarge: TextStyle(),
+          labelMedium: TextStyle(),
+          labelSmall: TextStyle(),
+          displayLarge: TextStyle(),
+          displayMedium: TextStyle(),
+          displaySmall: TextStyle(),
+          headlineLarge: TextStyle(),
+          headlineMedium: TextStyle(),
+          headlineSmall: TextStyle(),
+          titleLarge: TextStyle(),
+          titleMedium: TextStyle(),
+          titleSmall: TextStyle(),
+        ).apply(
+          displayColor: AppColors.onPrimaryColor,
+          bodyColor: AppColors.onPrimaryColor,
+          decorationColor: AppColors.onPrimaryColor,
+        ),
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(
             foregroundColor: AppColors.onPrimaryColor,

@@ -11,7 +11,8 @@ class PerformanceDisplay extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: GetBuilder<PerformanceController>(
-        builder: (performanceController) => GetBuilder<MicTechnicalDataController>(
+        builder: (performanceController) =>
+            GetBuilder<MicTechnicalDataController>(
           builder: (micTechnicalDataController) => Column(
             children: [
               Row(

@@ -75,7 +75,7 @@ class MainDataDisplay extends StatelessWidget {
                                   final textStyle = TextStyle(
                                     color:
                                         touchedSpot.bar.gradient?.colors[0] ??
-                                        touchedSpot.bar.color,
+                                            touchedSpot.bar.color,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 14,
                                   );
@@ -114,8 +114,8 @@ class MainDataDisplay extends StatelessWidget {
                             show: true,
                             drawHorizontalLine: true,
                             drawVerticalLine: false,
-                            getDrawingHorizontalLine: (_) => FlLine(
-                              color: AppColors.contentColorBlue.withOpacity(1),
+                            getDrawingHorizontalLine: (_) => const FlLine(
+                              color: AppColors.contentColorBlue,
                               dashArray: [8, 0],
                               strokeWidth: 0.8,
                             ),
