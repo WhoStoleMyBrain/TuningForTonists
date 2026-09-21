@@ -222,8 +222,10 @@ Track the following for every delivery:
 
 ## Immediate next issues
 
-1. Replace the obsolete starter widget test and add pure cents/note-mapping
-   tests.
+1. [x] Replace the obsolete starter widget test and add pure cents/note-mapping
+   tests. Completed with validated, reference-pitch-aware pure Dart pitch math
+   and deterministic tests for intervals, note names, octaves, and invalid
+   input.
 2. Define the detector interface, result/confidence type, and immutable settings
    object without changing live behavior.
 3. Add generated PCM fixtures for silence, 82.41 Hz, 110 Hz, 196 Hz, 329.63 Hz,
