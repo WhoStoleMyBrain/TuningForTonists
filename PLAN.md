@@ -1,201 +1,235 @@
-# Tuning Accuracy Roadmap (Flutter)
+# Offline Multi-Instrument Tuner Product Plan
 
-This plan captures the current pitch-detection pipeline, likely error sources, and a phased roadmap to move the tuner from “working” to “reliable and accurate.” It focuses on correctness first, then stability, then UX.
+This is the implementation plan for turning the current Flutter prototype into
+a dependable, polished, fully offline tuner. The shorter
+[`PRODUCT_GAP_REPORT.md`](PRODUCT_GAP_REPORT.md) remains the product-level gap
+summary; this document defines delivery order, scope, and completion criteria.
 
-## Repo analysis (current state)
+## Product outcome
 
-### Pitch detection approach
-- **Primary calculation mode** defaults to **Cepstrum** in `WaveDataController.calculationType`.
-  - `CalculationController.calculateDisplayData` branches on `CalculationType` and calls **Cepstrum, HPS, Autocorrelation, or Zero Crossing**.
-  - **Cepstrum path**: `calculateFrequenciesCepstrum` performs a Hann window, FFT (`fftea`), `log(magnitude)` transform, then FFT again (`applyRealFftHalf`) and picks the max index to estimate the fundamental. (`tuning_for_tonists/lib/controllers/calculation_controller.dart`)
-- **HPS** path: FFT magnitudes + manual HPS product, then peak bin → frequency mapping. (`calculation_controller.dart`)
-- **Zero-crossing**: sign-change counting. (`calculation_controller.dart`)
-- **Autocorrelation**: naïve time-domain autocorrelation over a limited lag range. (`calculation_controller.dart`)
-- **Libraries used**: `fftea` (FFT), `scidart` (Hann window, log), `mic_stream` (audio capture). (`fft_controller.dart`, `calculation_controller.dart`)
+A user must be able to install the app, remain offline, create an instrument
+with any number of tuning targets, and tune reliably without an account. The UI
+must offer two levels of control:
 
-### Audio capture & buffering
-- **Mic capture** via `mic_stream` (`MicStream.microphone`), configured with:
-  - `sampleRate`: from `MicInitializationValuesController` (default **8192** in `main.dart`).
-  - `channelConfig`: mono.
-  - `audioFormat`: PCM 16-bit by default. (`microphone_helper.dart`, `main.dart`)
-- Runtime mic metadata: `MicStream.bitDepth`, `MicStream.sampleRate`, and `MicStream.bufferSize` populate `MicTechnicalDataController`. (`microphone_helper.dart`)
-- **Waveform buffering**:
-  - `WaveDataController.waveDataLength` defaults to **4096** samples; data is appended and truncated to this size. (`wave_data_controller.dart`)
-  - Visible samples list holds up to **200** detected frequencies, used for averaging and UI display. (`wave_data_controller.dart`)
+1. **Standard mode** — select an instrument/tuning and a Fast, Balanced, or
+   Precise response preset. An **Auto** detector supplies safe defaults.
+2. **Expert mode** — configure detector (Auto, HPS, autocorrelation, cepstrum,
+   or zero crossing), frequency range, window/FFT size, smoothing, confidence,
+   noise gate, reference pitch, and temperament per instrument profile.
 
-### Windowing / filtering / FFT steps
-- **Hann window** applied in `calculateFrequency2` (FFT/HPS path) and cepstrum path.
-- Commented-out Butterworth filter code exists but is inactive. (`calculation_controller.dart`)
-- FFT magnitude is taken via `fftea`’s `squareMagnitudes()`. (`fft_controller.dart`)
-- Frequency mapping:
-  - HPS/FFT: `(bin + 31) * sampleRate / waveDataLength`. (`calculation_controller.dart`)
-  - Cepstrum: `sampleRate / maxIndex`, where `maxIndex` is derived after skipping bins. (`calculation_controller.dart`)
+Standard and Expert modes must use the same underlying profile and tuning
+engine. Standard mode is a simplified view, not a separate implementation.
 
-### Calibration assumptions (A4, temperament, cents, smoothing)
-- **A4=440 Hz** is implied by the default `Note` and predefined tuning tables. (`tuning_controller.dart`, `constants/constants.dart`)
-- **Equal temperament** is assumed implicitly by using fixed note frequencies in `constants.dart`.
-- **Cents calculation** uses `log(x)/log(1.000577789)` and a default cent range of ±60 cents. (`tuning_controller.dart`)
-- **Smoothing** is minimal: last-second averaging of detected frequencies and a tuning threshold for percent-in-range. (`tuning_controller.dart`)
+## Current state
 
-### Likely failure points / sources of systematic error
-1. **Sample-rate mismatch**
-   - Capture uses `micInitializationValuesController.sampleRate` (default 8192), but some calculations use `MicStream.sampleRate` while others use the initialization value. Any mismatch will systematically skew frequency estimates. (`microphone_helper.dart`, `calculation_controller.dart`)
-2. **PCM decoding / endianness errors**
-   - The 16-bit conversion logic uses `asUint8List(4)` and a custom 2-byte combine with sign correction. This is likely incorrect for signed little-endian PCM and can distort waveforms. (`microphone_helper.dart`)
-3. **Audio file stream is not decoded**
-   - The testing path streams raw `.mp3` bytes as if they were PCM; this will yield nonsense frequencies. (`testing_controller.dart`, `microphone_helper.dart`)
-4. **Incorrect bin-to-frequency mapping**
-   - Manual offsets like `sublist(31)` and `(maxIdx + 31)` suggest bin skipping without clear rationale; could misalign peaks. (`calculation_controller.dart`)
-5. **Window size & resolution**
-   - Default `waveDataLength=4096` with `sampleRate=8192` yields ~0.5s windows; note detection may be sluggish and may bias towards low-frequency content.
-6. **Octave errors / harmonic locking**
-   - Cepstrum/HPS can lock onto strong harmonics if preprocessing and peak picking are not robust. (`calculation_controller.dart`)
-7. **Autocorrelation constraints**
-   - `autocorrLength` is capped at 137, making low-frequency detection unreliable. (`calculation_controller.dart`)
-8. **Platform audio-session differences**
-   - `mic_stream` permissions/sessions can return unexpected sample rates or buffer sizes on specific devices. (`microphone_helper.dart`)
+### Available now
 
----
+- On-device microphone capture and live frequency/note displays.
+- Cepstrum, HPS, autocorrelation, and zero-crossing detectors.
+- Basic confidence, energy-gate, and frequency-smoothing logic.
+- Guitar and ukulele presets.
+- Local custom tunings containing any number of manually named frequencies.
+- Diagnostic screens, generated tones, sample-audio tools, and performance
+  data.
 
-## PLAN
+### Important gaps
 
-### Phase 0 — Baseline & instrumentation
-**Goal:** Make the pipeline observable and repeatable without changing algorithms yet.
+- There is no Auto detector or user-friendly technical preset system.
+- A custom tuning stores only a name and notes; detector/calibration parameters
+  are not part of a reusable instrument profile.
+- Custom configurations cannot yet be fully edited, reordered, duplicated,
+  deleted, imported, or exported.
+- A4/reference pitch and equal temperament are effectively fixed assumptions.
+- Several visible settings are placeholders and are not saved.
+- Harmonic rejection, stable note locking, and “no usable signal” behavior need
+  completion and device validation.
+- Tests do not yet validate DSP, note mapping, persistence, or actual app flows;
+  the remaining starter widget test does not describe the current UI.
+- Airplane-mode startup, audio interruptions, accessibility, and the stated
+  accuracy/latency targets have not been verified across devices.
 
-**Tasks**
-- Add a debug overlay / log line that shows: **IMPLEMENTED—NEEDS LOCAL VERIFICATION**
-  - actual runtime sample rate, buffer size, bit depth, channel config
-  - selected calculation method (Cepstrum/HPS/Autocorrelation/ZeroCrossing)
-  - raw detected frequency + confidence/strength metric (peak magnitude / ratio)
-  - Local verification: run on a device to confirm values populate in the debug overlay.
-- Add a “capture a short sample” path that stores a few seconds of **raw PCM** to a local file (if feasible with existing deps). **IMPLEMENTED—NEEDS LOCAL VERIFICATION** (verify on device that the file is created and playable).
-- Add an in-app **synthetic tone generator** for validation (pure Dart), so known frequencies can be fed directly into the analysis pipeline. **IMPLEMENTED—NEEDS LOCAL VERIFICATION** (needs device validation for ±3 cents after 300 ms)
+## Implementation principles
 
-**Likely files to change**
-- `tuning_for_tonists/lib/controllers/calculation_controller.dart`
-- `tuning_for_tonists/lib/controllers/microphone_controller.dart`
-- `tuning_for_tonists/lib/controllers/wave_data_controller.dart`
-- `tuning_for_tonists/lib/screens/mic_detail_screen.dart`
-- `tuning_for_tonists/lib/controllers/testing_controller.dart`
+- Keep audio capture, pure-Dart pitch analysis, profile persistence, and UI
+  separate so detection can be tested without a microphone.
+- Store user intent in profiles; translate Fast/Balanced/Precise presets into
+  validated engine parameters at one boundary.
+- Keep all tuning and help data on-device. No account, network request,
+  telemetry, or cloud dependency is required for core operation.
+- Prefer small, reviewable increments. Do not redesign the UI before the engine
+  has deterministic correctness tests.
+- Hide experimental diagnostics from the normal journey while keeping them
+  available in a clearly marked developer/advanced area.
 
-**Acceptance criteria**
-- Debug overlay shows live sample rate/buffer size and detected frequency.
-- Synthetic 440 Hz tone reads within **±3 cents** after **300 ms**.
-- Raw PCM capture produces a playable file on device (validated via OS file viewer).
+## Delivery roadmap
 
-**Manual test procedure (device)**
-1. Open the mic detail screen.
-2. Start mic stream; verify debug overlay values populate.
-3. Enable synthetic tone at 440 Hz and confirm displayed frequency/cents.
-4. Record a 3-second sample and verify file exists and plays back.
+### Phase 1 — Prove accuracy and establish a baseline
 
-### Phase 1 — Correctness fixes (sample rate, format, mapping)
-**Goal:** Fix the most likely sources of systematic error.
+**Goal:** make correctness measurable before expanding the product model.
 
-**Tasks**
-- Ensure **all frequency calculations use the actual runtime sample rate** (from `MicStream.sampleRate`) rather than the initialization value. **IMPLEMENTED—NEEDS LOCAL VERIFICATION** (verify on device that detected pitch does not shift when runtime sample rate differs from initialization).
-- Replace the 16-bit PCM conversion logic with a verified **little-endian Int16** decoder (consistent with mic_stream output). **IMPLEMENTED—NEEDS LOCAL VERIFICATION** (verify on device mic capture that waveform/pitch accuracy is correct for PCM16).
-- Make bin-skipping explicit and documented, or remove ad-hoc offsets like `sublist(31)` unless justified. **IMPLEMENTED—NEEDS LOCAL VERIFICATION** (verify bin-to-frequency mapping on device with synthetic tones).
-- Ensure window length and FFT size are consistent with the visible sample rate, and track the effective FFT resolution. **IMPLEMENTED—NEEDS LOCAL VERIFICATION** (verify FFT length lock toggle and resolution display on device).
-- Introduce a simple **confidence metric** (peak-to-average ratio or harmonic ratio) to gate low-confidence readings. **IMPLEMENTED—NEEDS LOCAL VERIFICATION** (verify confidence stays above threshold for clean tones and drops in silence/noise; confirm mic detail screen displays confidence values).
+**Deliverables**
 
-**Likely files to change**
-- `tuning_for_tonists/lib/helpers/microphone_helper.dart`
-- `tuning_for_tonists/lib/controllers/calculation_controller.dart`
-- `tuning_for_tonists/lib/controllers/fft_controller.dart`
-- `tuning_for_tonists/lib/controllers/mic_technical_data_controller.dart`
+- Extract detector inputs/outputs behind a pure-Dart interface that accepts PCM
+  samples, runtime sample rate, and an immutable parameter object.
+- Replace compressed MP3-as-PCM testing with generated tones and decoded PCM/WAV
+  fixtures for low notes, common guitar notes, silence, noise, and harmonics.
+- Add deterministic tests for PCM decoding, frequency-bin mapping, cents, note
+  mapping, each detector, confidence gating, and smoothing.
+- Finish noise rejection, fundamental/harmonic selection, and explicit
+  “no usable signal” output.
+- Measure current latency, jitter, octave errors, and CPU cost; record results by
+  detector and frequency range.
+- Complete real-device checks for actual sample rate, buffer size, permissions,
+  pause/resume, and microphone reconnect behavior.
 
-**Acceptance criteria**
-- With synthetic 440 Hz input, output is **±3 cents** and stable after **300 ms**.
-- With a pre-tuned A string (~110 Hz), output is **±5 cents** within **1 second**.
-- Changing device sample rate does not shift the detected pitch.
+**Exit criteria**
 
-**Manual test procedure (device)**
-1. Start synthetic 110 Hz tone → verify A2 within ±5 cents.
-2. Start synthetic 440 Hz tone → verify A4 within ±3 cents.
-3. Use a pre-tuned guitar A string; verify within ±5 cents after 1 second.
+- Clean generated tones are within ±3 cents after 500 ms across the supported
+  range; guitar/bass device trials are within ±5 cents after one second.
+- Sustained tones settle to less than ±2 cents jitter, silence produces no note,
+  and pitch changes settle within 500 ms.
+- Automated tests cover every detector and the full PCM-to-tuning-result path.
+- Device results and any detector-specific limits are documented.
 
-### Phase 2 — Stability & quality
-**Goal:** Reduce jitter and improve robustness without masking correctness.
+### Phase 2 — Build the instrument/profile model
 
-**Tasks**
-- Add temporal smoothing/hysteresis (e.g., exponential moving average) gated by confidence. **IMPLEMENTED—NEEDS LOCAL VERIFICATION** (validate jitter and convergence timings on device).
-- Add a basic noise gate: ignore frames below an energy threshold.
-- Add harmonic rejection: prefer fundamentals over harmonics using HPS/cepstrum heuristics.
-- Adjust window length and overlap to balance latency vs. stability (e.g., 2048/4096 with 50% overlap).
+**Goal:** represent arbitrary instruments and all settings needed to reproduce a
+tuning session.
 
-**Likely files to change**
-- `tuning_for_tonists/lib/controllers/calculation_controller.dart`
-- `tuning_for_tonists/lib/controllers/wave_data_controller.dart`
-- `tuning_for_tonists/lib/controllers/tuning_controller.dart`
+**Deliverables**
 
-**Acceptance criteria**
-- Holding a steady tone yields < **±2 cents** jitter after 500 ms.
-- Sudden pitch changes settle within **<500 ms**.
-- Silence does not produce spurious note locks.
+- Introduce versioned `InstrumentProfile`, `TuningTarget`, and
+  `DetectionSettings` models, with migration from existing saved tunings.
+- Support any number of ordered targets, including one-note instruments and
+  paired/coursed strings.
+- Allow target entry by note plus octave, exact frequency, or cents offset, with
+  sharp/flat display preference and custom labels.
+- Add create, edit, reorder, duplicate, rename, delete, favorite, and validation
+  workflows. Protect built-in profiles by copying before editing.
+- Add chromatic and target/string modes with automatic or manual target
+  selection.
+- Persist the active profile, selected mode, reference pitch, temperament, and
+  detection settings locally.
+- Add human-readable offline import/export and safe recovery for unsupported or
+  corrupted profile data.
 
-**Manual test procedure (device)**
-1. Hold a steady 440 Hz tone; observe cents jitter over 3 seconds.
-2. Switch between 440 Hz and 392 Hz; observe convergence speed.
-3. Test in a quiet room and then with background noise.
+**Exit criteria**
 
-### Phase 3 — UX improvements
-**Goal:** Make the tuner feel stable and usable.
+- A user can create and later edit profiles with 1, 4, 6, 7, 8, 12, or more
+  targets without special cases.
+- Profiles round-trip through persistence and export/import without data loss.
+- Existing custom tunings migrate without being deleted or silently changed.
+- Model, migration, validation, and CRUD flows have automated tests.
 
-**Tasks**
-- Add “note lock” behavior: lock to a detected note when confidence is high, unlock when confidence drops or pitch shifts.
-- Smooth needle/cent display using the same filtered frequency.
-- Show confidence indicator (e.g., color/opacity).
-- Improve tuning selection & alternate tunings workflow (without changing pitch logic).
+### Phase 3 — Add Standard and Expert control levels
 
-**Likely files to change**
-- `tuning_for_tonists/lib/widgets/` (needle, bars, plots)
-- `tuning_for_tonists/lib/controllers/tuning_controller.dart`
-- `tuning_for_tonists/lib/screens/main_screen.dart`
+**Goal:** make strong defaults effortless while keeping technical control
+available.
 
-**Acceptance criteria**
-- Needle display does not “jump” between harmonics on sustained tones.
-- Note name stays stable when the frequency is within ±10 cents for 500 ms.
+**Deliverables**
 
-**Manual test procedure (device)**
-1. Sustain a single note for 3 seconds; watch for stable note lock.
-2. Slightly bend pitch; verify needle movement without flicker.
+- Add an Auto detector that selects or combines proven detectors by range and
+  confidence, with a documented fallback when confidence is low.
+- Define Fast, Balanced, and Precise presets for latency/accuracy trade-offs.
+- Build Standard settings for profile, tuning mode, response preset, reference
+  pitch, note naming, and confirmation feedback.
+- Build Expert settings for detector, detection range, window/FFT size,
+  smoothing, confidence threshold, noise gate, and temperament.
+- Validate parameter combinations and offer “reset to recommended” per profile.
+- Replace or remove every placeholder settings row and persist every setting
+  that remains visible.
 
-### Phase 4 — Tests
-**Goal:** Prevent regressions and document expected behavior.
+**Exit criteria**
 
-**Tasks**
-- Unit tests for:
-  - note mapping and cents calculation
-  - confidence thresholds and smoothing
-- Optional golden tests for key UI widgets (needle, cents display).
+- A first-time user can tune without understanding detector terminology.
+- Expert values survive restart and affect the engine through one typed settings
+  object; invalid combinations cannot start a session.
+- Auto meets Phase 1 accuracy targets for guitar, bass, ukulele, and generated
+  test ranges and falls back cleanly instead of showing an unstable note.
+- Preset mappings and Expert-setting persistence are covered by tests.
 
-**Likely files to change**
-- `tuning_for_tonists/test/` (new tests)
-- `tuning_for_tonists/lib/controllers/tuning_controller.dart`
+### Phase 4 — Polish the tuning journey
 
-**Acceptance criteria**
-- Test coverage for cents and note mapping; tests pass locally (`flutter test`).
-- Synthetic tone validation re-usable in tests.
+**Goal:** provide a clear, fast, and accessible everyday experience.
 
-**Manual test procedure (device)**
-1. Run `flutter test` locally and verify all green.
+**Deliverables**
 
----
+- Focus the primary view on target/detected note, cents deviation, direction,
+  signal/confidence, and an unmistakable in-tune or no-signal state.
+- Add one-tap target selection, confidence-based note lock, optional automatic
+  target progression, and optional sound/vibration confirmation.
+- Add first-run microphone permission guidance, input-level checks, and a quick
+  accuracy check.
+- Complete responsive phone/tablet layouts, dark/light themes, large text,
+  screen-reader labels, color-blind-safe feedback, and non-color indicators.
+- Provide friendly empty, invalid-profile, permission-denied, interrupted-audio,
+  and unsupported-device states.
+- Package concise offline help for calibration, target selection, presets, and
+  Expert settings.
 
-## Minimal reproducible audio validation strategy
-**Preferred (no new deps):**
-- Add a **pure Dart sine-wave generator** that outputs PCM samples (Int16) and feeds them into `calculateDisplayData`. This avoids mic variability and MP3 decoding issues.
-  - Frequencies to include: 110 Hz, 220 Hz, 440 Hz, 329.6 Hz (E4), 196 Hz (G3).
-  - Add an on-screen toggle or dev-only button to inject these samples.
+**Exit criteria**
 
-**Fallback (existing assets, but needs decoding):**
-- If PCM data can be extracted via existing packages (e.g., `flutter_sound` already in deps), add a mode to decode a short PCM clip from assets and feed the same pipeline.
-- Avoid adding any new dependencies unless explicitly approved.
+- Core tuning, profile selection, and recovery paths are usable with a screen
+  reader and increased text size and never depend on color alone.
+- Sustained notes do not visibly jump between harmonics; UI animation does not
+  change the engine result or add noticeable latency.
+- Widget/integration tests cover onboarding, profile selection, tuning states,
+  permission denial, and recovery states.
 
----
+### Phase 5 — Verify offline operation and release readiness
 
-## Summary of immediate next steps
-1. Instrument the pipeline (Phase 0) to expose real sample rate, buffer size, and detected frequency.
-2. Fix sample-rate usage and PCM decoding (Phase 1) — these are most likely to cause systematic errors.
-3. Add minimal synthetic audio validation to prove correctness across a few target tones.
+**Goal:** make the completed experience trustworthy on supported devices.
+
+**Deliverables**
+
+- Verify first launch, normal use, bundled help, profile editing, backup/restore,
+  and restart in airplane mode.
+- Publish an in-app privacy statement: audio stays on-device, recordings are
+  opt-in, and core use requires no account, analytics, telemetry, or network.
+- Test representative low/mid/high-end devices, tablets, built-in microphones,
+  and supported external microphones.
+- Exercise permission changes, audio focus/calls, background/foreground,
+  microphone disconnects, corrupt storage, and interrupted imports.
+- Establish a regression matrix for supported frequency range, accuracy,
+  latency, jitter, CPU/battery use, and profile compatibility.
+- Remove developer controls from release navigation and finish release notes,
+  data reset, and local backup documentation.
+
+**Exit criteria**
+
+- All core acceptance journeys pass from a clean install with networking
+  disabled.
+- Phase 1 accuracy/latency targets pass on the supported-device matrix.
+- Static analysis has no unexplained issues and the automated suite is green.
+- There are no placeholder controls, dead-end screens, or unhandled core audio
+  and persistence failures in the release build.
+
+## Cross-phase work tracking
+
+Each phase should be delivered as small issues/PRs using this order within the
+phase: **model or pure logic → tests → persistence/controller integration → UI →
+device validation → documentation**. An item is not complete when code merely
+exists; its automated acceptance checks must pass and device-only checks must be
+recorded.
+
+Track the following for every delivery:
+
+- user-visible behavior and whether it belongs to Standard or Expert mode;
+- migration/backward-compatibility impact;
+- deterministic tests added;
+- device/manual checks still required;
+- offline, accessibility, privacy, performance, and battery impact.
+
+## Immediate next issues
+
+1. Replace the obsolete starter widget test and add pure cents/note-mapping
+   tests.
+2. Define the detector interface, result/confidence type, and immutable settings
+   object without changing live behavior.
+3. Add generated PCM fixtures for silence, 82.41 Hz, 110 Hz, 196 Hz, 329.63 Hz,
+   and 440 Hz, then baseline all four detectors.
+4. Resolve harmonic/no-signal behavior until Phase 1 thresholds pass.
+5. Draft the versioned profile schema and migration for existing custom tunings.
+
+Features should not move into the polished main journey until the relevant
+engine and persistence exit criteria are met.
